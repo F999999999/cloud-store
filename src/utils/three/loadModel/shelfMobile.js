@@ -10,8 +10,8 @@ dracoLoader.setDecoderPath(`three/draco/`);
 gltfLoader.setDRACOLoader(dracoLoader);
 
 // 导入 GLB/GLTF 模型
-export const ContainerMobile = gltfLoader.loadAsync(
-  `model/container/container.glb`,
+export const ShelfMobile = gltfLoader.loadAsync(
+  `model/shelf/shelf.glb`,
   (xhr) => {
     // 模型正在加载中
     console.log("加载进度：" + (xhr.loaded / xhr.total) * 100 + "%");
