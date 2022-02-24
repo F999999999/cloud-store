@@ -10,6 +10,14 @@ const cameraControls = (renderer, scene, camera) => {
   const clock = new THREE.Clock();
   const cameraControls = new CameraControls(camera, renderer.domElement);
 
+  // 用户输入配置
+  // 左键
+  cameraControls.mouseButtons.left = CameraControls.ACTION.NONE;
+  // 右键
+  cameraControls.mouseButtons.right = CameraControls.ACTION.TRUCK;
+  // 中键
+  cameraControls.mouseButtons.middle = CameraControls.ACTION.ROTATE;
+
   (function anim() {
     // 更新相机控制器并判断是否有更新
     if (cameraControls.update(clock.getDelta())) {

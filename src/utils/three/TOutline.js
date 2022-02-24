@@ -14,6 +14,7 @@ let outlinePass = {
   usePatternTexture: false,
   visibleEdgeColor: 0xffffff,
   hiddenEdgeColor: 0x190909,
+  selectedObjects: [],
 };
 
 // Outline 轮廓线
