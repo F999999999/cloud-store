@@ -5,15 +5,12 @@ import {
   WebGLRenderer,
 } from "three";
 
-import cameraControls from "@/utils/three/CameraControls";
-import TRaycaster from "@/utils/three/TRaycaster";
-
 export class TEngine {
   dom;
   renderer;
   scene;
   camera;
-  cameraControls;
+  renderFnArr = [];
 
   constructor(threeRef) {
     // 渲染场景的 DOM 元素
@@ -49,15 +46,21 @@ export class TEngine {
     // 设置相机方向(需要指向的场景对象)
     this.camera.lookAt(this.scene.position);
 
-    // 鼠标控制相机
-    this.cameraControls = cameraControls(
-      this.renderer,
-      this.scene,
-      this.camera
-    );
+    const anim = () => {
+      if (this.renderFnArr.length > 0) {
+        this.renderFnArr.forEach((fn) => {
+          if (typeof fn === "function") {
+            fn();
+          }
+        });
+      }
+      requestAnimationFrame(anim);
+    };
+    anim();
+  }
 
-    // 鼠标选中模型对象
-    TRaycaster(this.dom, this.renderer, this.scene, this.camera);
+  addRenderAnim(fn) {
+    this.renderFnArr.push(fn);
   }
 
   // 添加模型到场景中

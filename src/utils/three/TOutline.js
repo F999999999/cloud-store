@@ -34,11 +34,11 @@ const TOutline = (renderer, scene, camera) => {
   composer.addPass(outlinePass);
 
   // 渲染轮廓线
-  const outlineRender = () => {
+  const renderOutline = () => {
     composer.render();
   };
 
-  return { outlinePass, outlineRender };
+  return { outlinePass, renderOutline };
 };
 
 export default TOutline;
