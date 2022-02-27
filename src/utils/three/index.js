@@ -45,7 +45,7 @@ export class TEngine {
     this.camera = new OrthographicCamera(-s * k, s * k, s, -s, -s * 10, s * 10);
 
     // 设置相机位置
-    this.camera.position.set(10, 10, 10);
+    this.camera.position.set(1000, 1000, 1000);
     // 设置相机方向(需要指向的场景对象)
     this.camera.lookAt(this.scene.position);
 

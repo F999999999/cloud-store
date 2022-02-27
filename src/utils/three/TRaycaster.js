@@ -1,18 +1,15 @@
-import { Raycaster, Vector2 } from "three";
+import { Raycaster, Vector2, Vector3 } from "three";
 import Outline from "@/utils/three/TOutline";
 import TDragControls from "@/utils/three/TDragControls";
 
-// 捕获的对象信息
-let selectedObjects = [];
-
 const TRaycaster = (dom, renderer, scene, camera) => {
   // 创建射线投射器对象
-  const raycaster = new Raycaster(camera.position);
+  const raycaster = new Raycaster(new Vector3(0, 10000, 0));
 
   // 描边
   const { outlinePass, outlineRender } = Outline(renderer, scene, camera);
   // 拖放控制器
-  const dragControls = TDragControls(camera, renderer, scene);
+  const dragControls = TDragControls(camera, renderer);
 
   // 更新标准设备坐标
   const onPointerMove = (event) => {
@@ -27,20 +24,15 @@ const TRaycaster = (dom, renderer, scene, camera) => {
     // 屏幕坐标转换为标准设备坐标
     pointer.x = ((mouseX - dom.offsetLeft) / dom.clientWidth) * 2 - 1;
     pointer.y = -((mouseY - dom.offsetTop) / dom.clientHeight) * 2 + 1;
-    // 标准设备坐标
-    const standardVector = new Vector2(pointer.x, pointer.y);
     // 设置标准设备坐标和相机
-    raycaster.setFromCamera(standardVector, camera);
+    raycaster.setFromCamera(pointer, camera);
 
-    // 检测鼠标点击位置
+    // 检测射线更新后执行
     checkIntersection();
   };
 
-  // 监听鼠标指针移动事件
-  renderer.domElement.addEventListener("pointermove", onPointerMove);
-
-  // 监听鼠标点击事件
-  renderer.domElement.addEventListener("click", () => {
+  // 鼠标点击事件
+  const onClick = () => {
     // 判断是否选中的实体
     // if (selectedObjects[0]) {
     //   console.log("click", selectedObjects[0]);
@@ -53,13 +45,19 @@ const TRaycaster = (dom, renderer, scene, camera) => {
     //     }
     //   }
     // }
-  });
-
-  // 添加到选择列表
-  const addSelectedObject = (object) => {
-    selectedObjects = [];
-    selectedObjects.push(object);
   };
+
+  // 监听鼠标指针移动事件
+  renderer.domElement.addEventListener("pointermove", onPointerMove);
+
+  // 监听鼠标点击事件
+  renderer.domElement.addEventListener("click", onClick);
+
+  // 货架格子
+  let shelfBaseObjects = [];
+  let berfectShelfBaseObjects = [];
+  // 货物
+  let goodsObjects = [];
 
   // 检测射线
   const checkIntersection = () => {
@@ -67,42 +65,65 @@ const TRaycaster = (dom, renderer, scene, camera) => {
     let intersects = raycaster.intersectObjects(scene.children, true);
     // 传递射线选中的对象给拖放控制器
     dragControls.updateIntersectObjects(intersects);
-    if (intersects.length > 0) {
-      // console.log(scene, "scene", intersects);
-    }
-    // 筛选被选中的对象
-    intersects = intersects.filter(
-      (intersect) => intersect?.object?.name === "goods"
-      //   ||
-      // intersect?.object?.name.slice(0, 11) === "shelf_base_"
-    );
 
     // 判断是否捕获到对象
     if (intersects.length > 0) {
-      // 捕获到对象
-      // 添加描边效果
-      const selectedObject = intersects[0].object;
-      addSelectedObject(selectedObject);
-      outlinePass.selectedObjects = selectedObjects;
+      intersects.forEach((intersect) => {
+        // 判断是否是货架格子
+        if (intersect?.object?.name.slice(0, 11) === "shelf_base_") {
+          shelfBaseObjects.push(intersect);
+        }
+        // 判断是否是货物
+        if (intersect.object.name === "goods") {
+          goodsObjects.push(intersect);
+        }
+      });
 
-      // 添加被拖放的物体
-      dragControls.addDragControlsObject(selectedObject);
-      // dragControls.addDragControlsObject(
-      //   scene
-      //     .getObjectByName("shelf")
-      //     .children.filter((item) => item.name.slice(0, 11) === "shelf_base_")
-      // );
+      // 判断是否捕获到货架格子
+      if (shelfBaseObjects.length > 0 && dragControls.getDragState()) {
+        // 清除之前被选中的货架格子的颜色
+        berfectShelfBaseObjects.forEach((item) => {
+          // 清除颜色
+          item.object.material.emissive.set(0x000000);
+        });
+        // 清空之前被选中的货架格子
+        berfectShelfBaseObjects = [];
+
+        // 货架格子添加颜色
+        shelfBaseObjects.forEach((item) => {
+          item.object.material.emissive.set(0x118ee9);
+          // 保存被选中的货架格子
+          berfectShelfBaseObjects.push(item);
+        });
+      } else {
+        // 清除之前被选中的货架格子的颜色
+        berfectShelfBaseObjects.forEach((item) => {
+          // 清除颜色
+          item.object.material.emissive.set(0x000000);
+        });
+      }
+      // 清空货架格子列表
+      shelfBaseObjects = [];
+
+      // 判断是否捕获到货物
+      if (goodsObjects.length > 0) {
+        // 当前货物
+        const selectedObject = goodsObjects[0].object;
+        // 添加到描边列表
+        outlinePass.selectedObjects = [selectedObject];
+        // 添加被拖放的物体
+        dragControls.addDragControlsObject(selectedObject);
+      } else {
+        // 清除描边效果
+        outlinePass.selectedObjects = [];
+        // 清空被拖放的物体
+        dragControls.clearDragControlsObject();
+      }
+      // 清空货物列表
+      goodsObjects = [];
     } else {
-      // 未捕获到对象
       // 清除描边效果
       outlinePass.selectedObjects = [];
-      // 还原物体大小
-      if (selectedObjects[0]?.name === "goods") {
-        // 还原大小
-        selectedObjects[0].scale.set(80, 80, 80);
-        // 清空选中列表
-        selectedObjects = [];
-      }
 
       // 清空被拖放的物体
       dragControls.clearDragControlsObject();
