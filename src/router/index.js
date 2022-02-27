@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 const HomePage = () => import("@/views/home");
 const StorePage = () => import("@/views/store");
+const LoginPage = () => import("@/views/login");
 
 const routes = [
   // 首页
@@ -14,6 +15,12 @@ const routes = [
     path: "/store",
     name: "Store",
     component: StorePage,
+  },
+  // 登录页面
+  {
+    path: "/login",
+    name: "Login",
+    component: LoginPage,
   },
 ];
 

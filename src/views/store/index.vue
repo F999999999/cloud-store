@@ -292,6 +292,7 @@ export default {
 
 <style scoped>
 .store {
+  position: relative;
   width: 100%;
   height: 100%;
 }
