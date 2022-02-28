@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { TEngine } from "@/utils/three";
 import { lightsList } from "@/utils/three/TLinghts";
 import { basicObjectList } from "@/utils/three/TBasicObject";
@@ -15,8 +15,7 @@ import { ContainerMobile } from "@/utils/three/loadModel/containerMobile";
 import { ShelfMobile } from "@/utils/three/loadModel/shelfMobile";
 import { shelfLocation } from "@/utils/modelLocation/shelfModelLocation";
 import OperationPanel from "@/views/store/components/operationPanel";
-import { useShelf } from "@/hooks/useShelf";
-import { useGoods } from "@/hooks/useGoods";
+import { useStore } from "vuex";
 import TRaycaster from "@/utils/three/TRaycaster";
 import Outline from "@/utils/three/TOutline";
 import TDragControls from "@/utils/three/TDragControls";
@@ -27,12 +26,16 @@ export default {
   name: "Store",
   components: { OperationPanel },
   setup() {
+    // three 绑定的元素
     const threeRef = ref(null);
 
-    // 货架数据
-    const { shelfList } = useShelf();
-    // 货物数据
-    const { goodsList } = useGoods();
+    // 获取 store
+    const store = useStore();
+
+    // 货架列表数据
+    const shelfList = computed(() => store.state.shelf.shelfList);
+    // 货物列表数据
+    const goodsList = computed(() => store.state.goods.goodsList);
 
     // DOM 渲染完成后执行
     onMounted(() => {
@@ -66,21 +69,21 @@ export default {
       // 货架格子
       let shelfBaseObjects = [];
       // 拖放前的货架格子
-      let berfectShelfBaseObjects = [];
+      let beforeShelfBaseObjects = [];
       // 货物
       let goodsObjects = [];
+      // 与射线相交的物体
+      let intersectObjects = [];
 
       // 监听鼠标指针移动事件
       TE.renderer.domElement.addEventListener("pointermove", (event) => {
         // 获取与射线相交的物体
-        const intersects = raycaster.updateIntersects(event);
-        // 传递射线选中的对象给拖放控制器
-        dragControls.updateIntersectObjects(intersects);
+        intersectObjects = raycaster.updateIntersects(event);
 
         // 判断是否有与射线相交的模型
-        if (intersects.length > 0) {
+        if (intersectObjects.length > 0) {
           // 遍历相交的模型
-          intersects.forEach((intersect) => {
+          intersectObjects.forEach((intersect) => {
             // 判断是否是货架格子
             if (intersect?.object?.name.slice(0, 11) === "shelf_base_") {
               shelfBaseObjects.push(intersect);
@@ -94,22 +97,22 @@ export default {
           // 判断是否捕获到货架格子并且拖放控制器是否处于拖放状态
           if (shelfBaseObjects.length > 0 && dragControls.getDragState()) {
             // 清除之前被选中的货架格子的颜色
-            berfectShelfBaseObjects.forEach((item) => {
+            beforeShelfBaseObjects.forEach((item) => {
               // 清除颜色
               item.object.material.emissive.set(0x000000);
             });
             // 清空之前被选中的货架格子
-            berfectShelfBaseObjects = [];
+            beforeShelfBaseObjects = [];
 
             // 货架格子添加颜色
             shelfBaseObjects.forEach((item) => {
               item.object.material.emissive.set(0x118ee9);
               // 保存被选中的货架格子
-              berfectShelfBaseObjects.push(item);
+              beforeShelfBaseObjects.push(item);
             });
           } else {
             // 清除之前被选中的货架格子的颜色
-            berfectShelfBaseObjects.forEach((item) => {
+            beforeShelfBaseObjects.forEach((item) => {
               // 清除颜色
               item.object.material.emissive.set(0x000000);
             });
@@ -136,7 +139,6 @@ export default {
         } else {
           // 清除描边效果
           outline.outlinePass.selectedObjects = [];
-
           // 清空被拖放的物体
           dragControls.clearDragControlsObject();
         }
@@ -147,6 +149,124 @@ export default {
         console.log("click", event);
       });
 
+      // 鼠标移入时执行
+      dragControls.addEventListener("hoveron", (event) => {
+        // 克隆当前被拖拽的物体
+        const object = event.object.clone();
+        // 当前被拖放物体的自定义数据
+        object.data = event.object.data;
+        // 保存当前被拖放的物体
+        dragControls.setCurrentDragControls(object);
+      });
+
+      // 开始拖拽时执行
+      dragControls.addEventListener("dragstart", () => {
+        // 设置拖放状态为正在拖放
+        dragControls.setDragState(true);
+      });
+
+      // 完成拖拽时执行
+      dragControls.addEventListener("dragend", (event) => {
+        // 设置拖放状态为未在拖放
+        dragControls.setDragState(false);
+
+        // 过滤鼠标指向的货架格子
+        const shelfBaseMesh = intersectObjects.find(
+          (item) => item.object.name.slice(0, 11) === "shelf_base_"
+        );
+
+        // 判断是否拖拽到货架格子
+        if (shelfBaseMesh) {
+          // 判断货架格子是否更改
+          if (
+            shelfBaseMesh.object.data.id ===
+              dragControls.getCurrentDragControls().data.shelf_grid_id &&
+            shelfBaseMesh.object.data.shelf_id ===
+              dragControls.getCurrentDragControls().data.shelf_id
+          ) {
+            // 货架格子未进行更改
+            console.log("货架格子未进行更改");
+            // 货物位置还原
+            event.object.position.set(
+              dragControls.getCurrentDragControls().position.x,
+              dragControls.getCurrentDragControls().position.y,
+              dragControls.getCurrentDragControls().position.z
+            );
+            return;
+          }
+
+          // 生成新的货物列表
+          const newGoodList = goodsList.value.map((item) => {
+            if (
+              item.shelf_id === event.object.data.shelf_id &&
+              item.shelf_grid_id === event.object.data.shelf_grid_id
+            ) {
+              item.shelf_id = shelfBaseMesh.object.data.shelf_id;
+              item.shelf_grid_id = shelfBaseMesh.object.data.id;
+              return item;
+            } else {
+              return item;
+            }
+          });
+
+          // 判断货物是否重叠
+          if (
+            newGoodList.filter(
+              (item) =>
+                item.shelf_id === event.object.data.shelf_id &&
+                item.shelf_grid_id === event.object.data.shelf_grid_id
+            ).length > 1
+          ) {
+            // 货物重叠
+            console.log("货物重叠");
+
+            // 物体闪烁
+            event.object.material.emissive.set(0xff0000);
+            setTimeout(() => {
+              event.object.material.emissive.set(0x000000);
+              setTimeout(() => {
+                event.object.material.emissive.set(0xff0000);
+                setTimeout(() => {
+                  event.object.material.emissive.set(0x000000);
+                  // 货物位置还原
+                  event.object.position.set(
+                    dragControls.getCurrentDragControls().position.x,
+                    dragControls.getCurrentDragControls().position.y,
+                    dragControls.getCurrentDragControls().position.z
+                  );
+                }, 200);
+              }, 200);
+            }, 200);
+
+            return;
+          }
+          // 更新数据
+          store.commit("goods/changeGoods", newGoodList);
+          // 更新货物数据
+          event.object.data = {
+            ...event.object.data,
+            shelf_id: shelfBaseMesh.object.data.shelf_id,
+            shelf_grid_id: shelfBaseMesh.object.data.id,
+          };
+          // 把货物放入货架格子
+          event.object.position.set(
+            shelfBaseMesh.object.parent.position.x +
+              shelfLocation[shelfBaseMesh.object.data.id - 1].x,
+            shelfBaseMesh.object.parent.position.y +
+              shelfLocation[shelfBaseMesh.object.data.id - 1].y,
+            shelfBaseMesh.object.parent.position.z +
+              shelfLocation[shelfBaseMesh.object.data.id - 1].z
+          );
+        } else {
+          // 还原货物位置
+          event.object.position.set(
+            dragControls.getCurrentDragControls().position.x,
+            dragControls.getCurrentDragControls().position.y,
+            dragControls.getCurrentDragControls().position.z
+          );
+        }
+      });
+
       // 货架模型间距
       const shelfSpacing = { x: 500, y: 466, z: -1000 };
       // 遍历数据渲染货架模型
@@ -155,7 +275,7 @@ export default {
         // 模型缩放比例
         const groupScale = 100;
         // 遍历渲染模型
-        shelfList.forEach((item) => {
+        shelfList.value.forEach((item) => {
           // 复制模型
           const newGroup = group.scene.children[0].clone();
           // 遍历每个位置
@@ -196,7 +316,7 @@ export default {
         // 模型缩放比例
         const groupScale = 80;
         // 遍历渲染模型
-        goodsList.forEach((item) => {
+        goodsList.value.forEach((item) => {
           // 复制模型
           let newGroup = group.scene.children[0].clone();
           newGroup.material = group.scene.children[0].material.clone();
@@ -205,15 +325,17 @@ export default {
           // 保存箱子数据
           newGroup.data = item;
           // 查找货架
-          const shelf = shelfList.find((shelf) => shelf.id === item.shelf_id);
+          const shelf = shelfList.value.find(
+            (shelf) => shelf.id === item.shelf_id
+          );
           // 设置箱子的位置
           newGroup.position.set(
             shelf.position.x * shelfSpacing.x +
-              shelfLocation[item.shelf_base_id - 1].x,
+              shelfLocation[item.shelf_grid_id - 1].x,
             shelf.position.y * shelfSpacing.y +
-              shelfLocation[item.shelf_base_id - 1].y,
+              shelfLocation[item.shelf_grid_id - 1].y,
             shelf.position.z * shelfSpacing.z +
-              shelfLocation[item.shelf_base_id - 1].z
+              shelfLocation[item.shelf_grid_id - 1].z
           );
 
           // 设置缩放比例

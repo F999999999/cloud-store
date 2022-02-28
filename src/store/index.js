@@ -1,4 +1,5 @@
 import { createStore } from "vuex";
+import shelf from "@/store/shelf";
 import goods from "@/store/goods";
 
 export default createStore({
@@ -6,6 +7,7 @@ export default createStore({
   mutations: {},
   actions: {},
   modules: {
+    shelf,
     goods,
   },
 });
