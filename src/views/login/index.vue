@@ -2,16 +2,18 @@
   <div class="content">
     <div class="loginBox">
       <h2>云仓</h2>
-      <form action="">
+      <form @submit="onSubmit">
         <div class="item">
-          <input type="text" required />
+          <input type="text" required v-model.trim="usernameField" />
           <label for="">账号</label>
+          <span class="error" v-if="usernameError">{{ usernameError }} </span>
         </div>
         <div class="item">
-          <input type="password" required />
+          <input type="password" required v-model.trim="passwordField" />
           <label for="">密码</label>
+          <span class="error" v-if="passwordError">{{ passwordError }} </span>
         </div>
-        <button class="btn">
+        <button class="btn" type="submit">
           登录
           <span></span>
           <span></span>
@@ -22,7 +24,70 @@
     </div>
   </div>
 </template>
-<script setup></script>
+<script setup>
+import { loginByAccountAndPasswordApi } from "../../api/user";
+import { useForm, useField } from "vee-validate";
+import { password, username } from "../../utils/vee-validate-schema";
+import { message } from "ant-design-vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+//所以需要的字段
+const {
+  usernameField,
+  usernameError,
+  passwordField,
+  passwordError,
+  usernameFormHandleSubmit,
+} = useFormValidate();
+//验证通过之后
+const onSubmit = usernameFormHandleSubmit(({ username, password }) => {
+  // console.log(username, password);
+  //登录接口
+  loginByAccountAndPasswordApi({ username, password })
+    .then((res) => {
+      if (res.status == 200) {
+        // 设置一个sessionStorage(sessionStorage存储数据的时间是打开浏览器存储 关闭浏览器 数据消失)
+        window.sessionStorage.setItem("token", res.data.token);
+        console.log(res.data.token);
+        message.success(res.message);
+        //路由跳转
+        router.push("/");
+      } else {
+        message.error(res.message);
+      }
+    })
+    .catch((err) => {
+      console.log("登录失败" + err);
+    });
+});
+
+//表单校验
+function useFormValidate() {
+  const { handleSubmit: usernameFormHandleSubmit } = useForm({
+    // 指定表单中包含的验证规则, 只有以下规则都验证通过了表单才可以提交
+    validationSchema: {
+      username,
+      password,
+    },
+  });
+
+  // 验证用户名
+  const { value: usernameField, errorMessage: usernameError } =
+    useField("username");
+  // 验证密码
+  const { value: passwordField, errorMessage: passwordError } =
+    useField("password");
+
+  return {
+    usernameField,
+    usernameError,
+    passwordField,
+    passwordError,
+    usernameFormHandleSubmit,
+  };
+}
+</script>
 
 <style scoped>
 * {
@@ -86,7 +151,7 @@ h2 {
 
 .item input:focus + label,
 .item input:valid + label {
-  top: 0px;
+  top: 0;
   font-size: 2px;
 }
 
@@ -126,7 +191,7 @@ h2 {
   height: 2px;
   background: -webkit-linear-gradient(left, transparent, #03e9f4);
   left: -100%;
-  top: 0px;
+  top: 0;
   animation: line1 1s linear infinite;
 }
 
@@ -141,7 +206,7 @@ h2 {
   width: 2px;
   height: 100%;
   background: -webkit-linear-gradient(top, transparent, #03e9f4);
-  right: 0px;
+  right: 0;
   top: -100%;
   animation: line2 1s 0.25s linear infinite;
 }
@@ -158,7 +223,7 @@ h2 {
   height: 2px;
   background: -webkit-linear-gradient(left, #03e9f4, transparent);
   left: 100%;
-  bottom: 0px;
+  bottom: 0;
   animation: line3 1s 0.75s linear infinite;
 }
 
@@ -173,7 +238,7 @@ h2 {
   width: 2px;
   height: 100%;
   background: -webkit-linear-gradient(top, transparent, #03e9f4);
-  left: 0px;
+  left: 0;
   top: 100%;
   animation: line4 1s 1s linear infinite;
 }
@@ -183,5 +248,8 @@ h2 {
   100% {
     top: -100%;
   }
+}
+.error {
+  color: red;
 }
 </style>

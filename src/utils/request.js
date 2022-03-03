@@ -3,7 +3,8 @@ import axios from "axios";
 // import router from "@/router";
 
 // 配置基准请求地址
-export const baseURL = "http://localhost:3333/";
+// export const baseURL = "http://localhost:3333/";
+export const baseURL = "http://101.35.10.230:3333/";
 
 // 创建一个新的 axios 实例对象，用于配置与服务器端相关的请求
 // 带 Token 的 axios 实例
