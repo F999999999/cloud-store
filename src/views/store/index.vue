@@ -2,173 +2,106 @@
   <div class="store">
     <div class="three-canvas" ref="threeRef"></div>
     <operation-panel />
+    <button style="position: absolute; top: 0; left: 0" @click="hhh">
+      hhhhhh
+    </button>
+    <template ref="shelfTagRef">
+      <shelf-tag
+        v-for="shelfTagData in shelfTagDataList"
+        :key="shelfTagData.id"
+        :title="shelfTagData.title"
+        :id="shelfTagData.id"
+        :name="shelfTagData.name"
+        :size="shelfTagData.size"
+        :position="shelfTagData.position"
+      />
+    </template>
+    <template ref="goodsTagRef">
+      <goods-tag
+        v-for="goodsTagData in goodsTagDataList"
+        :key="goodsTagData.id"
+        :show="goodsTagData.show"
+        :title="goodsTagData.title"
+        :id="goodsTagData.id"
+        :name="goodsTagData.name"
+        :shelf_id="goodsTagData.shelf_id"
+        :shelf_grid_id="goodsTagData.shelf_grid_id"
+        :weight="goodsTagData.weight"
+        :shelflife="goodsTagData.shelflife"
+        :production_date="goodsTagData.production_date"
+        :storage_time="goodsTagData.storage_time"
+        :persistentShow="goodsTagData.persistentShow"
+      />
+    </template>
   </div>
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { TEngine } from "@/utils/three";
 import { lightsList } from "@/utils/three/TLinghts";
 import { basicObjectList } from "@/utils/three/TBasicObject";
-import { helperList } from "@/utils/three/THelper";
+// import { helperList } from "@/utils/three/THelper";
 import { ContainerMobile } from "@/utils/three/loadModel/containerMobile";
 import { ShelfMobile } from "@/utils/three/loadModel/shelfMobile";
 import { shelfLocation } from "@/utils/modelLocation/shelfModelLocation";
 import OperationPanel from "@/views/store/components/operationPanel";
+import { useStore } from "vuex";
+import TRaycaster from "@/utils/three/TRaycaster";
+import Outline from "@/utils/three/TOutline";
+import TDragControls from "@/utils/three/TDragControls";
+import cameraControls from "@/utils/three/CameraControls";
+import labelRenderer from "@/utils/three/CSS2DRenderer";
+import { goodsTag, shelfTag } from "@/utils/three/CSS2DObject";
+import ShelfTag from "@/views/store/components/shelfTag";
+import GoodsTag from "@/views/store/components/goodsTag";
 // import { CameraHelper } from "three";
 
 export default {
   name: "Store",
-  components: { OperationPanel },
+  components: { GoodsTag, ShelfTag, OperationPanel },
   setup() {
+    // three 绑定的元素
     const threeRef = ref(null);
+    // 实例化的 ThreeJS
+    let ThreeJs = ref(null);
+    // 获取 store
+    const store = useStore();
 
-    //货架示例数据
-    const shelfArr = [
-      {
-        id: 1,
-        name: "shelf1",
-        position: { x: 0, y: 0, z: 0 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        id: 2,
-        name: "shelf2",
-        position: { x: 1, y: 0, z: 0 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        id: 3,
-        name: "shelf3",
-        position: { x: 2, y: 0, z: 0 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        id: 4,
-        name: "shelf4",
-        position: { x: 1, y: 0, z: 1 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-    ];
-    // 箱子示例数据
-    const containerArr = [
-      {
-        name: "box",
-        shelf_id: 1,
-        shelf_base_id: 1,
-        position: { x: 0, y: 0, z: 0 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box1",
-        shelf_id: 1,
-        shelf_base_id: 2,
-        position: { x: 1, y: 0, z: 1 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box2",
-        shelf_id: 1,
-        shelf_base_id: 3,
-        position: { x: 0, y: 0, z: 2 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box3",
-        shelf_id: 1,
-        shelf_base_id: 4,
-        position: { x: 1, y: 0, z: 2 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box4",
-        shelf_id: 1,
-        shelf_base_id: 6,
-        position: { x: 0, y: 0, z: 4 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box5",
-        shelf_id: 1,
-        shelf_base_id: 12,
-        position: { x: 0, y: 0, z: 5 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box",
-        shelf_id: 1,
-        shelf_base_id: 19,
-        position: { x: 0, y: 1, z: 0 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box",
-        shelf_id: 1,
-        shelf_base_id: 21,
-        position: { x: 0, y: 1, z: 2 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box",
-        shelf_id: 2,
-        shelf_base_id: 22,
-        position: { x: 0, y: 1, z: 6 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box",
-        shelf_id: 1,
-        shelf_base_id: 25,
-        position: { x: 0, y: 1, z: 3 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box",
-        shelf_id: 1,
-        shelf_base_id: 39,
-        position: { x: 0, y: 1, z: 5 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box",
-        shelf_id: 4,
-        shelf_base_id: 66,
-        position: { x: 0, y: 2, z: 2 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-      {
-        name: "box",
-        shelf_id: 2,
-        shelf_base_id: 20,
-        position: { x: 0, y: 3, z: 3 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-      },
-    ];
+    // 货架 Tag
+    const shelfTagRef = ref(null);
+    // 货架 Tag 的数据列表
+    const shelfTagDataList = ref([]);
+    // 货架 Tag 列表
+    const shelfTagList = [];
+
+    // 货物 Tag
+    const goodsTagRef = ref(null);
+    // 货物 Tag 的数据列表
+    const goodsTagDataList = ref([]);
+    // 货物 Tag 列表
+    const goodsTagList = [];
+
+    // 货架列表数据
+    const shelfList = computed(() => store.state.shelf.shelfList);
+    // 获取货架列表数据
+    store.dispatch("shelf/getShelfList");
+    // 货物列表数据
+    const goodsList = computed(() => store.state.goods.goodsList);
+    // 获取商品列表数据
+    store.dispatch("goods/getGoodsList");
+    // 货架模型间距
+    const shelfSpacing = { x: 240 + 260, y: 466, z: -1000 };
+
+    const hhh = () => {};
 
     // DOM 渲染完成后执行
     onMounted(() => {
-      // 实例化 Three
+      // 实例化 ThreeJs
       const TE = new TEngine(threeRef.value);
-
+      ThreeJs.value = TE;
       // 辅助工具
-      TE.addObject(...helperList);
+      // TE.addObject(...helperList);
       // 光源
       TE.addObject(...lightsList);
       // 基本网格模型
@@ -176,8 +109,318 @@ export default {
       // 相机辅助
       // TE.addObject(new CameraHelper(TE.camera));
 
-      // 货架模型间距
-      const shelfSpacing = { x: 500, y: 466, z: -1000 };
+      // 相机控制器
+      const TCameraControls = cameraControls(TE.renderer, TE.scene, TE.camera);
+      // 添加相机控制器到渲染列表
+      TE.addRenderAnim(TCameraControls.renderCamera);
+
+      // 射线投射器(鼠标选中模型对象)
+      const raycaster = TRaycaster(TE.dom, TE.renderer, TE.scene, TE.camera);
+
+      // 轮廓线渲染
+      const outline = Outline(TE.renderer, TE.scene, TE.camera);
+      // 添加轮廓线到渲染列表
+      TE.addRenderAnim(outline.renderOutline);
+
+      // 拖放控制器
+      const dragControls = TDragControls(TE.camera, TE.renderer);
+
+      // 货架格子
+      let shelfBaseObjects = [];
+      // 拖放前的货架格子
+      let beforeShelfBaseObjects = [];
+      // 货物
+      let goodsObjects = [];
+      // 与射线相交的物体
+      let intersectObjects = [];
+
+      // 监听鼠标指针移动事件
+      TE.renderer.domElement.addEventListener("pointermove", (event) => {
+        // 获取与射线相交的物体
+        intersectObjects = raycaster.updateIntersects(event);
+
+        // 判断是否有与射线相交的模型
+        if (intersectObjects.length > 0) {
+          // 遍历相交的模型
+          intersectObjects.forEach((intersect) => {
+            // 判断是否是货架格子
+            if (intersect?.object?.name.slice(0, 11) === "shelf_base_") {
+              shelfBaseObjects.push(intersect);
+            }
+            // 判断是否是货物
+            if (intersect?.object?.name === "goods") {
+              goodsObjects.push(intersect);
+            }
+          });
+
+          // 判断是否捕获到货架格子并且拖放控制器是否处于拖放状态
+          if (shelfBaseObjects.length > 0 && dragControls.getDragState()) {
+            console.log("shelf_base", shelfBaseObjects[0].object.data);
+            // 清除之前被选中的货架格子的颜色
+            beforeShelfBaseObjects.forEach((item) => {
+              // 清除颜色
+              item.object.material.emissive.set(0x000000);
+            });
+            // 清空之前被选中的货架格子
+            beforeShelfBaseObjects = [];
+
+            // 货架格子添加颜色
+            // 只渲染第一个货架格子
+            shelfBaseObjects[0].object.material.emissive.set(0x118ee9);
+            // 保存被选中的货架格子
+            beforeShelfBaseObjects.push(shelfBaseObjects[0]);
+          } else {
+            // 清除之前被选中的货架格子的颜色
+            beforeShelfBaseObjects.forEach((item) => {
+              // 清除颜色
+              item.object.material.emissive.set(0x000000);
+            });
+          }
+          // 清空货架格子列表
+          shelfBaseObjects = [];
+
+          // 判断是否捕获到货物
+          if (goodsObjects.length > 0) {
+            // 当前货物
+            const selectedObject = goodsObjects[0].object;
+            // 添加到描边列表
+            outline.outlinePass.selectedObjects = [selectedObject];
+            // 判断是否处于拖放状态
+            if (!dragControls.getDragState()) {
+              // setTimeout(() => {
+              //   // 添加被拖放的物体
+              //   dragControls.addDragControlsObject(selectedObject);
+              // }, 400);
+              // 显示货物详情
+              goodsTagDataList.value.forEach((item, i) => {
+                if (item.id === selectedObject.data.id) {
+                  goodsTagDataList.value[i].show = true;
+                }
+              });
+            }
+          } else {
+            // 清除描边效果
+            outline.outlinePass.selectedObjects = [];
+            // 清空被拖放的物体
+            dragControls.clearDragControlsObject();
+            // 隐藏货物详情
+            goodsTagDataList.value.forEach((item, i) => {
+              if (!item.persistentShow) {
+                goodsTagDataList.value[i].show = false;
+              }
+            });
+          }
+          // 清空货物列表
+          goodsObjects = [];
+        } else {
+          // 清除描边效果
+          outline.outlinePass.selectedObjects = [];
+          // 清空被拖放的物体
+          dragControls.clearDragControlsObject();
+        }
+      });
+
+      // 监听鼠标左键按下事件
+      TE.renderer.domElement.addEventListener("mousedown", (event) => {
+        console.log("mousedown", intersectObjects, event);
+        // 判断是否有与射线相交的模型
+        if (intersectObjects.length > 0) {
+          if (intersectObjects[0].object.name === "goods") {
+            // // 显示货物详情
+            // goodsTagDataList.value.forEach((item, i) => {
+            //   if (item.id === intersectObjects[0].object.data.id) {
+            //     goodsTagDataList.value[i].persistentShow = true;
+            //   }
+            // });
+          }
+        }
+        const _goodsObjects = [];
+        // 遍历相交的模型
+        intersectObjects.forEach((intersect) => {
+          // 判断是否是货物
+          if (intersect?.object?.name === "goods") {
+            // 判断是否处于拖放状态
+            if (!dragControls.getDragState()) {
+              // 显示货物详情
+              goodsTagDataList.value.forEach((item, i) => {
+                if (item.id === intersectObjects[0].object.data.id) {
+                  goodsTagDataList.value[i].persistentShow = true;
+                }
+              });
+            }
+            _goodsObjects.push(intersect);
+          }
+        });
+        // 判断是否捕获到货物
+        if (_goodsObjects.length > 0) {
+          console.log("--=--");
+          // 当前货物
+          const selectedObject = _goodsObjects[0].object;
+
+          dragControls.addDragControlsObject(selectedObject);
+
+          // setTimeout(() => {
+          //   console.log("--------------", selectedObject);
+          //   // 添加被拖放的物体
+          //   dragControls.addDragControlsObject(selectedObject);
+          //
+          //   // 判断是否处于拖放状态
+          //   // if (!dragControls.getDragState()) {
+          //   //   // setTimeout(() => {
+          //   //   //   console.log("--------------", selectedObject);
+          //   //   //   // 添加被拖放的物体
+          //   //   //   dragControls.addDragControlsObject(selectedObject);
+          //   //   // }, 400);
+          //   //   console.log("--------------", selectedObject);
+          //   //   // 添加被拖放的物体
+          //   //   dragControls.addDragControlsObject(selectedObject);
+          //   // }
+          // }, 400);
+        }
+      });
+
+      // 鼠标移入时执行
+      dragControls.addEventListener("hoveron", (event) => {
+        // 克隆当前被拖拽的物体
+        const object = event.object.clone();
+        // 当前被拖放物体的自定义数据
+        object.data = event.object.data;
+        // 显示货物详情
+        // goodsTagDataList.value.forEach((item, i) => {
+        //   if (item.id === event.object.data.id) {
+        //     goodsTagDataList.value[i].show = true;
+        //   }
+        // });
+        // 保存当前被拖放的物体
+        dragControls.setCurrentDragControls(object);
+      });
+
+      // 鼠标移出时执行
+      // dragControls.addEventListener("hoveroff", (event) => {
+      //   // 隐藏货物详情
+      //   goodsTagDataList.value.forEach((item, i) => {
+      //     if (item.id === event.object.data.id && !item.persistentShow) {
+      //       goodsTagDataList.value[i].show = false;
+      //     }
+      //   });
+      // });
+
+      // 开始拖拽时执行
+      dragControls.addEventListener("dragstart", () => {
+        // 设置拖放状态为正在拖放
+        dragControls.setDragState(true);
+        // 隐藏货物详情
+        goodsTagDataList.value.forEach((item, i) => {
+          // 取消持久显示
+          goodsTagDataList.value[i].persistentShow = false;
+          // 隐藏
+          goodsTagDataList.value[i].show = false;
+        });
+      });
+
+      dragControls.addEventListener("drag", () => {});
+
+      // 完成拖拽时执行
+      dragControls.addEventListener("dragend", (event) => {
+        // 设置拖放状态为未在拖放
+        dragControls.setDragState(false);
+
+        // 过滤鼠标指向的货架格子
+        const shelfBaseMesh = intersectObjects.find(
+          (item) => item.object.name.slice(0, 11) === "shelf_base_"
+        );
+
+        // 判断是否拖拽到货架格子
+        if (shelfBaseMesh) {
+          // 判断货架格子是否更改
+          if (
+            shelfBaseMesh.object.data.id ===
+              dragControls.getCurrentDragControls().data.shelf_grid_id &&
+            shelfBaseMesh.object.data.shelf_id ===
+              dragControls.getCurrentDragControls().data.shelf_id
+          ) {
+            // 货架格子未进行更改
+            console.log("货架格子未进行更改");
+            // 货物位置还原
+            event.object.position.set(
+              dragControls.getCurrentDragControls().position.x,
+              dragControls.getCurrentDragControls().position.y,
+              dragControls.getCurrentDragControls().position.z
+            );
+            return;
+          }
+
+          // 生成新的货物列表
+          const newGoodList = goodsList.value.map((item) => {
+            if (
+              item.shelf_id === event.object.data.shelf_id &&
+              item.shelf_grid_id === event.object.data.shelf_grid_id
+            ) {
+              item.shelf_id = shelfBaseMesh.object.data.shelf_id;
+              item.shelf_grid_id = shelfBaseMesh.object.data.id;
+              return item;
+            } else {
+              return item;
+            }
+          });
+
+          // 判断货物是否重叠
+          if (
+            newGoodList.filter(
+              (item) =>
+                item.shelf_id === event.object.data.shelf_id &&
+                item.shelf_grid_id === event.object.data.shelf_grid_id
+            ).length > 1
+          ) {
+            // 货物重叠
+            console.log("货物重叠");
+
+            // 物体闪烁
+            event.object.material.emissive.set(0xff0000);
+            setTimeout(() => {
+              event.object.material.emissive.set(0x000000);
+              setTimeout(() => {
+                event.object.material.emissive.set(0xff0000);
+                setTimeout(() => {
+                  event.object.material.emissive.set(0x000000);
+                  // 货物位置还原
+                  event.object.position.set(
+                    dragControls.getCurrentDragControls().position.x,
+                    dragControls.getCurrentDragControls().position.y,
+                    dragControls.getCurrentDragControls().position.z
+                  );
+                }, 200);
+              }, 200);
+            }, 200);
+
+            return;
+          }
+          // 更新数据
+          store.commit("goods/changeGoods", newGoodList);
+          // 更新货物数据
+          event.object.data = {
+            ...event.object.data,
+            shelf_id: shelfBaseMesh.object.data.shelf_id,
+            shelf_grid_id: shelfBaseMesh.object.data.id,
+          };
+          // 把货物放入货架格子
+          event.object.position.set(
+            shelfBaseMesh.object.parent.position.x +
+              shelfLocation[shelfBaseMesh.object.data.id - 1].x,
+            shelfBaseMesh.object.parent.position.y +
+              shelfLocation[shelfBaseMesh.object.data.id - 1].y,
+            shelfBaseMesh.object.parent.position.z +
+              shelfLocation[shelfBaseMesh.object.data.id - 1].z
+          );
+        } else {
+          // 还原货物位置
+          event.object.position.set(
+            dragControls.getCurrentDragControls().position.x,
+            dragControls.getCurrentDragControls().position.y,
+            dragControls.getCurrentDragControls().position.z
+          );
+        }
+      });
 
       // 遍历数据渲染货架模型
       ShelfMobile.then((group) => {
@@ -185,113 +428,161 @@ export default {
         // 模型缩放比例
         const groupScale = 100;
         // 遍历渲染模型
-        shelfArr.forEach((item) => {
+        shelfList.value.forEach((item) => {
           // 复制模型
           const newGroup = group.scene.children[0].clone();
           // 遍历每个位置
           newGroup.children.forEach((child, i) => {
+            // 给货架的每个位置都添加自定义属性
             newGroup.children[i].data = {
               id: Number(child.name.slice(-3)),
               shelf_id: item.id,
             };
+            // 让货架每个位置的材质都变成独立的
+            newGroup.children[i].material = child.material.clone();
           });
-
           // 设置名称
           newGroup.name = "shelf";
-
           // 保存货架数据
           newGroup.data = item;
-
           // 设置模型的位置
           newGroup.position.set(
             item.position.x * shelfSpacing.x,
             item.position.y * shelfSpacing.y,
             item.position.z * shelfSpacing.z
           );
-
-          // 设置模型旋转角度
-          newGroup.rotation.set(
-            item.rotation.x,
-            item.rotation.y,
-            item.rotation.z
-          );
-
           // 设置缩放比例
           newGroup.scale.set(
-            item.scale.x * groupScale,
-            item.scale.y * groupScale,
-            item.scale.z * groupScale
+            item?.scale?.x ? item.scale.x * groupScale : groupScale,
+            item?.scale?.y ? item.scale.y * groupScale : groupScale,
+            item?.scale?.z ? item.scale.z * groupScale : groupScale
           );
+
+          const shelfTagData = {
+            show: false,
+            title: "货架 - " + item.name,
+            id: item.id,
+            name: item.name,
+            size: {
+              length: item.length,
+              width: item.width,
+              height: item.height,
+            },
+            position: {
+              x: item.position.x,
+              y: item.position.y,
+              z: item.position.z,
+            },
+          };
+          shelfTagDataList.value.push(shelfTagData);
+          // 添加 CSS2DObject 标签
+          Promise.resolve(shelfTagDataList.value.length).then((length) => {
+            // 生成货架的 Tag 标签
+            const tag = shelfTag(
+              shelfTagRef.value.children[length - 1],
+              shelfTagData.name,
+              shelfTagData.position
+            );
+            // 添加货架的 Tag 标签
+            newGroup.add(tag);
+            // 保存货架的 Tag 标签
+            shelfTagList.push(tag);
+          });
 
           // 添加模型到场景中
           TE.addObject(newGroup);
         });
       });
 
-      // 遍历数据渲染箱子模型
+      // 遍历数据渲染货物模型
       ContainerMobile.then((group) => {
-        console.log("=箱子模型=", group);
+        console.log("=货物模型=", group);
         // 模型缩放比例
         const groupScale = 80;
         // 遍历渲染模型
-        containerArr.forEach((item) => {
+        goodsList.value.forEach((item) => {
           // 复制模型
-          let newGroup = group.scene.clone();
-          newGroup = newGroup.children[0].clone();
+          let newGroup = group.scene.children[0].clone();
+          newGroup.material = group.scene.children[0].material.clone();
           // 设置名称
           newGroup.name = "goods";
-
-          // 保存箱子数据
+          // 保存货物数据
           newGroup.data = item;
-
           // 查找货架
-          const shelf = shelfArr.find((shelf) => shelf.id === item.shelf_id);
-          // console.log(
-          //   "shelf: ",
-          //   shelf,
-          //   shelf.position.x,
-          //   shelfLocation[item.shelf_base_id - 1],
-          //   item.shelf_base_id
-          // );
-          // 设置模型的位置
+          const shelf = shelfList.value.find(
+            (shelf) => shelf.id === item.shelf_id
+          );
+          // 设置货物的位置
           newGroup.position.set(
             shelf.position.x * shelfSpacing.x +
-              shelfLocation[item.shelf_base_id - 1].x,
+              shelfLocation[item.shelf_grid_id - 1].x,
             shelf.position.y * shelfSpacing.y +
-              shelfLocation[item.shelf_base_id - 1].y,
+              shelfLocation[item.shelf_grid_id - 1].y,
             shelf.position.z * shelfSpacing.z +
-              shelfLocation[item.shelf_base_id - 1].z
-          );
-
-          // 设置模型旋转角度
-          newGroup.rotation.set(
-            item.rotation.x,
-            item.rotation.y,
-            item.rotation.z
+              shelfLocation[item.shelf_grid_id - 1].z
           );
 
           // 设置缩放比例
           newGroup.scale.set(
-            item.scale.x * groupScale,
-            item.scale.y * groupScale,
-            item.scale.z * groupScale
+            item?.scale?.x ? item.scale.x * groupScale : groupScale,
+            item?.scale?.y ? item.scale.y * groupScale : groupScale,
+            item?.scale?.z ? item.scale.z * groupScale : groupScale
           );
+
+          const goodsTagData = {
+            show: false,
+            persistentShow: false,
+            title: "货物 - " + item.name,
+            id: item.id,
+            name: item.name,
+            shelf_id: item.shelf_id,
+            shelf_grid_id: item.shelf_grid_id,
+            weight: item.weight,
+            shelflife: item.shelflife,
+            production_date: item.production_date,
+            storage_time: item.storage_time,
+          };
+          goodsTagDataList.value.push(goodsTagData);
+          // 添加 CSS2DObject 标签
+          Promise.resolve(goodsTagDataList.value.length).then((length) => {
+            // 生成货物的 Tag 标签
+            const tag = goodsTag(
+              goodsTagRef.value.children[length - 1],
+              goodsTagData.name,
+              goodsTagData.position
+            );
+            // 添加货物的 Tag 标签
+            newGroup.add(tag);
+            // 保存货物的 Tag 标签
+            goodsTagList.push(tag);
+          });
 
           // 添加模型到场景中
           TE.addObject(newGroup);
         });
       });
+
+      // 添加 CSS 2D渲染器到渲染列表
+      TE.addRenderAnim(() => labelRenderer.render(TE.scene, TE.camera));
 
       console.log("TE", TE);
     });
 
-    return { threeRef };
+    return {
+      threeRef,
+      hhh,
+      shelfTagRef,
+      shelfTagDataList,
+      goodsTagRef,
+      goodsTagDataList,
+    };
   },
 };
 </script>
 
 <style scoped>
 .store {
+  position: relative;
   width: 100%;
   height: 100%;
 }

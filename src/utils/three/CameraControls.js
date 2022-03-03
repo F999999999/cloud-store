@@ -18,16 +18,14 @@ const cameraControls = (renderer, scene, camera) => {
   // 中键
   cameraControls.mouseButtons.middle = CameraControls.ACTION.ROTATE;
 
-  (function anim() {
-    // 更新相机控制器并判断是否有更新
+  const renderCamera = () => {
+    // 判断相机控制器是否有更新
     if (cameraControls.update(clock.getDelta())) {
       renderer.render(scene, camera);
     }
+  };
 
-    requestAnimationFrame(anim);
-  })();
-
-  return cameraControls;
+  return { cameraControls, renderCamera };
 };
 
 export default cameraControls;
