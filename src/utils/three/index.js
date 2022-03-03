@@ -54,6 +54,11 @@ export class TEngine {
           }
         });
       }
+
+      // labelRenderer.render(this.scene, this.camera);
+
+      // this.renderer.autoClear = false;
+      // this.renderer.render(this.scene, this.camera1);
       requestAnimationFrame(anim);
     };
     anim();

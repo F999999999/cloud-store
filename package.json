@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "ant-design-vue": "^2.2.8",
+    "axios": "^0.26.0",
     "camera-controls": "^1.33.2",
     "core-js": "^3.6.5",
     "vue": "^3.0.0",

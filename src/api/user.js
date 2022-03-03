@@ -7,7 +7,7 @@ import { requestWithOutToken } from "@/utils/request";
  * @returns {Promise}
  */
 export const loginByAccountAndPasswordApi = ({ account, password }) => {
-  return requestWithOutToken("/login", "post", { account, password });
+  return requestWithOutToken("/users/login", "post", { account, password });
 };
 
 /**
