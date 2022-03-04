@@ -13,6 +13,15 @@ const shelf = {
     changeShelf(state, shelf) {
       state.shelfList = shelf;
     },
+    // 修改货架 Tag 显示状态
+    changeShelfTagShow(state, { id, tagShow }) {
+      state.shelfList = state.shelfList.map((item) => {
+        if (item.id === id) {
+          item.tagShow = tagShow;
+        }
+        return item;
+      });
+    },
   },
   actions: {
     // 获取货架列表数据

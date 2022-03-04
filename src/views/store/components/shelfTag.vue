@@ -1,9 +1,9 @@
 <template>
   <div class="shelf-tag" ref="domElementRef">
     <a-card
-      v-show="show"
-      :title="title"
-      style="width: 260px; opacity: 0.8"
+      v-show="tagShow"
+      :title="'货架 - ' + name"
+      style="width: 200px; opacity: 0.8"
       headStyle="color: #000; background-color: #fff;"
       bodyStyle="color: #fff; background-color: #92a2ba;"
       :bordered="false"
@@ -19,10 +19,10 @@
         <a-col :span="16">{{ name }}</a-col>
         <a-col :span="8"> 尺寸：</a-col>
         <a-col :span="16">
-          {{ size.length }} * {{ size.width }} * {{ size.height }}
+          {{ size.length }}*{{ size.width }}*{{ size.height }}
         </a-col>
         <a-col :span="8"> 位置：</a-col>
-        <a-col :span="8"> 第 {{ position.x + 1 }} 行 </a-col>
+        <a-col :span="8"> 第 {{ position.x + 1 }} 行</a-col>
         <a-col :span="8">第 {{ position.z + 1 }} 列</a-col>
       </a-row>
     </a-card>
@@ -35,13 +35,9 @@ import { ref } from "vue";
 export default {
   name: "shelfTag",
   props: {
-    show: {
+    tagShow: {
       type: Boolean,
       default: false,
-    },
-    title: {
-      type: String,
-      default: "",
     },
     id: {
       type: Number,

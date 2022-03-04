@@ -2,25 +2,24 @@
   <div class="store">
     <div class="three-canvas" ref="threeRef"></div>
     <operation-panel />
-    <button style="position: absolute; top: 0; left: 0" @click="hhh">
-      hhhhhh
-    </button>
+    <button style="position: absolute; top: 0; left: 0">hhhhhh</button>
     <template ref="shelfTagRef">
       <shelf-tag
-        v-for="shelfTagData in shelfTagDataList"
-        :key="shelfTagData.id"
-        :title="shelfTagData.title"
-        :id="shelfTagData.id"
-        :name="shelfTagData.name"
-        :size="shelfTagData.size"
-        :position="shelfTagData.position"
+        v-for="shelfTag in shelfList"
+        :key="shelfTag.id"
+        :tagShow="shelfTag.tagShow"
+        :id="shelfTag.id"
+        :name="shelfTag.name"
+        :size="shelfTag.size"
+        :position="shelfTag.position"
       />
     </template>
-    <template ref="goodsTagRef">
+    <div ref="goodsTagRef">
       <goods-tag
-        v-for="goodsTagData in goodsTagDataList"
+        v-for="goodsTagData in goodsList"
         :key="goodsTagData.id"
-        :show="goodsTagData.show"
+        :tagShow="goodsTagData.tagShow"
+        :tagShowTimer="goodsTagData.tagShowTimer"
         :title="goodsTagData.title"
         :id="goodsTagData.id"
         :name="goodsTagData.name"
@@ -32,7 +31,7 @@
         :storage_time="goodsTagData.storage_time"
         :persistentShow="goodsTagData.persistentShow"
       />
-    </template>
+    </div>
   </div>
 </template>
 
@@ -70,17 +69,9 @@ export default {
 
     // 货架 Tag
     const shelfTagRef = ref(null);
-    // 货架 Tag 的数据列表
-    const shelfTagDataList = ref([]);
-    // 货架 Tag 列表
-    const shelfTagList = [];
 
     // 货物 Tag
     const goodsTagRef = ref(null);
-    // 货物 Tag 的数据列表
-    const goodsTagDataList = ref([]);
-    // 货物 Tag 列表
-    const goodsTagList = [];
 
     // 货架列表数据
     const shelfList = computed(() => store.state.shelf.shelfList);
@@ -92,8 +83,6 @@ export default {
     store.dispatch("goods/getGoodsList");
     // 货架模型间距
     const shelfSpacing = { x: 240 + 260, y: 466, z: -1000 };
-
-    const hhh = () => {};
 
     // DOM 渲染完成后执行
     onMounted(() => {
@@ -155,7 +144,6 @@ export default {
 
           // 判断是否捕获到货架格子并且拖放控制器是否处于拖放状态
           if (shelfBaseObjects.length > 0 && dragControls.getDragState()) {
-            console.log("shelf_base", shelfBaseObjects[0].object.data);
             // 清除之前被选中的货架格子的颜色
             beforeShelfBaseObjects.forEach((item) => {
               // 清除颜色
@@ -187,26 +175,37 @@ export default {
             outline.outlinePass.selectedObjects = [selectedObject];
             // 判断是否处于拖放状态
             if (!dragControls.getDragState()) {
-              // setTimeout(() => {
-              //   // 添加被拖放的物体
-              //   dragControls.addDragControlsObject(selectedObject);
-              // }, 400);
-              // 显示货物详情
-              goodsTagDataList.value.forEach((item, i) => {
-                if (item.id === selectedObject.data.id) {
-                  goodsTagDataList.value[i].show = true;
-                }
+              // 隐藏货物 Tag 标签
+              store.commit("goods/changeGoodsTagShow", {
+                all: true,
+                tagShow: false,
               });
+              // 显示货物 Tag 标签
+              store.commit("goods/changeGoodsTagShow", {
+                id: selectedObject.data.id,
+                tagShow: true,
+              });
+              // 显示货物详情
+              // goodsList.value.forEach((item, i) => {
+              //   // 隐藏未选中的并显示选中的
+              //   goodsList.value[i].tagShow = item.id === selectedObject.data.id;
+              // });
             }
           } else {
             // 清除描边效果
             outline.outlinePass.selectedObjects = [];
             // 清空被拖放的物体
             dragControls.clearDragControlsObject();
+
             // 隐藏货物详情
-            goodsTagDataList.value.forEach((item, i) => {
+            goodsList.value.forEach((item) => {
               if (!item.persistentShow) {
-                goodsTagDataList.value[i].show = false;
+                // 隐藏货物 Tag 标签显示状态
+                store.commit("goods/changeGoodsTagShow", {
+                  id: item.id,
+                  tagShow: false,
+                });
+                // goodsList.value[i].tagShow = false;
               }
             });
           }
@@ -223,17 +222,6 @@ export default {
       // 监听鼠标左键按下事件
       TE.renderer.domElement.addEventListener("mousedown", (event) => {
         console.log("mousedown", intersectObjects, event);
-        // 判断是否有与射线相交的模型
-        if (intersectObjects.length > 0) {
-          if (intersectObjects[0].object.name === "goods") {
-            // // 显示货物详情
-            // goodsTagDataList.value.forEach((item, i) => {
-            //   if (item.id === intersectObjects[0].object.data.id) {
-            //     goodsTagDataList.value[i].persistentShow = true;
-            //   }
-            // });
-          }
-        }
         const _goodsObjects = [];
         // 遍历相交的模型
         intersectObjects.forEach((intersect) => {
@@ -241,11 +229,16 @@ export default {
           if (intersect?.object?.name === "goods") {
             // 判断是否处于拖放状态
             if (!dragControls.getDragState()) {
-              // 显示货物详情
-              goodsTagDataList.value.forEach((item, i) => {
-                if (item.id === intersectObjects[0].object.data.id) {
-                  goodsTagDataList.value[i].persistentShow = true;
-                }
+              // 设置货物 tag 标签持久显示
+              store.commit("goods/changeGoodsTagPersistentShow", {
+                id: intersect.object.data.id,
+                tagPersistentShow: true,
+              });
+
+              // 显示货物 Tag 标签
+              store.commit("goods/changeGoodsTagShow", {
+                id: intersect.object.data.id,
+                tagShow: true,
               });
             }
             _goodsObjects.push(intersect);
@@ -253,29 +246,10 @@ export default {
         });
         // 判断是否捕获到货物
         if (_goodsObjects.length > 0) {
-          console.log("--=--");
           // 当前货物
           const selectedObject = _goodsObjects[0].object;
-
+          // 添加到可拖放列表
           dragControls.addDragControlsObject(selectedObject);
-
-          // setTimeout(() => {
-          //   console.log("--------------", selectedObject);
-          //   // 添加被拖放的物体
-          //   dragControls.addDragControlsObject(selectedObject);
-          //
-          //   // 判断是否处于拖放状态
-          //   // if (!dragControls.getDragState()) {
-          //   //   // setTimeout(() => {
-          //   //   //   console.log("--------------", selectedObject);
-          //   //   //   // 添加被拖放的物体
-          //   //   //   dragControls.addDragControlsObject(selectedObject);
-          //   //   // }, 400);
-          //   //   console.log("--------------", selectedObject);
-          //   //   // 添加被拖放的物体
-          //   //   dragControls.addDragControlsObject(selectedObject);
-          //   // }
-          // }, 400);
         }
       });
 
@@ -285,40 +259,29 @@ export default {
         const object = event.object.clone();
         // 当前被拖放物体的自定义数据
         object.data = event.object.data;
-        // 显示货物详情
-        // goodsTagDataList.value.forEach((item, i) => {
-        //   if (item.id === event.object.data.id) {
-        //     goodsTagDataList.value[i].show = true;
-        //   }
-        // });
         // 保存当前被拖放的物体
         dragControls.setCurrentDragControls(object);
       });
-
-      // 鼠标移出时执行
-      // dragControls.addEventListener("hoveroff", (event) => {
-      //   // 隐藏货物详情
-      //   goodsTagDataList.value.forEach((item, i) => {
-      //     if (item.id === event.object.data.id && !item.persistentShow) {
-      //       goodsTagDataList.value[i].show = false;
-      //     }
-      //   });
-      // });
 
       // 开始拖拽时执行
       dragControls.addEventListener("dragstart", () => {
         // 设置拖放状态为正在拖放
         dragControls.setDragState(true);
-        // 隐藏货物详情
-        goodsTagDataList.value.forEach((item, i) => {
-          // 取消持久显示
-          goodsTagDataList.value[i].persistentShow = false;
-          // 隐藏
-          goodsTagDataList.value[i].show = false;
+
+        // 取消货物 tag 标签持久显示
+        store.commit("goods/changeGoodsTagPersistentShow", {
+          id: intersectObjects[0].object.data.id,
+          tagPersistentShow: false,
+        });
+
+        // 隐藏货物 Tag 标签
+        store.commit("goods/changeGoodsTagShow", {
+          id: intersectObjects[0].object.data.id,
+          tagShow: false,
         });
       });
 
-      dragControls.addEventListener("drag", () => {});
+      // dragControls.addEventListener("drag", () => {});
 
       // 完成拖拽时执行
       dragControls.addEventListener("dragend", (event) => {
@@ -332,6 +295,7 @@ export default {
 
         // 判断是否拖拽到货架格子
         if (shelfBaseMesh) {
+          console.log("shelfBaseMesh", shelfBaseMesh);
           // 判断货架格子是否更改
           if (
             shelfBaseMesh.object.data.id ===
@@ -428,7 +392,7 @@ export default {
         // 模型缩放比例
         const groupScale = 100;
         // 遍历渲染模型
-        shelfList.value.forEach((item) => {
+        shelfList.value.forEach((item, i) => {
           // 复制模型
           const newGroup = group.scene.children[0].clone();
           // 遍历每个位置
@@ -458,35 +422,23 @@ export default {
             item?.scale?.z ? item.scale.z * groupScale : groupScale
           );
 
-          const shelfTagData = {
-            show: false,
-            title: "货架 - " + item.name,
+          // 添加货架 Tag 标签显示状态
+          store.commit("shelf/changeShelfTagShow", {
             id: item.id,
-            name: item.name,
-            size: {
-              length: item.length,
-              width: item.width,
-              height: item.height,
-            },
-            position: {
-              x: item.position.x,
-              y: item.position.y,
-              z: item.position.z,
-            },
-          };
-          shelfTagDataList.value.push(shelfTagData);
+            tagShow: false,
+          });
+
           // 添加 CSS2DObject 标签
-          Promise.resolve(shelfTagDataList.value.length).then((length) => {
+          Promise.resolve(i).then((i) => {
+            console.log("shelfTagRef.value", shelfTagRef.value);
             // 生成货架的 Tag 标签
             const tag = shelfTag(
-              shelfTagRef.value.children[length - 1],
-              shelfTagData.name,
-              shelfTagData.position
+              shelfTagRef.value.children[i],
+              shelfList.value[i].name,
+              shelfList.value[i].position
             );
             // 添加货架的 Tag 标签
             newGroup.add(tag);
-            // 保存货架的 Tag 标签
-            shelfTagList.push(tag);
           });
 
           // 添加模型到场景中
@@ -500,7 +452,7 @@ export default {
         // 模型缩放比例
         const groupScale = 80;
         // 遍历渲染模型
-        goodsList.value.forEach((item) => {
+        goodsList.value.forEach((item, i) => {
           // 复制模型
           let newGroup = group.scene.children[0].clone();
           newGroup.material = group.scene.children[0].material.clone();
@@ -529,32 +481,34 @@ export default {
             item?.scale?.z ? item.scale.z * groupScale : groupScale
           );
 
-          const goodsTagData = {
-            show: false,
-            persistentShow: false,
-            title: "货物 - " + item.name,
+          // 添加货物 Tag 标签显示状态
+          store.commit("goods/changeGoodsTagShow", {
             id: item.id,
-            name: item.name,
-            shelf_id: item.shelf_id,
-            shelf_grid_id: item.shelf_grid_id,
-            weight: item.weight,
-            shelflife: item.shelflife,
-            production_date: item.production_date,
-            storage_time: item.storage_time,
-          };
-          goodsTagDataList.value.push(goodsTagData);
+            tagShow: false,
+          });
+
+          // 添加货物 Tag 标签持久显示状态
+          store.commit("goods/changeGoodsTagPersistentShow", {
+            id: item.id,
+            tagPersistentShow: false,
+          });
+
+          // 添加货物 Tag 标签显示时间
+          store.commit("goods/changeGoodsTagShowTime", {
+            id: item.id,
+            tagShowTimer: 6000,
+          });
+
           // 添加 CSS2DObject 标签
-          Promise.resolve(goodsTagDataList.value.length).then((length) => {
+          Promise.resolve(i).then((i) => {
             // 生成货物的 Tag 标签
             const tag = goodsTag(
-              goodsTagRef.value.children[length - 1],
-              goodsTagData.name,
-              goodsTagData.position
+              goodsTagRef.value.children[i],
+              goodsList.value[i].name,
+              goodsList.value[i].position
             );
             // 添加货物的 Tag 标签
             newGroup.add(tag);
-            // 保存货物的 Tag 标签
-            goodsTagList.push(tag);
           });
 
           // 添加模型到场景中
@@ -570,11 +524,10 @@ export default {
 
     return {
       threeRef,
-      hhh,
       shelfTagRef,
-      shelfTagDataList,
+      shelfList,
       goodsTagRef,
-      goodsTagDataList,
+      goodsList,
     };
   },
 };
