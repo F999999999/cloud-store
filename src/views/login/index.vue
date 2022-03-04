@@ -5,12 +5,12 @@
       <form @submit="onSubmit">
         <div class="item">
           <input type="text" required v-model.trim="usernameField" />
-          <label for="">账号</label>
+          <label>账号</label>
           <span class="error" v-if="usernameError">{{ usernameError }} </span>
         </div>
         <div class="item">
           <input type="password" required v-model.trim="passwordField" />
-          <label for="">密码</label>
+          <label>密码</label>
           <span class="error" v-if="passwordError">{{ passwordError }} </span>
         </div>
         <button class="btn" type="submit">
@@ -25,9 +25,9 @@
   </div>
 </template>
 <script setup>
-import { loginByAccountAndPasswordApi } from "../../api/user";
+import { loginByAccountAndPasswordApi } from "@/api/user";
 import { useForm, useField } from "vee-validate";
-import { password, username } from "../../utils/vee-validate-schema";
+import { password, username } from "@/utils/vee-validate-schema";
 import { message } from "ant-design-vue";
 import { useRouter } from "vue-router";
 
@@ -46,7 +46,7 @@ const onSubmit = usernameFormHandleSubmit(({ username, password }) => {
   //登录接口
   loginByAccountAndPasswordApi({ username, password })
     .then((res) => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         // 设置一个sessionStorage(sessionStorage存储数据的时间是打开浏览器存储 关闭浏览器 数据消失)
         window.localStorage.setItem("token", res.data.token);
         message.success(res.message);
