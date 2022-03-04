@@ -48,8 +48,7 @@ const onSubmit = usernameFormHandleSubmit(({ username, password }) => {
     .then((res) => {
       if (res.status == 200) {
         // 设置一个sessionStorage(sessionStorage存储数据的时间是打开浏览器存储 关闭浏览器 数据消失)
-        window.sessionStorage.setItem("token", res.data.token);
-        console.log(res.data.token);
+        window.localStorage.setItem("token", res.data.token);
         message.success(res.message);
         //路由跳转
         router.push("/");

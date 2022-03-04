@@ -35,7 +35,7 @@ const router = createRouter({
 // next代表 下一步去哪里 如果next()代表方形 如果next('/login')是强制跳转至/login路由
 router.beforeEach((to, from, next) => {
   // 获取存在window里的token值 用来判断
-  let token = window.sessionStorage.getItem("token");
+  let token = window.localStorage.getItem("token");
   console.log(token);
   // 判断如果准备去的路由的name不是Login登入页面 并且没有授权的时候 强制跳转至name为Login的路由页面
   if (to.name !== "Login" && !token)
