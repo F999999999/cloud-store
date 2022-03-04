@@ -2,7 +2,7 @@
   <div class="operationPanel">
     <a-row class="container">
       <a-col :span="4" class="operationPanel-left">
-        <div class="operationPanel-left-item">
+        <div class="operationPanel-left-item active">
           <HomeOutlined :style="{ fontSize: 'large' }" /><span>库存</span>
         </div>
         <div class="operationPanel-left-item">
@@ -13,7 +13,8 @@
         </div>
       </a-col>
       <a-col :span="20" class="operationPanel-right">
-        <div class="operationPanel-right-inventory">
+        <!--  库存  -->
+        <div class="operationPanel-right-inventory" style="display: block">
           <div class="operationPanel-right-overview">
             <h3>货物总览</h3>
             <a-row class="operationPanel-right-overview-content">
@@ -78,6 +79,43 @@
             </a-row>
           </div>
         </div>
+        <!--  入库  -->
+        <div class="operationPanel-right-storage" style="display: none">
+          <a-form layout="vertical" :model="formState" @finish="onFinish">
+            <a-form-item label="商品名称:" name="name">
+              <a-input v-model:value="formState.name" required />
+            </a-form-item>
+            <a-form-item label="商品重量:" name="weight">
+              <a-input v-model:value="formState.weight" />
+            </a-form-item>
+            <a-form-item label="商品保质期:" name="shelflife">
+              <a-input v-model:value="formState.shelflife" />
+            </a-form-item>
+            <a-form-item label="商品生产日期:" name="production_date">
+              <a-date-picker v-model:value="formState.production_date">
+                <template #renderExtraFooter>extra footer</template>
+              </a-date-picker>
+            </a-form-item>
+            <a-form-item label="商品入库时间:" name="storage_time">
+              <a-date-picker show-time v-model:value="formState.storage_time">
+                <template #renderExtraFooter>extra footer</template>
+              </a-date-picker>
+            </a-form-item>
+            <a-form-item label="货架ID:" name="shelf_id">
+              <a-input v-model:value="formState.shelf_id" required />
+            </a-form-item>
+            <a-form-item label="货架格子ID:" name="shelf_grid_id">
+              <a-input v-model:value="formState.shelf_grid_id" required />
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" html-type="submit">添加商品</a-button>
+            </a-form-item>
+          </a-form>
+        </div>
+        <!--  出库  -->
+        <div class="operationPanel-right-delivery" style="display: none">
+          出库内容
+        </div>
       </a-col>
     </a-row>
   </div>
@@ -89,9 +127,59 @@ import {
   ArrowRightOutlined,
   ArrowUpOutlined,
 } from "@ant-design/icons-vue";
+import { ref } from "vue";
 export default {
   name: "operationPanel",
   components: { HomeOutlined, ArrowRightOutlined, ArrowUpOutlined },
+  setup() {
+    const formState = ref({
+      // 商品名称
+      name: "",
+      // 商品重量
+      weight: "",
+      // 商品保质期
+      shelflife: "",
+      // 商品生产日期
+      production_date: "",
+      // 商品入库时间
+      storage_time: "",
+      // 货架ID
+      shelf_id: "",
+      // 货架格子ID
+      shelf_grid_id: "",
+    });
+    // 提交表单且数据验证成功后回调事件
+    const onFinish = (values) => {
+      console.log(values);
+    };
+
+    return {
+      formState,
+      onFinish,
+    };
+  },
+};
+// 实现tabs切换(排他思想)
+window.onload = function () {
+  let titleName = document.getElementsByClassName("operationPanel-left-item");
+  // console.log(titleName, "titleName");
+  let tabContent = document.querySelectorAll(".operationPanel-right>div");
+  // console.log(tabContent, "tabContent");
+  if (titleName.length !== tabContent.length) {
+    return;
+  }
+  for (let i = 0; i < titleName.length; i++) {
+    titleName[i].id = i;
+    titleName[i].onclick = function () {
+      for (let j = 0; j < titleName.length; j++) {
+        titleName[j].className = "operationPanel-left-item";
+        tabContent[j].style.display = "none";
+      }
+      // console.log(this, "this");
+      this.className = "operationPanel-left-item active";
+      tabContent[this.id].style.display = "block";
+    };
+  }
 };
 </script>
 
@@ -112,6 +200,9 @@ export default {
       .operationPanel-left-item {
         height: 90px;
         padding: 20px 0;
+        &.active {
+          color: #3f85fe;
+        }
         span {
           display: block;
           margin-top: 5px;
@@ -220,6 +311,15 @@ export default {
               border-radius: 10px;
             }
           }
+        }
+      }
+      .operationPanel-right-storage {
+        /deep/ .ant-input {
+          padding: 4px;
+          background-color: #d1d5ed;
+        }
+        /deep/ .ant-calendar-picker {
+          width: 239px;
         }
       }
     }
