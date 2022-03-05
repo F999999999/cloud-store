@@ -253,18 +253,17 @@ export default {
         }
       });
 
-      // 鼠标移入时执行
-      dragControls.addEventListener("hoveron", (event) => {
-        // 克隆当前被拖拽的物体
-        const object = event.object.clone();
-        // 当前被拖放物体的自定义数据
-        object.data = event.object.data;
-        // 保存当前被拖放的物体
-        dragControls.setCurrentDragControls(object);
-      });
-
       // 开始拖拽时执行
-      dragControls.addEventListener("dragstart", () => {
+      dragControls.addEventListener("dragstart", (event) => {
+        if (dragControls.getCurrentDragControls().length <= 0) {
+          // 克隆当前被拖拽的物体
+          const object = event.object.clone();
+          // 当前被拖放物体的自定义数据
+          object.data = event.object.data;
+          // 保存当前被拖放的物体
+          dragControls.setCurrentDragControls(object);
+        }
+
         // 设置拖放状态为正在拖放
         dragControls.setDragState(true);
 
@@ -295,7 +294,6 @@ export default {
 
         // 判断是否拖拽到货架格子
         if (shelfBaseMesh) {
-          console.log("shelfBaseMesh", shelfBaseMesh);
           // 判断货架格子是否更改
           if (
             shelfBaseMesh.object.data.id ===

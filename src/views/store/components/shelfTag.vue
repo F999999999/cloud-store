@@ -13,7 +13,7 @@
       </template>
 
       <a-row style="color: #000">
-        <a-col :span="8">ID:</a-col>
+        <a-col :span="8">货架ID:</a-col>
         <a-col :span="16">{{ id }}</a-col>
         <a-col :span="8"> 名称：</a-col>
         <a-col :span="16">{{ name }}</a-col>
