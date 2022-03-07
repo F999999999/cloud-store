@@ -85,10 +85,10 @@
             <a-form-item label="商品名称：" name="name">
               <a-input v-model:value="formState.name" required />
             </a-form-item>
-            <a-form-item label="商品重量：" name="weight">
+            <a-form-item label="商品重量（单位：kg）：" name="weight">
               <a-input v-model:value="formState.weight" />
             </a-form-item>
-            <a-form-item label="商品保质期：" name="shelflife">
+            <a-form-item label="商品保质期（单位：天）：" name="shelflife">
               <a-input v-model:value="formState.shelflife" />
             </a-form-item>
             <a-form-item label="商品生产日期：" name="production_date">
@@ -125,15 +125,15 @@
           <div class="operationPanel-right-delivery-list">
             <a-card
               size="small"
-              title="商品名称："
+              title="商品名称"
               :style="{ width: '100%', marginTop: '5px' }"
             >
-              <p>ID：8 重量：2.5</p>
-              <!--              <p></p>-->
-              <!--              <p></p>-->
-              <!--              <p></p>-->
-              <p>货架格子ID：34 货架ID：3</p>
-              <p>保质期：6 生产日期：2022/10/7</p>
+              <p>ID：8</p>
+              <p>重量：2.5</p>
+              <p>保质期：6</p>
+              <p>货架ID：3</p>
+              <p>货架格子ID：34</p>
+              <p>生产日期：2022/10/7</p>
               <p>入库时间：2022/11/6 22:00:00</p>
             </a-card>
             <a-card
@@ -141,15 +141,45 @@
               title="商品名称"
               :style="{ width: '100%', marginTop: '5px' }"
             >
-              <p>商品ID：8</p>
-              <p>商品重量：2.5</p>
-              <p>商品保质期：6</p>
+              <p>ID：8</p>
+              <p>重量：2.5</p>
+              <p>保质期：6</p>
               <p>货架ID：3</p>
               <p>货架格子ID：34</p>
-              <p>商品生产日期：2022/10/7</p>
-              <p>商品入库时间：2022/11/6 22:00:00</p>
+              <p>生产日期：2022/10/7</p>
+              <p>入库时间：2022/11/6 22:00:00</p>
+            </a-card>
+            <a-card
+              size="small"
+              title="商品名称"
+              :style="{ width: '100%', marginTop: '5px' }"
+            >
+              <p>ID：8</p>
+              <p>重量：2.5</p>
+              <p>保质期：6</p>
+              <p>货架ID：3</p>
+              <p>货架格子ID：34</p>
+              <p>生产日期：2022/10/7</p>
+              <p>入库时间：2022/11/6 22:00:00</p>
+            </a-card>
+            <a-card
+              size="small"
+              title="商品名称"
+              :style="{ width: '100%', marginTop: '5px' }"
+            >
+              <p>ID：8</p>
+              <p>重量：2.5</p>
+              <p>保质期：6</p>
+              <p>货架ID：3</p>
+              <p>货架格子ID：34</p>
+              <p>生产日期：2022/10/7</p>
+              <p>入库时间：2022/11/6 22:00:00</p>
             </a-card>
           </div>
+          <!--  商品出库按钮  -->
+          <a-button type="primary" :style="{ marginTop: '8px' }">
+            移除商品
+          </a-button>
         </div>
       </a-col>
     </a-row>
@@ -393,6 +423,8 @@ window.onload = function () {
       .operationPanel-right-delivery {
         .operationPanel-right-delivery-list {
           text-align: left;
+          height: 600px;
+          overflow-y: auto;
           p {
             margin-bottom: 8px;
           }
