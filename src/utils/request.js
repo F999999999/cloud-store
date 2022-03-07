@@ -1,6 +1,5 @@
 import axios from "axios";
-// import store from "@/store";
-// import router from "@/router";
+import router from "@/router";
 
 // 配置基准请求地址
 // export const baseURL = "http://localhost:3333/";
@@ -36,16 +35,16 @@ instanceWithToken.interceptors.response.use(
           // 登录失效
           console.log(401);
           // 删除 用户信息
-          // store.commit("user/setProfile", {});
-          // // 跳转到登录页面
-          // router
-          //   .push("/login")
-          //   .then(() => {
-          //     console.log("跳转成功");
-          //   })
-          //   .catch(() => {
-          //     console.log("跳转失败");
-          //   });
+          window.localStorage.removeItem("token");
+          // 跳转到登录页面
+          router
+            .push("/login")
+            .then(() => {
+              console.log("跳转成功");
+            })
+            .catch(() => {
+              console.log("跳转失败");
+            });
           return;
         default:
           break;

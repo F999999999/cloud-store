@@ -22,7 +22,6 @@ const pointLightHelper = new PointLightHelper(
   pointLight.distance,
   pointLight.color
 );
-console.log(pointLightHelper);
 
 // 聚光灯
 const spotLightHelper = new SpotLightHelper(
@@ -31,6 +30,4 @@ const spotLightHelper = new SpotLightHelper(
   spotLight.color
 );
 
-console.log(spotLightHelper);
-
-helperList.push(axisHelper, gridHelper);
+helperList.push(axisHelper, gridHelper, pointLightHelper, spotLightHelper);

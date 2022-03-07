@@ -1,5 +1,8 @@
 <template>
-  <div class="operationPanel">
+  <div
+    class="operationPanel"
+    :style="{ width: width + 'px', height: height + 'px' }"
+  >
     <a-row class="container">
       <a-col :span="4" class="operationPanel-left">
         <div class="operationPanel-left-item active">
@@ -82,29 +85,29 @@
         <!--  入库  -->
         <div class="operationPanel-right-storage" style="display: none">
           <a-form layout="vertical" :model="formState" @finish="onFinish">
-            <a-form-item label="商品名称:" name="name">
+            <a-form-item label="商品名称：" name="name">
               <a-input v-model:value="formState.name" required />
             </a-form-item>
-            <a-form-item label="商品重量:" name="weight">
+            <a-form-item label="商品重量（单位：kg）：" name="weight">
               <a-input v-model:value="formState.weight" />
             </a-form-item>
-            <a-form-item label="商品保质期:" name="shelflife">
+            <a-form-item label="商品保质期（单位：天）：" name="shelflife">
               <a-input v-model:value="formState.shelflife" />
             </a-form-item>
-            <a-form-item label="商品生产日期:" name="production_date">
+            <a-form-item label="商品生产日期：" name="production_date">
               <a-date-picker v-model:value="formState.production_date">
                 <template #renderExtraFooter>extra footer</template>
               </a-date-picker>
             </a-form-item>
-            <a-form-item label="商品入库时间:" name="storage_time">
+            <a-form-item label="商品入库时间：" name="storage_time">
               <a-date-picker show-time v-model:value="formState.storage_time">
                 <template #renderExtraFooter>extra footer</template>
               </a-date-picker>
             </a-form-item>
-            <a-form-item label="货架ID:" name="shelf_id">
+            <a-form-item label="货架ID：" name="shelf_id">
               <a-input v-model:value="formState.shelf_id" required />
             </a-form-item>
-            <a-form-item label="货架格子ID:" name="shelf_grid_id">
+            <a-form-item label="货架格子ID：" name="shelf_grid_id">
               <a-input v-model:value="formState.shelf_grid_id" required />
             </a-form-item>
             <a-form-item>
@@ -114,7 +117,72 @@
         </div>
         <!--  出库  -->
         <div class="operationPanel-right-delivery" style="display: none">
-          出库内容
+          <!--  搜索框  -->
+          <a-input-search
+            v-model:value="searchValue"
+            placeholder="请搜索你想选择的商品"
+            :style="{ width: '100%' }"
+            @search="onSearch"
+          />
+          <!--  搜索出的商品列表  -->
+          <div class="operationPanel-right-delivery-list">
+            <a-card
+              size="small"
+              title="商品名称"
+              :style="{ width: '100%', marginTop: '5px' }"
+            >
+              <p>ID：8</p>
+              <p>重量：2.5</p>
+              <p>保质期：6</p>
+              <p>货架ID：3</p>
+              <p>货架格子ID：34</p>
+              <p>生产日期：2022/10/7</p>
+              <p>入库时间：2022/11/6 22:00:00</p>
+            </a-card>
+            <a-card
+              size="small"
+              title="商品名称"
+              :style="{ width: '100%', marginTop: '5px' }"
+            >
+              <p>ID：8</p>
+              <p>重量：2.5</p>
+              <p>保质期：6</p>
+              <p>货架ID：3</p>
+              <p>货架格子ID：34</p>
+              <p>生产日期：2022/10/7</p>
+              <p>入库时间：2022/11/6 22:00:00</p>
+            </a-card>
+            <a-card
+              size="small"
+              title="商品名称"
+              :style="{ width: '100%', marginTop: '5px' }"
+            >
+              <p>ID：8</p>
+              <p>重量：2.5</p>
+              <p>保质期：6</p>
+              <p>货架ID：3</p>
+              <p>货架格子ID：34</p>
+              <p>生产日期：2022/10/7</p>
+              <p>入库时间：2022/11/6 22:00:00</p>
+            </a-card>
+            <a-card
+              size="small"
+              title="商品名称"
+              :style="{ width: '100%', marginTop: '5px' }"
+            >
+              <p>ID：8</p>
+              <p>重量：2.5</p>
+              <p>保质期：6</p>
+              <p>货架ID：3</p>
+              <p>货架格子ID：34</p>
+              <p>生产日期：2022/10/7</p>
+              <p>入库时间：2022/11/6 22:00:00</p>
+            </a-card>
+          </div>
+          <!--  商品出库按钮  -->
+          <a-button type="primary" :style="{ marginTop: '8px' }">
+            移除商品
+          </a-button>
         </div>
       </a-col>
     </a-row>
@@ -128,10 +196,25 @@ import {
   ArrowUpOutlined,
 } from "@ant-design/icons-vue";
 import { ref } from "vue";
+import { addGoodsApi } from "@/api/goods";
+import { message } from "ant-design-vue";
+import { useStore } from "vuex";
 export default {
   name: "operationPanel",
   components: { HomeOutlined, ArrowRightOutlined, ArrowUpOutlined },
+  props: {
+    width: {
+      type: Number,
+      default: 340,
+    },
+    height: {
+      type: Number,
+      default: 0,
+    },
+  },
   setup() {
+    const store = useStore();
+    // 入库表单字段
     const formState = ref({
       // 商品名称
       name: "",
@@ -148,14 +231,42 @@ export default {
       // 货架格子ID
       shelf_grid_id: "",
     });
+    // 搜索关键字
+    const searchValue = ref("");
     // 提交表单且数据验证成功后回调事件
     const onFinish = (values) => {
-      console.log(values);
+      // 将时间进行处理 处理为时间戳
+      values.production_date = Math.floor(
+        new Date(values.production_date).valueOf() / 1000
+      );
+      values.storage_time = Math.floor(
+        new Date(values.storage_time).valueOf() / 1000
+      );
+      // console.log(values, "values2");
+      // 商品入库
+      addGoodsApi(values).then((data) => {
+        console.log(data, "data");
+        if (data.status === 200) {
+          // 提示信息
+          message.success(data.message);
+          // 刷新商品列表
+          store.dispatch("goods/getGoodsList");
+          // 将表单内容清空
+          formState.value = {};
+        }
+      });
+    };
+    // 点击搜索或按下回车键时的回调
+    const onSearch = (value) => {
+      console.log("use value", value);
+      console.log("or use this.value", searchValue.value);
     };
 
     return {
       formState,
+      searchValue,
       onFinish,
+      onSearch,
     };
   },
 };
@@ -186,10 +297,10 @@ window.onload = function () {
 <style scoped lang="less">
 .operationPanel {
   position: absolute;
-  top: 95px;
-  left: 25px;
-  width: 335px;
-  height: 730px;
+  top: 0;
+  left: 0;
+  width: 340px;
+  height: 100%;
   background-color: #92a2ba9d;
   border-radius: 15px;
   overflow: hidden;
@@ -320,6 +431,16 @@ window.onload = function () {
         }
         /deep/ .ant-calendar-picker {
           width: 239px;
+        }
+      }
+      .operationPanel-right-delivery {
+        .operationPanel-right-delivery-list {
+          text-align: left;
+          height: 600px;
+          overflow-y: auto;
+          p {
+            margin-bottom: 8px;
+          }
         }
       }
     }
