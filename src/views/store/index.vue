@@ -30,6 +30,7 @@
         :production_date="goodsTagData.production_date"
         :storage_time="goodsTagData.storage_time"
         :persistentShow="goodsTagData.persistentShow"
+        :shelf="shelfList.find((item) => item.id === goodsTagData.shelf_id)"
       />
     </div>
   </div>
@@ -514,6 +515,9 @@ export default {
         });
       });
 
+      labelRenderer.setSize(window.innerWidth - 140, window.innerHeight - 140);
+      labelRenderer.domElement.style.left = "140px";
+      labelRenderer.domElement.style.top = "140px";
       // 添加 CSS 2D渲染器到渲染列表
       TE.addRenderAnim(() => labelRenderer.render(TE.scene, TE.camera));
 

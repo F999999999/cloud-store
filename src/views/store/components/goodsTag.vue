@@ -1,58 +1,141 @@
 <template>
-  <div class="shelf-tag" ref="domElementRef">
-    <a-card
-      v-show="tagShow"
-      :title="'货物 - ' + name"
-      style="width: 260px; opacity: 0.8"
-      headStyle="color: #000; background-color: #fff;"
-      bodyStyle="color: #fff; background-color: #92a2ba;"
-      :bordered="false"
-    >
-      <template #extra>
-        <a href="#" v-if="persistentShow">{{ tagShowTimer }}</a>
-      </template>
+  <div class="goods-tag" ref="domElementRef">
+    <div v-show="tagShow">
+      <a-card
+        :title="'货物 - shhosh s手孔井上片机是' + name"
+        style="width: 260px; opacity: 0.9"
+        headStyle="color: #000; background-color: #fff;"
+        bodyStyle="color: #fff; background-color: #92a2ba;"
+        :bordered="false"
+      >
+        <template #extra>
+          <a href="#" v-if="persistentShow">{{ tagShowTimer }}</a>
+        </template>
 
-      <a-row style="color: #000">
-        <a-col :span="8">ID:</a-col>
-        <a-col :span="16">{{ id || "-" }}</a-col>
-        <a-col :span="8"> 名称：</a-col>
-        <a-col :span="16">{{ name || "-" }}</a-col>
-        <a-col :span="8"> 重量：</a-col>
-        <a-col :span="16"> {{ weight >= 0 ? weight : "-" }}</a-col>
-        <a-col :span="8"> 保质期：</a-col>
-        <a-col :span="16"> {{ shelflife >= 0 ? shelflife : "-" }}</a-col>
-        <a-col :span="8">生产日期：</a-col>
-        <a-col :span="16">
-          {{
-            production_date >= 0
-              ? new Date(production_date * 1000).toLocaleString()
-              : "-"
-          }}
-        </a-col>
-        <a-col :span="8">入库时间：</a-col>
-        <a-col :span="16">
-          {{
-            production_date >= 0
-              ? new Date(production_date * 1000).toLocaleString()
-              : "-"
-          }}
-        </a-col>
-        <a-col :span="8">货物位置：</a-col>
-        <a-col :span="16"> {{ shelf_id }} - {{ shelf_grid_id }}</a-col>
-      </a-row>
+        <a-row style="color: #000">
+          <a-col :span="4">ID:</a-col>
+          <a-col :span="6">
+            <a-tag color="#008000" style="font-weight: 700; color: yellow">
+              {{ id || "-" }}
+            </a-tag>
+          </a-col>
+          <a-col :span="6"> 重量：</a-col>
+          <a-col :span="8">
+            <a-tag color="#008000" style="font-weight: 700">
+              <span style="color: yellow">{{
+                weight >= 0 ? weight : "-"
+              }}</span>
+              KG
+            </a-tag>
+          </a-col>
+          <a-col :span="8"> 保质期：</a-col>
+          <a-col :span="16">
+            <a-tag color="#008000" style="font-weight: 700">
+              <span style="color: yellow">
+                {{ shelflife >= 0 ? shelflife : "-" }}</span
+              >
+              天
+            </a-tag>
+          </a-col>
+          <a-col :span="8">生产日期：</a-col>
+          <a-col :span="16">
+            <a-tag color="#008000" style="font-weight: 700; color: yellow">
+              {{
+                production_date >= 0
+                  ? new Date(production_date * 1000).toLocaleString()
+                  : "-"
+              }}
+            </a-tag>
+          </a-col>
+          <a-col :span="8">入库时间：</a-col>
+          <a-col :span="16">
+            <a-tag color="#008000" style="font-weight: 700; color: yellow">
+              {{
+                storage_time >= 0
+                  ? new Date(storage_time * 1000).toLocaleString()
+                  : "-"
+              }}
+            </a-tag>
+          </a-col>
+          <a-col :span="10">
+            <a-progress
+              type="circle"
+              :percent="
+                (Math.abs(
+                  Math.floor(
+                    (new Date().getTime() / 1000 - production_date) / 86400
+                  )
+                ) /
+                  shelflife) *
+                100
+              "
+              :success-percent="
+                (Math.abs(
+                  Math.floor(
+                    (new Date().getTime() / 1000 - storage_time) / 86400
+                  )
+                ) /
+                  shelflife) *
+                100
+              "
+              :width="80"
+              :strokeWidth="10"
+              :status="production_date === shelflife ? 'exception' : 'normal'"
+              :format="
+                () =>
+                  `产:${Math.abs(
+                    Math.floor(
+                      (new Date().getTime() / 1000 - production_date) / 86400
+                    )
+                  )}天
+                库:${Math.abs(
+                  Math.floor(
+                    (new Date().getTime() / 1000 - storage_time) / 86400
+                  )
+                )}天`
+              "
+            />
+          </a-col>
+          <a-col :span="14">
+            <a-row>
+              <a-col :span="10">货架：</a-col>
+              <a-col :span="14">
+                <a-tag color="#008000" style="font-weight: 700; color: yellow">
+                  {{ shelf.name }}
+                </a-tag>
+              </a-col>
+
+              <a-col :span="10">位置：</a-col>
+              <a-col :span="14" style="font-weight: 700">
+                <a-tag color="#008000">
+                  <span style="color: yellow">{{
+                    currentShelfGrid?.position?.y + 1
+                  }}</span
+                  >层
+                  <span style="color: yellow">{{
+                    currentShelfGrid?.position?.x + 1
+                  }}</span
+                  >行
+                  <span style="color: yellow">{{
+                    currentShelfGrid?.position?.z + 1
+                  }}</span
+                  >列
+                </a-tag>
+              </a-col>
+            </a-row>
+          </a-col>
+        </a-row>
+      </a-card>
+      <!-- 提示 -->
       <a-row>
-        <a-col
-          :span="24"
-          v-if="persistentShow"
-          style="color: red; background-color: yellow"
-        >
-          6s后自动关闭
+        <a-col :span="24" v-if="persistentShow">
+          <a-tag color="orange">6s后自动关闭</a-tag>
         </a-col>
-        <a-col :span="24" v-else style="color: red; background-color: yellow">
-          提示：双击并拖动可以移动货物位置
+        <a-col :span="24" v-else>
+          <a-tag color="orange">双击并拖动可以移动货物位置</a-tag>
         </a-col>
       </a-row>
-    </a-card>
+    </div>
   </div>
 </template>
 
@@ -107,6 +190,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    shelf: {
+      type: Object,
+      default: () => ({}),
+    },
     changeGoodsTagShow: {
       type: Function,
       default: () => {},
@@ -116,6 +203,21 @@ export default {
     const domElementRef = ref(null);
 
     const store = useStore();
+    // 当前货物的位置
+    const currentShelfGrid = ref({});
+    // 监听货物位置信息的变化
+    watch(
+      () => props.shelf.shelf_grid,
+      (shelf_grid) => {
+        if (shelf_grid.length > 0 && props.shelf_grid_id) {
+          // currentShelfGrid.value = shelf_grid.find(
+          //   (item) => item.shelf_grid_id === props.shelf_grid_id
+          // );
+          currentShelfGrid.value = shelf_grid[props.shelf_grid_id - 1];
+          console.log("=====================", props.shelf);
+        }
+      }
+    );
 
     // 商品列表
     const goodsList = computed(() => store.state.goods.goodsList);
@@ -189,18 +291,16 @@ export default {
       domElementRef,
       closeTag,
       timeoutCloseTag,
+      currentShelfGrid,
     };
   },
 };
 </script>
 
 <style scoped>
-.shelf-tag {
+.goods-tag {
   position: absolute;
   top: 0;
   left: 0;
-  /*color: #fff;*/
-  /*background-color: #92a2ba9d;*/
-  /*border-radius: 15px;*/
 }
 </style>
