@@ -50,23 +50,6 @@
                 }}</span>
               </a-tag>
             </a-col>
-
-            <!--<a-col :span="8"> 已用：</a-col>-->
-            <!--<a-col :span="5">-->
-            <!--  <a-tag color="#008000" style="font-weight: 700">-->
-            <!--    <span style="color: yellow">{{-->
-            <!--      shelfTagData.total.useGrid + 90-->
-            <!--    }}</span>-->
-            <!--  </a-tag>-->
-            <!--</a-col>-->
-            <!--<a-col :span="8"> 空闲：</a-col>-->
-            <!--<a-col :span="3">-->
-            <!--  <a-tag color="#008000" style="font-weight: 700">-->
-            <!--    <span style="color: yellow">{{-->
-            <!--      shelfTagData.total.emptyGrid + 100-->
-            <!--    }}</span>-->
-            <!--  </a-tag>-->
-            <!--</a-col>-->
           </a-row>
         </a-col>
         <a-col :span="8" style="margin-top: -18px">
