@@ -1,5 +1,8 @@
 <template>
-  <div class="operationPanel">
+  <div
+    class="operationPanel"
+    :style="{ width: width + 'px', height: height + 'px' }"
+  >
     <a-row class="container">
       <a-col :span="4" class="operationPanel-left">
         <div class="operationPanel-left-item active">
@@ -169,6 +172,16 @@ import { useStore } from "vuex";
 export default {
   name: "operationPanel",
   components: { HomeOutlined, ArrowRightOutlined, ArrowUpOutlined },
+  props: {
+    width: {
+      type: Number,
+      default: 340,
+    },
+    height: {
+      type: Number,
+      default: 0,
+    },
+  },
   setup() {
     const store = useStore();
     // 入库表单字段
@@ -254,10 +267,10 @@ window.onload = function () {
 <style scoped lang="less">
 .operationPanel {
   position: absolute;
-  top: 95px;
-  left: 25px;
-  width: 335px;
-  height: 730px;
+  top: 0;
+  left: 0;
+  width: 340px;
+  height: 100%;
   background-color: #92a2ba9d;
   border-radius: 15px;
   overflow: hidden;

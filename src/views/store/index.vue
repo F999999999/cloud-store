@@ -1,37 +1,23 @@
 <template>
   <div class="store">
     <div class="three-canvas" ref="threeRef"></div>
-    <operation-panel />
-    <button style="position: absolute; top: 0; left: 0">hhhhhh</button>
+    <operation-panel :height="fullHeight - 160" style="top: 80px; left: 40px" />
     <template ref="shelfTagRef">
       <shelf-tag
-        v-for="shelfTag in shelfList"
-        :key="shelfTag.id"
-        :tagShow="shelfTag.tagShow"
-        :id="shelfTag.id"
-        :name="shelfTag.name"
-        :size="shelfTag.size"
-        :position="shelfTag.position"
+        v-for="shelfTagData in shelfList"
+        :key="shelfTagData.id"
+        :shelfTagData="shelfTagData"
       />
     </template>
     <div ref="goodsTagRef">
       <goods-tag
         v-for="goodsTagData in goodsList"
         :key="goodsTagData.id"
-        :tagShow="goodsTagData.tagShow"
-        :tagShowTimer="goodsTagData.tagShowTimer"
-        :title="goodsTagData.title"
-        :id="goodsTagData.id"
-        :name="goodsTagData.name"
-        :shelf_id="goodsTagData.shelf_id"
-        :shelf_grid_id="goodsTagData.shelf_grid_id"
-        :weight="goodsTagData.weight"
-        :shelflife="goodsTagData.shelflife"
-        :production_date="goodsTagData.production_date"
-        :storage_time="goodsTagData.storage_time"
-        :persistentShow="goodsTagData.persistentShow"
+        :goodsTagData="goodsTagData"
         :shelf="shelfList.find((item) => item.id === goodsTagData.shelf_id)"
-      />
+      >
+        <a-tag color="orange">双击并拖动可以移动货物位置</a-tag>
+      </goods-tag>
     </div>
   </div>
 </template>
@@ -53,8 +39,8 @@ import TDragControls from "@/utils/three/TDragControls";
 import cameraControls from "@/utils/three/CameraControls";
 import labelRenderer from "@/utils/three/CSS2DRenderer";
 import { goodsTag, shelfTag } from "@/utils/three/CSS2DObject";
-import ShelfTag from "@/views/store/components/shelfTag";
-import GoodsTag from "@/views/store/components/goodsTag";
+import ShelfTag from "@/components/shelfTag";
+import GoodsTag from "@/components/goodsTag";
 // import { CameraHelper } from "three";
 
 export default {
@@ -200,14 +186,11 @@ export default {
 
             // 隐藏货物详情
             goodsList.value.forEach((item) => {
-              if (!item.persistentShow) {
-                // 隐藏货物 Tag 标签显示状态
-                store.commit("goods/changeGoodsTagShow", {
-                  id: item.id,
-                  tagShow: false,
-                });
-                // goodsList.value[i].tagShow = false;
-              }
+              // 隐藏货物 Tag 标签显示状态
+              store.commit("goods/changeGoodsTagShow", {
+                id: item.id,
+                tagShow: false,
+              });
             });
           }
           // 清空货物列表
@@ -230,12 +213,6 @@ export default {
           if (intersect?.object?.name === "goods") {
             // 判断是否处于拖放状态
             if (!dragControls.getDragState()) {
-              // 设置货物 tag 标签持久显示
-              store.commit("goods/changeGoodsTagPersistentShow", {
-                id: intersect.object.data.id,
-                tagPersistentShow: true,
-              });
-
               // 显示货物 Tag 标签
               store.commit("goods/changeGoodsTagShow", {
                 id: intersect.object.data.id,
@@ -267,12 +244,6 @@ export default {
 
         // 设置拖放状态为正在拖放
         dragControls.setDragState(true);
-
-        // 取消货物 tag 标签持久显示
-        store.commit("goods/changeGoodsTagPersistentShow", {
-          id: intersectObjects[0].object.data.id,
-          tagPersistentShow: false,
-        });
 
         // 隐藏货物 Tag 标签
         store.commit("goods/changeGoodsTagShow", {
@@ -424,7 +395,7 @@ export default {
           // 添加货架 Tag 标签显示状态
           store.commit("shelf/changeShelfTagShow", {
             id: item.id,
-            tagShow: false,
+            tagShow: true,
           });
 
           // 添加 CSS2DObject 标签
@@ -486,18 +457,6 @@ export default {
             tagShow: false,
           });
 
-          // 添加货物 Tag 标签持久显示状态
-          store.commit("goods/changeGoodsTagPersistentShow", {
-            id: item.id,
-            tagPersistentShow: false,
-          });
-
-          // 添加货物 Tag 标签显示时间
-          store.commit("goods/changeGoodsTagShowTime", {
-            id: item.id,
-            tagShowTimer: 6000,
-          });
-
           // 添加 CSS2DObject 标签
           Promise.resolve(i).then((i) => {
             // 生成货物的 Tag 标签
@@ -530,6 +489,7 @@ export default {
       shelfList,
       goodsTagRef,
       goodsList,
+      fullHeight: window.innerHeight,
     };
   },
 };
