@@ -27,11 +27,11 @@
             <a-col :span="12">
               <a-tag color="#008000" style="font-weight: 700">
                 <span style="color: yellow">{{
-                  shelfTagData.position.x + 100
+                  shelfTagData.position.x + 1
                 }}</span>
                 行
                 <span style="color: yellow">{{
-                  shelfTagData.position.z + 100
+                  shelfTagData.position.z + 1
                 }}</span>
                 列
               </a-tag>
