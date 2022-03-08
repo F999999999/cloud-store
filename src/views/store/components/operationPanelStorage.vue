@@ -116,7 +116,6 @@ export default {
             children: [],
           };
           item.shelf_grid.forEach((item2) => {
-            console.log(item.goods_id, "item.goods_id");
             if (item.goods_id == null) {
               obj.children.push({
                 value: item2.shelf_grid_id,
@@ -128,7 +127,6 @@ export default {
           });
           if (obj.children.length > 0) shelfOptions.value.push(obj);
         });
-        console.log("shelfOptions", shelfOptions.value);
       }
     );
 
