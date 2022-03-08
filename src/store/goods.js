@@ -22,24 +22,6 @@ const goods = {
         return item;
       });
     },
-    // 修改货物 Tag 持久显示状态
-    changeGoodsTagPersistentShow(state, { id, tagPersistentShow }) {
-      state.goodsList = state.goodsList.map((item) => {
-        if (item.id === id) {
-          item.tagPersistentShow = tagPersistentShow;
-        }
-        return item;
-      });
-    },
-    // 修改货物 Tag 显示时间
-    changeGoodsTagShowTime(state, { id, tagShowTime }) {
-      state.goodsList = state.goodsList.map((item) => {
-        if (item.id === id) {
-          item.tagShowTime = tagShowTime;
-        }
-        return item;
-      });
-    },
   },
   actions: {
     // 获取商品数据

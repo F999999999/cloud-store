@@ -6,12 +6,18 @@ const shelf = {
     return {
       // 货物数据
       shelfList: [],
+      // 统计信息
+      shelfTotal: {},
     };
   },
   mutations: {
     // 修改货架数据
     changeShelf(state, shelf) {
       state.shelfList = shelf;
+    },
+    // 修改统计信息
+    changeTotal(state, total) {
+      state.shelfTotal = total;
     },
     // 修改货架 Tag 显示状态
     changeShelfTagShow(state, { id, tagShow }) {
@@ -31,6 +37,8 @@ const shelf = {
         if (res.status === 200) {
           // 更新数据
           commit("changeShelf", res.data);
+          // 更新统计信息
+          commit("changeTotal", res.total);
         }
       });
     },

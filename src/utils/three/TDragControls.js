@@ -4,7 +4,7 @@ const TDragControls = (camera, renderer) => {
   // 可被拖放的物体
   const dragControlsObject = [];
   // 当前被拖放的物体
-  let currentDragControlsObject = null;
+  let currentDragControlsObject = [];
   const getCurrentDragControls = () => {
     return currentDragControlsObject;
   };
