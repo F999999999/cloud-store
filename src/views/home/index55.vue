@@ -1,34 +1,49 @@
-export default function echartsData() {
-  return {
+<template>
+  <div id="max"></div>
+</template>
+
+<script setup>
+// 去除公共样式
+import "@/assets/reset.css";
+// 基于准备好的dom，初始化echarts实例
+import * as echarts from "echarts";
+import { onMounted } from "vue";
+onMounted(() => {
+  const myChart = echarts.init(document.getElementById("max"));
+  let angle = 0; //角度，用来做简单的动画效果的
+  let value = 65.13;
+  var option = {
+    //backgroundColor:"#061740",
     title: [
       {
         text: "{a|" + value + "}{c|%}",
         x: "center",
         y: "42%",
         textStyle: {
+          // 圈里面字的匹配
           rich: {
             a: {
-              fontSize: 68,
+              fontSize: 14,
               color: "#29EEF3",
             },
 
             c: {
-              fontSize: 36,
+              fontSize: 14,
               color: "#ffffff",
               // padding: [5,0]
             },
           },
         },
       },
-      {
-        text: "运行占比",
-        x: "center",
-        y: "53%",
-        textStyle: {
-          fontSize: 36,
-          color: "#ffffff",
-        },
-      },
+      // {
+      //   text: "运行占比",
+      //   x: "center",
+      //   y: "53%",
+      //   textStyle: {
+      //     fontSize: 36,
+      //     color: "#ffffff",
+      //   },
+      // },
     ],
     legend: {
       type: "plain",
@@ -181,7 +196,7 @@ export default function echartsData() {
               r: 4,
             },
             style: {
-              shadowColor: "#4FADFD",
+              shadowColor: "#08eeff",
               shadowBlur: 10,
               stroke: "#0CD3DB", //粉
               fill: "#0CD3DB",
@@ -221,7 +236,7 @@ export default function echartsData() {
       {
         name: "吃猪肉频率",
         type: "pie",
-        radius: ["56%", "45%"],
+        radius: ["35%", "45%"],
         silent: true,
         clockwise: true,
         startAngle: 90,
@@ -274,27 +289,33 @@ export default function echartsData() {
       },
     ],
   };
-}
 
-let angle = 0; //角度，用来做简单的动画效果的
-let value = 65.13;
-function draw() {
-  angle = angle + 3;
-  // myChart.setOption(echartsData, true);
-  //window.requestAnimationFrame(draw);
+  //获取圆上面某点的坐标(x0,y0表示坐标，r半径，angle角度)
+  function getCirlPoint(x0, y0, r, angle) {
+    let x1 = x0 + r * Math.cos((angle * Math.PI) / 180);
+    let y1 = y0 + r * Math.sin((angle * Math.PI) / 180);
+    return {
+      x: x1,
+      y: y1,
+    };
+  }
+
+  function draw() {
+    angle = angle + 5;
+    myChart.setOption(option, true);
+    //window.requestAnimationFrame(draw);
+  }
+
+  setInterval(function () {
+    //用setInterval做动画感觉有问题
+    draw();
+  }, 100);
+});
+</script>
+
+<style>
+#max {
+  width: 100px;
+  height: 100px;
 }
-//获取圆上面某点的坐标(x0,y0表示坐标，r半径，angle角度)
-function getCirlPoint(x0, y0, r, angle) {
-  let x1 = x0 + r * Math.cos((angle * Math.PI) / 180);
-  let y1 = y0 + r * Math.sin((angle * Math.PI) / 180);
-  console.log(2);
-  return {
-    x: x1,
-    y: y1,
-  };
-}
-setInterval(function () {
-  //用setInterval做动画感觉有问题
-  draw();
-  console.log(1);
-}, 100);
+</style>

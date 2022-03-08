@@ -12,7 +12,7 @@
     "axios": "^0.26.0",
     "camera-controls": "^1.33.2",
     "core-js": "^3.6.5",
-    "echarts": "^5.3.0",
+    "echarts": "^4.8.0",
     "vee-validate": "^4.5.9",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
