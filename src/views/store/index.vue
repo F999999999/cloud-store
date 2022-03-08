@@ -395,7 +395,7 @@ export default {
           // 添加货架 Tag 标签显示状态
           store.commit("shelf/changeShelfTagShow", {
             id: item.id,
-            tagShow: true,
+            tagShow: false,
           });
 
           // 添加 CSS2DObject 标签

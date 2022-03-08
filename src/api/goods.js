@@ -15,3 +15,20 @@ export const getGoodsListApi = () => {
 export const addGoodsApi = (params) => {
   return requestWithToken("/store/add_goods", "post", params);
 };
+/**
+ * 根据商品名搜索商品列表(商品出库)
+ * @param name 商品名
+ * @returns {Promise}
+ */
+export const searchDeliveryNameApi = (name) => {
+  return requestWithToken("/store/search_goods", "get", { name });
+};
+/**
+ * 根据商品id移除商品(商品出库)
+ * @param id 商品id
+ * @param takeout_time 移除时间
+ * @returns {Promise}
+ */
+export const removeGoodsByIdApi = ({ id, takeout_time }) => {
+  return requestWithToken("/store/remove_goods", "post", { id, takeout_time });
+};
