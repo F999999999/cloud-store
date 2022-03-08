@@ -474,6 +474,13 @@ export default {
         });
       });
 
+      // watch(
+      //   () => goodsList.value,
+      //   (value) => {
+      //     console.log("货物=watch=", goodsList.value, value);
+      //   }
+      // );
+
       labelRenderer.setSize(window.innerWidth - 140, window.innerHeight - 140);
       labelRenderer.domElement.style.left = "140px";
       labelRenderer.domElement.style.top = "140px";
