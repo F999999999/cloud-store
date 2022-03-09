@@ -13,8 +13,8 @@ export default {
   name: "progressBall",
   props: {
     ballId: {
-      type: Number,
-      default: () => new Date().valueOf(),
+      type: String,
+      default: () => "ball" + new Date().valueOf(),
     },
     storeTotal: {
       type: Number,
@@ -33,9 +33,9 @@ export default {
       // 通过for循环，在相同class的dom内绘制元素
       // var myChart = echarts.init(roseCharts[i]);
       // console.log(roseCharts[i]);
-      var angle = 0; //角度，用来做简单的动画效果的
-      var value = ((props.useGoods / props.storeTotal) * 100).toFixed(2);
-      var option = {
+      let angle = 0; //角度，用来做简单的动画效果的
+      const value = ((props.useGoods / props.storeTotal) * 100).toFixed(2);
+      const option = {
         //backgroundColor:"#061740",
         title: [
           {

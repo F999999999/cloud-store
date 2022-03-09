@@ -6,19 +6,16 @@
     <div class="header">云仓</div>
     <div class="home_left">
       <ul>
-        <store-tag
-          v-for="i in 3"
-          :key="i"
-          :id="i"
-          :storeTotal="100 * i"
-          :useGoods="50 + i"
-        />
-        <!-- <li>
-          <div><img src="../../assets/image/02.jpg" alt="" /></div>
-        </li>
+        <!--        动态环形图-->
         <li>
-          <div><img src="../../assets/image/02.jpg" alt="" /></div>
-        </li> -->
+          <store-tag
+            v-for="i in 3"
+            :key="i"
+            :id="i"
+            :storeTotal="100 * i"
+            :useGoods="50 + i"
+          />
+        </li>
       </ul>
     </div>
     <div class="home_right">
@@ -45,6 +42,21 @@
             <!-- 背景 -->
             <div class="home_right_status_img">
               <img src="../../assets/image/03.jpg" alt="" />
+              <div class="home_right_status_img_context">
+                <!--                柱状图组件-->
+                <ul>
+                  <li>
+                    <p class="home_right_status_img_context_title">
+                      <i></i>仓库A
+                    </p>
+                    <histogram
+                      v-for="i in 3"
+                      :key="i"
+                      :histogramId="'histogram' + i"
+                    />
+                  </li>
+                </ul>
+              </div>
             </div>
             <!-- echarts -->
             <div></div>
@@ -58,8 +70,9 @@
 <script>
 import StoreTag from "@/views/home/components/storeTag";
 import TextTag from "@/views/home/components/textScrolling";
+import histogram from "@/views/home/components/histogram";
 export default {
-  components: { StoreTag, TextTag },
+  components: { StoreTag, TextTag, histogram },
   setup() {
     return {};
   },
@@ -91,7 +104,7 @@ export default {
   left: 5%;
 }
 .home_left li {
-  padding: 20px 0;
+  padding: 3% 0;
 }
 .home_right {
   position: absolute;
@@ -148,6 +161,7 @@ export default {
   top: 10px;
   left: 38%;
   color: #00ffff;
+  z-index: 9999;
 }
 .home_right_status_p i {
   display: inline-block;
@@ -158,5 +172,32 @@ export default {
 .home_right_status_p i img {
   width: 100%;
   margin: 3px 0 0 0px;
+}
+.home_right_status_img{
+  position: relative;
+}
+
+
+.home_right_status_img .home_right_status_img_context {
+  position: absolute;
+  top: 15%;
+  left:5%;
+  color: #fff;
+  height: 110px;
+  //background-color: red;
+}
+.home_right_status_img_context_title{
+//margin:0 0 0 -70%
+  text-align:left
+}
+
+.home_right_status_img_context_title::before{
+  content:" ";
+  display: inline-block;
+  width: 10px;
+  height:10px;
+border-radius: 50%;
+  color:#00fbff;
+  z-index:1;
 }
 </style>
