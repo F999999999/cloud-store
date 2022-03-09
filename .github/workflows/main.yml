@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           # 需要使用的 node 版本
-          node-version: '16'
+          node-version: 16
 
       # 缓存 node_modules
       - name: Cache dependencies 📦
@@ -44,19 +44,19 @@ jobs:
         id: npm-cache
         with:
           # 需要缓存的文件、目录和通配符模式列表
-          path: |
-            **/node_modules
+          path: ~/.npm
           # 用于恢复和保存缓存的显式密钥
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/package-lock.json') }}
           # 如果键没有发生缓存命中，则用于恢复缓存的键的显式密钥
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
+
       # 安装依赖
       - name: Install dependencies 🔧
         # 判断缓存是否命中
         if: steps.npm-cache.outputs.cache-hit != 'true'
         # 如果没有命中，则安装依赖
-        run: npm install --frozen-lockfile
+        run: npm ci
 
       # 运行构建脚本
       - name: Build ⏳
