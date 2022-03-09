@@ -33,9 +33,7 @@
           </div>
         </li>
         <div class="context">
-          <ol>
-            <li v-for="i in 3" :key="i">1、我是故障信息</li>
-          </ol>
+          <TextTag></TextTag>
         </div>
         <li>
           <div class="home_right_status">
@@ -48,7 +46,7 @@
             <div class="home_right_status_img">
               <img src="../../assets/image/03.jpg" alt="" />
             </div>
-            <!-- echatts -->
+            <!-- echarts -->
             <div></div>
           </div>
         </li>
@@ -57,7 +55,16 @@
   </div>
 </template>
 
-<script setup></script>
+<script>
+import StoreTag from "@/views/home/components/storeTag";
+import TextTag from "@/views/home/components/textScrolling";
+export default {
+  components: { StoreTag, TextTag },
+  setup() {
+    return {};
+  },
+};
+</script>
 
 <style lang="less" scoped>
 .home {
@@ -68,12 +75,7 @@
   background-size: 100% 100%;
   overflow: hidden;
 }
-// #main {
-//   margin: 100px auto;
-//   width: 200px;
-//   height: 200px;
-//   background: #093347;
-// }
+
 .header {
   width: 100%;
   height: 60px;
@@ -100,7 +102,7 @@
   padding: 5px 0 68px 0;
 }
 
-// 图片的处理
+/*// 图片的处理*/
 .home img {
   border-radius: 7%;
 }
@@ -127,8 +129,8 @@
 }
 .context {
   position: absolute;
-  top: 8%;
-  left: 12%;
+  top: 9%;
+  left: 7%;
 }
 
 .context li {
@@ -158,9 +160,3 @@
   margin: 3px 0 0 0px;
 }
 </style>
-<script>
-import StoreTag from "@/views/home/components/storeTag";
-export default {
-  components: { StoreTag },
-};
-</script>
