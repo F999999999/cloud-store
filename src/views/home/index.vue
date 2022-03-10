@@ -30,6 +30,7 @@
           </div>
         </li>
         <div class="context">
+          <!--          信息滚动-->
           <TextTag></TextTag>
         </div>
         <li>
@@ -45,24 +46,27 @@
               <div class="home_right_status_img_context">
                 <!--                柱状图组件-->
                 <ul>
-                  <li>
+                  <li v-for="i in 3" :key="i">
                     <p class="home_right_status_img_context_title">
                       <i></i>仓库A
                     </p>
-                    <histogram
-                      v-for="i in 3"
-                      :key="i"
-                      :histogramId="'histogram' + i"
-                    />
+                    <histogram :histogramId="'histogram' + i" />
                   </li>
                 </ul>
               </div>
             </div>
-            <!-- echarts -->
-            <div></div>
           </div>
         </li>
       </ul>
+    </div>
+    <div class="home_bottom">
+      <div class="home_bottom_button">
+        <ul>
+          <li class="button_1"><span>仓库A</span></li>
+          <li class="button_2"><span>仓库A</span></li>
+          <li class="button_3"><span>仓库A</span></li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -104,7 +108,7 @@ export default {
   left: 5%;
 }
 .home_left li {
-  padding: 3% 0;
+  padding: 6% 0;
 }
 .home_right {
   position: absolute;
@@ -112,7 +116,7 @@ export default {
   right: 5%;
 }
 .home_right li {
-  padding: 5px 0 68px 0;
+  padding: 4% 0 40% 0;
 }
 
 /*// 图片的处理*/
@@ -196,8 +200,54 @@ export default {
   display: inline-block;
   width: 10px;
   height:10px;
-border-radius: 50%;
+  border-radius: 50%;
   color:#00fbff;
   z-index:1;
+}
+.home_right_status_img_context li{
+  padding:0
+}
+.home_bottom {
+  width:800px;
+  height:80px;
+  //background-color:red;
+  position: absolute;
+  bottom:6%;
+  left:28%;
+  color: #fff;
+}
+.home_bottom li {
+float:left;
+  margin:0% 10%;
+  text-align:center;
+  padding-left:10px;
+
+
+}
+.home_bottom_button{
+  //display: flex;
+  //justify-content:space-between;
+  //flex-direction:row;
+
+}
+.home_bottom .button_1{
+  width:100px;
+  height:100px;
+  background-image: url(../../../src/assets/image/a.jpg);
+}
+.home_bottom .button_2{
+  width:100px;
+  height:100px;
+  background-image: url(../../../src/assets/image/b.jpg);
+}
+.home_bottom .button_3{
+  width:100px;
+  height:100px;
+  background-image: url(../../../src/assets/image/c.jpg);
+}
+
+.home_bottom span{
+  display: inline-block;
+  padding:45% 0%
 }
 </style>
