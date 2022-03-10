@@ -29,6 +29,6 @@ export const searchDeliveryNameApi = (name) => {
  * @param takeout_time 移除时间
  * @returns {Promise}
  */
-export const removeGoodsByIdApi = ({ id, takeout_time }) => {
-  return requestWithToken("/store/remove_goods", "post", { id, takeout_time });
+export const removeGoodsByIdApi = ({ ids, takeout_time }) => {
+  return requestWithToken("/store/remove_goods", "post", { ids, takeout_time });
 };
