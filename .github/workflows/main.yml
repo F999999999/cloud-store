@@ -100,9 +100,11 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_KEY }}
           # 运行在远程服务器的命令
           # 切换到部署目录
+          # 删除旧文件
           # 解压压缩包
           # 执行清理操作
           script: |
             cd ${{ secrets.REMOTE_TARGET }}
+            rm -rf !(release.tar.gz)
             tar xzvf release.tar.gz
             rm -rf release.tar.gz
