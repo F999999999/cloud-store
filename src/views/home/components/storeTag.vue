@@ -69,10 +69,6 @@ export default {
       color: #00ffff;
     }
   }
-  img {
-    width: 358px;
-    height: 213px;
-  }
   /*字体颜色大小*/
   .box_context {
     p {

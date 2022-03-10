@@ -30,7 +30,7 @@
           </div>
         </li>
         <div class="context">
-          <!--          信息滚动-->
+          <!--信息滚动-->
           <TextTag></TextTag>
         </div>
         <li>
@@ -250,4 +250,48 @@ float:left;
   display: inline-block;
   padding:45% 0%
 }
+.home_right .home_right_warn .warn_tt {
+  position: absolute;
+  top: 10%;
+  left: 44%;
+  color: #00ffff;
+}
+.context {
+  position: absolute;
+  top: 8%;
+  left: 12%;
+}
+
+.context li {
+  padding: 5px 0;
+  color: #fff;
+  font-size: 14px;
+  line-height: 16px;
+}
+// 运行状态
+.home_right_status {
+  position: relative;
+}
+.home_right_status_p {
+  position: absolute;
+  top: 10px;
+  left: 38%;
+  color: #00ffff;
+}
+.home_right_status_p i {
+  display: inline-block;
+  width: 21px;
+  height: 25px;
+  margin: 0 0 0 -10px;
+}
+.home_right_status_p i img {
+  width: 100%;
+  margin: 3px 0 0 0px;
+}
 </style>
+<script>
+import StoreTag from "@/views/home/components/storeTag";
+export default {
+  components: { StoreTag },
+};
+</script>
