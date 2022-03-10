@@ -24,7 +24,7 @@ jobs:
 
     # 指定任务执行的命令
     steps:
-      # 检出代码
+      # 拉取代码
       - name: Checkout 🛎️
         uses: actions/checkout@v2
         with:
@@ -38,10 +38,10 @@ jobs:
           # 需要使用的 node 版本
           node-version: 16
 
-      # 缓存 node_modules
-      - name: Cache dependencies 📦
+      # 缓存依赖文件
+      - name: Cache dependencies 💾
         uses: actions/cache@v2
-        id: npm-cache
+        id: cache-node-modules
         with:
           # 需要缓存的文件、目录和通配符模式列表
           path: ~/.npm
@@ -54,7 +54,7 @@ jobs:
       # 安装依赖
       - name: Install dependencies 🔧
         # 判断缓存是否命中
-        if: steps.npm-cache.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         # 如果没有命中，则安装依赖
         run: npm ci
 
@@ -62,8 +62,12 @@ jobs:
       - name: Build ⏳
         run: npm run build
 
-      # 部署到服务器
-      - name: Deploy 🚀
+      # 打包并压缩
+      - name: Packaging 📦
+        run: tar czvf dist/release.tar.gz dist/
+
+      # 上传到服务器
+      - name: Upload 🚀
         # 构建
         uses: easingthemes/ssh-deploy@v2.1.5
         # 该步骤所需的环境变量
@@ -76,9 +80,29 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           # 服务器部署路径
           TARGET: ${{ secrets.REMOTE_TARGET }}
-          # 源目录（打包的目录）
-          SOURCE: "dist/"
+          # 源目录（打包的目录或文件）
+          SOURCE: "dist/release.tar.gz"
           # rsync flags（默认值："-rltgoDzvO"）
           # --delete 删除那些目标目录中有而源目录中没有的多余文件
           # --exclude 排除目标目录中那些被该选项指定的文件
           ARGS: "-rltgoDzvO --delete --exclude '.user.ini'"
+
+      # 部署服务器
+      - name: Deploy 🎉
+        # 构建
+        uses: appleboy/ssh-action@master
+        with:
+          # 服务器地址(IP或者域名)
+          host: ${{ secrets.REMOTE_HOST }}
+          # 服务器用户名
+          username: ${{ secrets.REMOTE_USER }}
+          # 服务器 SSH 私钥
+          key: ${{ secrets.REMOTE_SSH_KEY }}
+          # 运行在远程服务器的命令
+          # 切换到部署目录
+          # 解压压缩包
+          # 执行清理操作
+          script: |
+            cd ${{ secrets.REMOTE_TARGET }}
+            tar xzvf release.tar.gz
+            rm -rf release.tar.gz
