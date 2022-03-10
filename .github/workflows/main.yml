@@ -56,7 +56,7 @@ jobs:
         # 判断缓存是否命中
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         # 如果没有命中，则安装依赖
-        run: npm ci
+        run: npm install
 
       # 运行构建脚本
       - name: Build ⏳
