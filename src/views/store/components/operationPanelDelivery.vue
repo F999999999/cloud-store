@@ -8,21 +8,18 @@
       @search="onSearch"
     />
     <!--  搜索出的商品列表  -->
-    <div
-      class="operationPanel-right-delivery-list"
-      v-if="deliveryList?.length > 0"
-    >
+    <div class="operationPanel-right-delivery" v-if="deliveryList?.length > 0">
       <a-card
         :class="[
           'operationPanel-right-delivery-item',
-          item.id === currentDeliveryId ? 'active' : '',
+          selectedDeliveryIdList.indexOf(item.id) !== -1 ? 'active' : '',
         ]"
         size="small"
         :title="`商品名称：${item.name}`"
         :style="{ width: '100%', marginTop: '5px' }"
         v-for="item in deliveryList"
         :key="item.id"
-        @click="currentDeliveryId = item.id"
+        @click="onSelectDelivery(item.id)"
       >
         <p>ID：{{ item.id }}</p>
         <p>重量：{{ item.weight }}</p>
@@ -65,9 +62,9 @@ export default {
     // 搜索关键字
     const searchValue = ref("");
     // 搜索出的商品列表(商品出库)
-    const deliveryList = ref(null);
-    // 用于存储当前id和判断active的类名的加入
-    const currentDeliveryId = ref(0);
+    const deliveryList = ref([]);
+    // 当前被选中的商品
+    const selectedDeliveryIdList = ref([]);
     // 点击搜索或按下回车键时的回调
     const onSearch = () => {
       // 根据商品名称搜索商品列表
@@ -92,24 +89,39 @@ export default {
     const removeGoods = () => {
       // 根据商品id移除商品
       removeGoodsByIdApi({
-        id: currentDeliveryId.value,
+        ids: selectedDeliveryIdList.value,
         takeout_time: new Date().toLocaleString() / 1000,
       }).then((data) => {
         if (data.status === 200) {
           // 提示信息
           message.success(data.message);
-          // 清空搜索商品列表
-          deliveryList.value = [];
+          // 删除移除的商品
+          deliveryList.value = deliveryList.value.filter(
+            (item) => !data.data.find((item2) => item2.goods_id === item.id)
+          );
         }
       });
+    };
+
+    // 选中商品
+    const onSelectDelivery = (id) => {
+      if (selectedDeliveryIdList.value.indexOf(id) === -1) {
+        selectedDeliveryIdList.value.push(id);
+      } else {
+        selectedDeliveryIdList.value.splice(
+          selectedDeliveryIdList.value.indexOf(id),
+          1
+        );
+      }
     };
 
     return {
       searchValue,
       onSearch,
       deliveryList,
-      currentDeliveryId,
+      selectedDeliveryIdList,
       removeGoods,
+      onSelectDelivery,
     };
   },
 };
@@ -117,7 +129,7 @@ export default {
 
 <style scoped lang="less">
 .operationPanel-right-delivery {
-  .operationPanel-right-delivery-list {
+  .operationPanel-right-delivery {
     text-align: left;
     height: 600px;
     overflow-y: auto;
@@ -125,9 +137,10 @@ export default {
       margin-bottom: 8px;
     }
     .operationPanel-right-delivery-item {
+      opacity: 0.7;
       &:hover,
       &.active {
-        background-color: #3f85fe66;
+        opacity: 1;
       }
     }
   }
