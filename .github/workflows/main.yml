@@ -39,16 +39,16 @@ jobs:
           node-version: 16
 
       # 缓存依赖文件
-      - name: Cache dependencies 💾
-        uses: actions/cache@v2
-        id: cache-node-modules
-        with:
-          # 需要缓存的文件、目录和通配符模式列表
-          path: ~/.npm
-          # 用于恢复和保存缓存的显式密钥
-          key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/package-lock.json') }}
-          # 如果键没有发生缓存命中，则用于恢复缓存的键的显式密钥
-          restore-keys: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
+#      - name: Cache dependencies 💾
+#        uses: actions/cache@v2
+#        id: cache-node-modules
+#        with:
+#          # 需要缓存的文件、目录和通配符模式列表
+#          path: ~/.npm
+#          # 用于恢复和保存缓存的显式密钥
+#          key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/package-lock.json') }}
+#          # 如果键没有发生缓存命中，则用于恢复缓存的键的显式密钥
+#          restore-keys: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
 
       # 安装依赖
       - name: Install dependencies 🔧
