@@ -8606,6 +8606,11 @@ vue-types@^3.0.0:
   dependencies:
     is-plain-object "3.0.1"
 
+vue3-seamless-scroll@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/vue3-seamless-scroll/-/vue3-seamless-scroll-1.1.5.tgz#9e6b5afa7c3cf1dfd2a64feb2f7f0422f01e4329"
+  integrity sha512-MbqpJCZR01O4wbDdbELM0fG0gSVLXY3oX4yfqXbgbyILsDtMvlFI81kDTeLeIEXhPkjyd8xur4zs3lUoJeBjyg==
+
 vue@^3.0.0:
   version "3.2.31"
   resolved "https://registry.npmmirror.com/vue/-/vue-3.2.31.tgz"

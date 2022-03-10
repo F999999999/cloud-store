@@ -12,12 +12,10 @@
       </a-form-item>
       <a-form-item label="商品生产日期：" name="production_date">
         <a-date-picker v-model:value="formState.production_date">
-          <template #renderExtraFooter>extra footer</template>
         </a-date-picker>
       </a-form-item>
       <a-form-item label="商品入库时间：" name="storage_time">
         <a-date-picker show-time v-model:value="formState.storage_time">
-          <template #renderExtraFooter>extra footer</template>
         </a-date-picker>
       </a-form-item>
       <a-form-item label="货架：" name="shelf_id">
@@ -26,7 +24,6 @@
           :options="shelfOptions"
           :display-render="displayRender"
           expand-trigger="hover"
-          placeholder="Please select"
         />
       </a-form-item>
       <a-form-item>
