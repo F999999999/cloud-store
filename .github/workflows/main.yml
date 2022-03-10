@@ -49,8 +49,8 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/package-lock.json') }}
           # 如果键没有发生缓存命中，则用于恢复缓存的键的显式密钥
           restore-keys: |
-          rm -rf ~/.npm
-          ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
+            ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
+            rm -rf ~/.npm
 
       # 安装依赖
       - name: Install dependencies 🔧
@@ -61,9 +61,7 @@ jobs:
 
       # 运行构建脚本
       - name: Build ⏳
-        run: |
-          npm -v
-          npm run build --if-present
+        run: npm run build --if-present
 
       # 打包并压缩
       - name: Packaging 📦
