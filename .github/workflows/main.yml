@@ -59,7 +59,9 @@ jobs:
 
       # 运行构建脚本
       - name: Build ⏳
-        run: npm run build --if-present
+        run: |
+        npm -v
+        npm run build --if-present
 
       # 打包并压缩
       - name: Packaging 📦
