@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 <template>
   <div class="home">
     <!--    <router-link to="/store">进入</router-link>-->
@@ -28,11 +27,11 @@
             <p class="warn_tt">故障信息</p>
             <img src="../../assets/image/01.jpg" alt="" />
           </div>
+          <div class="context">
+            <!--信息滚动-->
+            <TextTag></TextTag>
+          </div>
         </li>
-        <div class="context">
-          <!--信息滚动-->
-          <TextTag></TextTag>
-        </div>
         <li>
           <div class="home_right_status">
             <!-- 标题 -->
@@ -175,7 +174,7 @@ export default {
 }
 .home_right_status_p i img {
   width: 100%;
-  margin: 3px 0 0 0px;
+  margin: 3px 0 0 0;
 }
 .home_right_status_img{
   position: relative;
@@ -218,7 +217,7 @@ export default {
 }
 .home_bottom li {
 float:left;
-  margin:0% 10%;
+  margin:0 10%;
   text-align:center;
   padding-left:10px;
 
@@ -248,7 +247,7 @@ float:left;
 
 .home_bottom span{
   display: inline-block;
-  padding:45% 0%
+  padding:45% 0
 }
 .home_right .home_right_warn .warn_tt {
   position: absolute;
@@ -286,12 +285,6 @@ float:left;
 }
 .home_right_status_p i img {
   width: 100%;
-  margin: 3px 0 0 0px;
+  margin: 3px 0 0 0;
 }
 </style>
-<script>
-import StoreTag from "@/views/home/components/storeTag";
-export default {
-  components: { StoreTag },
-};
-</script>
