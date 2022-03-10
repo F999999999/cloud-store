@@ -38,6 +38,21 @@ jobs:
           # 需要使用的 node 版本
           node-version: 16
 
+      # 设置缓存路径
+      - name: Get npm cache directory path
+        id: npm-cache-dir-path
+        run: echo "::set-output name=dir::$(npm config get cache)"
+
+      # npm缓存
+      - name: Cache npm cache
+        uses: actions/cache@v2
+        id: cache-npm-cache
+        with:
+          path: ${{ steps.npm-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
       # node-modules缓存
       - name: Cache dependencies 💾
         uses: actions/cache@v2
@@ -50,20 +65,19 @@ jobs:
           # 如果键没有发生缓存命中，则用于恢复缓存的键的显式密钥
           restore-keys: |
             ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
-            rm -rf node_modules package-lock.json
 
       # 安装依赖
       - name: Install dependencies 🔧
         # 判断缓存是否命中
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        if: |
+          steps.cache-npm-cache.outputs.cache-hit != 'true' ||
+          steps.cache-node-modules.outputs.cache-hit != 'true'
         # 如果没有命中，则安装依赖
         run: npm ci
 
       # 运行构建脚本
       - name: Build ⏳
-        run: |
-          npm -v
-          npm run build --if-present
+        run: npm run build --if-present
 
       # 打包并压缩
       - name: Packaging 📦
