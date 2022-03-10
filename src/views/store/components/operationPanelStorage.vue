@@ -158,5 +158,8 @@ export default {
   /deep/ .ant-calendar-picker {
     width: 239px;
   }
+  /deep/ .ant-cascader-picker {
+    background-color: #d1d5ed;
+  }
 }
 </style>

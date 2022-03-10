@@ -19,7 +19,7 @@
         ]"
         size="small"
         :title="`商品名称：${item.name}`"
-        :style="{ width: '100%', marginTop: '5px' }"
+        :style="{ width: '100%', marginBottom: '5px' }"
         v-for="item in deliveryList"
         :key="item.id"
         @click="currentDeliveryId = item.id"
@@ -117,10 +117,12 @@ export default {
 
 <style scoped lang="less">
 .operationPanel-right-delivery {
+  height: 100%;
   .operationPanel-right-delivery-list {
     text-align: left;
-    height: 600px;
+    height: 80%;
     overflow-y: auto;
+    margin-top: 5px;
     p {
       margin-bottom: 8px;
     }
