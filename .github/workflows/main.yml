@@ -64,7 +64,7 @@ jobs:
 
       # 打包并压缩
       - name: Packaging 📦
-        run: tar czvf dist/release.tar.gz dist/
+        run: tar czvf release.tar.gz dist/
 
       # 上传到服务器
       - name: Upload 🚀
@@ -81,7 +81,7 @@ jobs:
           # 服务器部署路径
           TARGET: ${{ secrets.REMOTE_TARGET }}
           # 源目录（打包的目录或文件）
-          SOURCE: "dist/release.tar.gz"
+          SOURCE: "release.tar.gz"
           # rsync flags（默认值："-rltgoDzvO"）
           # --delete 删除那些目标目录中有而源目录中没有的多余文件
           # --exclude 排除目标目录中那些被该选项指定的文件
