@@ -152,13 +152,9 @@ export default {
 .operationPanel-right-storage {
   /deep/ .ant-input {
     padding: 4px;
-    background-color: #d1d5ed;
   }
   /deep/ .ant-calendar-picker {
     width: 239px;
-  }
-  /deep/ .ant-cascader-picker {
-    background-color: #d1d5ed;
   }
 }
 </style>
