@@ -26,7 +26,7 @@ export class TEngine {
     // 设置渲染区域尺寸
     this.renderer.setSize(this.dom.offsetWidth, this.dom.offsetHeight);
     // 设置背景颜色
-    this.renderer.setClearColor(0x9999ff, 1);
+    this.renderer.setClearColor(0x141e30, 1);
     // 把 canvas 对象插入到指定 DOM 标签中
     this.dom.appendChild(this.renderer.domElement);
 
