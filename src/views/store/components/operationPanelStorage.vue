@@ -24,6 +24,7 @@
           :options="shelfOptions"
           :display-render="displayRender"
           expand-trigger="hover"
+          placeholder="请选择"
         />
       </a-form-item>
       <a-form-item>
@@ -91,6 +92,7 @@ export default {
             shelf_id: "",
             shelf_grid_id: "",
           };
+          shelfOptionsValue.value = null;
         }
       });
     };
