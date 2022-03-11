@@ -7,13 +7,12 @@ module.exports = {
     minimize: true,
     minimizer: [new TerserPlugin()],
   },
-  // 配置 webpack-dev-server
   configureWebpack: {
     minimizer: [
       new TerserPlugin({
         terserOptions: {
           compress: {
-            // 不输出 console.log
+            // 删除所有的 `console` 语句
             pure_funcs: ["console.log"],
           },
         },
