@@ -105,16 +105,6 @@ window.onload = () => {
     .operationPanel-right {
       height: 100%;
       padding: 20px 20px 0;
-      .operationPanel-right-delivery {
-        .operationPanel-right-delivery-list {
-          text-align: left;
-          height: 600px;
-          overflow-y: auto;
-          p {
-            margin-bottom: 8px;
-          }
-        }
-      }
     }
   }
 }
