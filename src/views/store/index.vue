@@ -23,13 +23,12 @@
 </template>
 
 <script>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { TEngine } from "@/utils/three";
 import { lightsList } from "@/utils/three/TLinghts";
 import { basicObjectList } from "@/utils/three/TBasicObject";
 // import { helperList } from "@/utils/three/THelper";
-import { ContainerMobile } from "@/utils/three/loadModel/containerMobile";
-import { ShelfMobile } from "@/utils/three/loadModel/shelfMobile";
+// import { CameraHelper } from "three";
 import { shelfLocation } from "@/utils/modelLocation/shelfModelLocation";
 import OperationPanel from "@/views/store/components/operationPanel";
 import { useStore } from "vuex";
@@ -41,7 +40,8 @@ import labelRenderer from "@/utils/three/CSS2DRenderer";
 import { goodsTag, shelfTag } from "@/utils/three/CSS2DObject";
 import ShelfTag from "@/components/shelfTag";
 import GoodsTag from "@/components/goodsTag";
-// import { CameraHelper } from "three";
+import { useGoodsModel } from "@/hooks/useGoods";
+import { useShelfModel } from "@/hooks/useShelf";
 
 export default {
   name: "Store",
@@ -66,10 +66,6 @@ export default {
     store.dispatch("shelf/getShelfList");
     // 货物列表数据
     const goodsList = computed(() => store.state.goods.goodsList);
-    // 获取商品列表数据
-    store.dispatch("goods/getGoodsList");
-    // 货架模型间距
-    const shelfSpacing = { x: 240 + 260, y: 466, z: -1000 };
 
     // DOM 渲染完成后执行
     onMounted(() => {
@@ -204,8 +200,7 @@ export default {
       });
 
       // 监听鼠标左键按下事件
-      TE.renderer.domElement.addEventListener("mousedown", (event) => {
-        console.log("mousedown", intersectObjects, event);
+      TE.renderer.domElement.addEventListener("mousedown", () => {
         const _goodsObjects = [];
         // 遍历相交的模型
         intersectObjects.forEach((intersect) => {
@@ -356,134 +351,104 @@ export default {
         }
       });
 
-      // 遍历数据渲染货架模型
-      ShelfMobile.then((group) => {
-        console.log("=货架模型=", group);
-        // 模型缩放比例
-        const groupScale = 100;
-        // 遍历渲染模型
-        shelfList.value.forEach((item, i) => {
-          // 复制模型
-          const newGroup = group.scene.children[0].clone();
-          // 遍历每个位置
-          newGroup.children.forEach((child, i) => {
-            // 给货架的每个位置都添加自定义属性
-            newGroup.children[i].data = {
-              id: Number(child.name.slice(-3)),
-              shelf_id: item.id,
-            };
-            // 让货架每个位置的材质都变成独立的
-            newGroup.children[i].material = child.material.clone();
-          });
-          // 设置名称
-          newGroup.name = "shelf";
-          // 保存货架数据
-          newGroup.data = item;
-          // 设置模型的位置
-          newGroup.position.set(
-            item.position.x * shelfSpacing.x,
-            item.position.y * shelfSpacing.y,
-            item.position.z * shelfSpacing.z
-          );
-          // 设置缩放比例
-          newGroup.scale.set(
-            item?.scale?.x ? item.scale.x * groupScale : groupScale,
-            item?.scale?.y ? item.scale.y * groupScale : groupScale,
-            item?.scale?.z ? item.scale.z * groupScale : groupScale
-          );
+      // 渲染货架模型
+      const addShelfModel = async (shelf, show = false) => {
+        const shelfModel = await useShelfModel({ shelf });
 
-          // 添加货架 Tag 标签显示状态
-          store.commit("shelf/changeShelfTagShow", {
-            id: item.id,
-            tagShow: false,
-          });
-
-          // 添加 CSS2DObject 标签
-          Promise.resolve(i).then((i) => {
-            console.log("shelfTagRef.value", shelfTagRef.value);
-            // 生成货架的 Tag 标签
-            const tag = shelfTag(
-              shelfTagRef.value.children[i],
-              shelfList.value[i].name,
-              shelfList.value[i].position
-            );
-            // 添加货架的 Tag 标签
-            newGroup.add(tag);
-          });
-
-          // 添加模型到场景中
-          TE.addObject(newGroup);
+        // 添加货架 Tag 标签显示状态
+        store.commit("shelf/changeShelfTagShow", {
+          id: shelf.id,
+          tagShow: show,
         });
-      });
 
-      // 遍历数据渲染货物模型
-      ContainerMobile.then((group) => {
-        console.log("=货物模型=", group);
-        // 模型缩放比例
-        const groupScale = 80;
-        // 遍历渲染模型
-        goodsList.value.forEach((item, i) => {
-          // 复制模型
-          let newGroup = group.scene.children[0].clone();
-          newGroup.material = group.scene.children[0].material.clone();
-          // 设置名称
-          newGroup.name = "goods";
-          // 保存货物数据
-          newGroup.data = item;
-          // 查找货架
-          const shelf = shelfList.value.find(
-            (shelf) => shelf.id === item.shelf_id
-          );
-          // 设置货物的位置
-          newGroup.position.set(
-            shelf.position.x * shelfSpacing.x +
-              shelfLocation[item.shelf_grid_id - 1].x,
-            shelf.position.y * shelfSpacing.y +
-              shelfLocation[item.shelf_grid_id - 1].y,
-            shelf.position.z * shelfSpacing.z +
-              shelfLocation[item.shelf_grid_id - 1].z
-          );
-
-          // 设置缩放比例
-          newGroup.scale.set(
-            item?.scale?.x ? item.scale.x * groupScale : groupScale,
-            item?.scale?.y ? item.scale.y * groupScale : groupScale,
-            item?.scale?.z ? item.scale.z * groupScale : groupScale
-          );
-
-          // 添加货物 Tag 标签显示状态
-          store.commit("goods/changeGoodsTagShow", {
-            id: item.id,
-            tagShow: false,
-          });
-
-          // 添加 CSS2DObject 标签
-          Promise.resolve(i).then((i) => {
-            // 生成货物的 Tag 标签
-            const tag = goodsTag(
-              goodsTagRef.value.children[i],
-              goodsList.value[i].name,
-              goodsList.value[i].position
-            );
-            // 添加货物的 Tag 标签
-            newGroup.add(tag);
-          });
-
-          // 添加模型到场景中
-          TE.addObject(newGroup);
+        // 添加 CSS2DObject 标签
+        Promise.resolve(shelfModel).then((shelf) => {
+          // 查找货架的 domElement 元素
+          for (let domElement of shelfTagRef.value.children) {
+            if (Number(domElement.getAttribute("data-id")) === shelf.data.id) {
+              // 生成货架的 Tag 标签
+              const tag = shelfTag(
+                domElement,
+                shelf.data.name,
+                shelf.data.position
+              );
+              // 添加货架的 Tag 标签
+              shelf.add(tag);
+            }
+          }
         });
-      });
 
-      // watch(
-      //   () => goodsList.value,
-      //   (value) => {
-      //     console.log("货物=watch=", goodsList.value, value);
-      //   }
-      // );
+        return shelfModel;
+      };
 
-      labelRenderer.setSize(window.innerWidth - 140, window.innerHeight - 140);
-      labelRenderer.domElement.style.left = "140px";
-      labelRenderer.domElement.style.top = "140px";
+      watch(
+        () => shelfList.value.length,
+        () => {
+          // 获取商品列表数据
+          store.dispatch("goods/getGoodsList");
+          shelfList.value.forEach((item) => {
+            // 添加货架模型
+            addShelfModel(item).then((shelfModel) => {
+              // 添加货架到场景中
+              TE.addObject(shelfModel);
+            });
+          });
+        }
+      );
+
+      // 渲染货物模型
+      const addGoodsModel = async (goods, show = false) => {
+        const goodsModel = await useGoodsModel({
+          shelfList: shelfList.value,
+          goods,
+          groupScale: 80,
+        });
+
+        // 添加货物 Tag 标签显示状态
+        store.commit("goods/changeGoodsTagShow", {
+          id: goods.id,
+          tagShow: show,
+        });
+
+        // 添加 CSS2DObject 标签
+        Promise.resolve(goodsModel).then((goods) => {
+          // 查找货物的 domElement 元素
+          for (let domElement of goodsTagRef.value.children) {
+            if (Number(domElement.getAttribute("data-id")) === goods.data.id) {
+              // 生成货架的 Tag 标签
+              const tag = goodsTag(
+                domElement,
+                goods.data.name,
+                goods.data.position
+              );
+              // 添加货架的 Tag 标签
+              goods.add(tag);
+            }
+          }
+        });
+
+        return goodsModel;
+      };
+
+      watch(
+        () => goodsList.value.length,
+        () => {
+          if (shelfList.value.length > 0) {
+            // 根据数据渲染货物模型
+            goodsList.value.forEach((item) => {
+              addGoodsModel(item).then((goodsModel) => {
+                // 添加货物到场景中
+                TE.addObject(goodsModel);
+              });
+            });
+          }
+        }
+      );
+
+      // 设置 Tag 标签的渲染参数
+      labelRenderer.setSize(window.innerWidth - 240, window.innerHeight - 240);
+      labelRenderer.domElement.style.left = "240px";
+      labelRenderer.domElement.style.top = "240px";
       // 添加 CSS 2D渲染器到渲染列表
       TE.addRenderAnim(() => labelRenderer.render(TE.scene, TE.camera));
 

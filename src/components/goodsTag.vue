@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-tag" ref="domElementRef">
+  <div class="goods-tag" ref="domElementRef" :data-id="goodsTagData.id">
     <div v-show="goodsTagData.tagShow">
       <a-card
         :title="'货物 - ' + goodsTagData.name"
