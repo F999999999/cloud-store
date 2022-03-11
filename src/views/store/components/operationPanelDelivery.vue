@@ -29,13 +29,17 @@
         <p>保质期：{{ item.shelflife }}</p>
         <p>货架ID：{{ item.shelf_id }}</p>
         <p>货架格子ID：{{ item.shelf_grid_id }}</p>
-        <p>生产日期：{{ item.production_date }}</p>
-        <p>入库时间：{{ item.storage_time }}</p>
+        <p>
+          生产日期：{{ new Date(item.production_date * 1000).toLocaleString() }}
+        </p>
+        <p>
+          入库时间：{{ new Date(item.storage_time * 1000).toLocaleString() }}
+        </p>
       </a-card>
     </div>
     <!--  商品出库按钮  -->
     <a-button
-      type="primary"
+      type="danger"
       :style="{ marginTop: '8px' }"
       v-if="deliveryList?.length > 0"
       @click="removeGoods"
@@ -135,7 +139,7 @@ export default {
   height: 100%;
   .operationPanel-right-delivery-list {
     text-align: left;
-    height: 80%;
+    height: calc(100% - 32px - 32px - 30px);
     overflow-y: auto;
     margin-top: 5px;
     p {

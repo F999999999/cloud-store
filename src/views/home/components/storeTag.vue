@@ -17,7 +17,7 @@
         :storeTotal="storeTotal"
         :useGoods="useGoods"
       />
-      <img src="@/assets/image/02.jpg" alt="" />
+      <img src="@/assets/image/box2_bg.png" alt="" />
     </div>
   </li>
 </template>

@@ -1,11 +1,9 @@
 <template>
   <div class="home">
-    <!--    <router-link to="/store">进入</router-link>-->
-    <!-- <div id="main"></div> -->
     <div class="header">云仓</div>
     <div class="home_left">
       <ul>
-        <!--        动态环形图-->
+        <!-- 动态环形图 -->
         <li>
           <store-tag
             v-for="i in 3"
@@ -25,7 +23,7 @@
               <img src="@/assets/image/warn.png" alt="" />
             </span>
             <p class="warn_tt">故障信息</p>
-            <img src="../../assets/image/01.jpg" alt="" />
+            <img src="~@/assets/image/box1_bg.png" alt="" />
           </div>
           <div class="context">
             <!--信息滚动-->
@@ -36,14 +34,14 @@
           <div class="home_right_status">
             <!-- 标题 -->
             <div class="home_right_status_p">
-              <i><img src="../../assets/image/run.png" alt="" /></i>
+              <i><img src="~@/assets/image/run.png" alt="" /></i>
               运行状态
             </div>
             <!-- 背景 -->
             <div class="home_right_status_img">
-              <img src="../../assets/image/03.jpg" alt="" />
+              <img src="~@/assets/image/box3_bg.png" alt="" />
               <div class="home_right_status_img_context">
-                <!--                柱状图组件-->
+                <!-- 柱状图组件 -->
                 <ul>
                   <li v-for="i in 3" :key="i">
                     <p class="home_right_status_img_context_title">
@@ -61,9 +59,9 @@
     <div class="home_bottom">
       <div class="home_bottom_button">
         <ul>
-          <li class="button_1"><span>仓库A</span></li>
-          <li class="button_2"><span>仓库A</span></li>
-          <li class="button_3"><span>仓库A</span></li>
+          <li class="button button_1"><span>仓库A</span></li>
+          <li class="button button_2"><span>仓库A</span></li>
+          <li class="button button_3"><span>仓库A</span></li>
         </ul>
       </div>
     </div>
@@ -87,7 +85,7 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-  background-image: url(../../../src/assets/image/bg.jpg);
+  background-image: url("~@/assets/image/bg.jpg");
   background-size: 100% 100%;
   overflow: hidden;
 }
@@ -105,56 +103,55 @@ export default {
   position: absolute;
   top: 11%;
   left: 5%;
-}
-.home_left li {
-  padding: 6% 0;
+  li {
+    padding: 6% 0;
+  }
 }
 .home_right {
   position: absolute;
   top: 13%;
   right: 5%;
-}
-.home_right li {
-  padding: 4% 0 40% 0;
+  li {
+    padding: 4% 0 40% 0;
+  }
+  .home_right_warn {
+    position: relative;
+    > span {
+      position: absolute;
+      top: 10%;
+      left: 35%;
+      width: 20px;
+      height: 18px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .warn_tt {
+      position: absolute;
+      top: 10%;
+      left: 44%;
+      color: #00ffff;
+    }
+  }
 }
 
-/*// 图片的处理*/
+// 图片的处理
 .home img {
   border-radius: 7%;
-}
-
-.home_right .home_right_warn {
-  position: relative;
-}
-.home_right .home_right_warn > span {
-  position: absolute;
-  top: 10%;
-  left: 35%;
-  width: 20px;
-  height: 18px;
-}
-.home_right .home_right_warn span img {
-  width: 100%;
-  height: 100%;
-}
-.home_right .home_right_warn .warn_tt {
-  position: absolute;
-  top: 10%;
-  left: 44%;
-  color: #00ffff;
 }
 .context {
   position: absolute;
   top: 9%;
   left: 7%;
+  li {
+    padding: 5px 0;
+    color: #fff;
+    font-size: 14px;
+    line-height: 16px;
+  }
 }
 
-.context li {
-  padding: 5px 0;
-  color: #fff;
-  font-size: 14px;
-  line-height: 16px;
-}
 // 运行状态
 .home_right_status {
   position: relative;
@@ -165,108 +162,101 @@ export default {
   left: 38%;
   color: #00ffff;
   z-index: 9999;
+  i {
+    display: inline-block;
+    width: 21px;
+    height: 25px;
+    margin: 0 0 0 -10px;
+    img {
+      width: 100%;
+      margin: 3px 0 0 0;
+    }
+  }
 }
-.home_right_status_p i {
-  display: inline-block;
-  width: 21px;
-  height: 25px;
-  margin: 0 0 0 -10px;
-}
-.home_right_status_p i img {
-  width: 100%;
-  margin: 3px 0 0 0;
-}
-.home_right_status_img{
+.home_right_status_img {
   position: relative;
+  .home_right_status_img_context {
+    position: absolute;
+    top: 15%;
+    left: 5%;
+    color: #fff;
+    height: 110px;
+    //background-color: red;
+    li {
+      padding: 0;
+    }
+  }
 }
 
+.home_right_status_img_context_title {
+  //margin:0 0 0 -70%
+  text-align: left;
+  ::before {
+    content: " ";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    color: #00fbff;
+    z-index: 1;
+  }
+}
 
-.home_right_status_img .home_right_status_img_context {
-  position: absolute;
-  top: 15%;
-  left:5%;
-  color: #fff;
-  height: 110px;
-  //background-color: red;
-}
-.home_right_status_img_context_title{
-//margin:0 0 0 -70%
-  text-align:left
-}
-
-.home_right_status_img_context_title::before{
-  content:" ";
-  display: inline-block;
-  width: 10px;
-  height:10px;
-  border-radius: 50%;
-  color:#00fbff;
-  z-index:1;
-}
-.home_right_status_img_context li{
-  padding:0
-}
 .home_bottom {
-  width:800px;
-  height:80px;
+  width: 800px;
+  height: 80px;
   //background-color:red;
   position: absolute;
-  bottom:6%;
-  left:28%;
+  left: 50%;
+  bottom: 6%;
+  transform: translate(-50%, -50%);
   color: #fff;
-}
-.home_bottom li {
-float:left;
-  margin:0 10%;
-  text-align:center;
-  padding-left:10px;
+  li {
+    float: left;
+    margin: 0 10%;
+    text-align: center;
+    padding-left: 10px;
+  }
+  .button {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    ::before {
+      content: "";
+      width: 100px;
+      height: 100px;
+      background-image: url("~@/assets/image/circle.png");
+      background-size: 100px 100px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    span {
+      display: inline-block;
+      padding: 45% 0;
+      margin-left: -10px;
+    }
+  }
 
+  .button_1 {
+    ::before {
+      transform: rotate(0deg);
+    }
+  }
 
-}
-.home_bottom_button{
-  //display: flex;
-  //justify-content:space-between;
-  //flex-direction:row;
+  .button_2 {
+    ::before {
+      transform: rotate(80deg);
+    }
+  }
 
-}
-.home_bottom .button_1{
-  width:100px;
-  height:100px;
-  background-image: url(../../../src/assets/image/a.jpg);
-}
-.home_bottom .button_2{
-  width:100px;
-  height:100px;
-  background-image: url(../../../src/assets/image/b.jpg);
-}
-.home_bottom .button_3{
-  width:100px;
-  height:100px;
-  background-image: url(../../../src/assets/image/c.jpg);
+  .button_3 {
+    ::before {
+      transform: rotate(130deg);
+    }
+  }
 }
 
-.home_bottom span{
-  display: inline-block;
-  padding:45% 0
-}
-.home_right .home_right_warn .warn_tt {
-  position: absolute;
-  top: 10%;
-  left: 44%;
-  color: #00ffff;
-}
-.context {
-  position: absolute;
-  top: 8%;
-  left: 12%;
-}
-
-.context li {
-  padding: 5px 0;
-  color: #fff;
-  font-size: 14px;
-  line-height: 16px;
-}
 // 运行状态
 .home_right_status {
   position: relative;
@@ -276,15 +266,15 @@ float:left;
   top: 10px;
   left: 38%;
   color: #00ffff;
-}
-.home_right_status_p i {
-  display: inline-block;
-  width: 21px;
-  height: 25px;
-  margin: 0 0 0 -10px;
-}
-.home_right_status_p i img {
-  width: 100%;
-  margin: 3px 0 0 0;
+  .home_right_status_p i {
+    display: inline-block;
+    width: 21px;
+    height: 25px;
+    margin: 0 0 0 -10px;
+    img {
+      width: 100%;
+      margin: 3px 0 0 0;
+    }
+  }
 }
 </style>
