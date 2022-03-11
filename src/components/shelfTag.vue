@@ -1,5 +1,5 @@
 <template>
-  <div class="shelf-tag" ref="domElementRef">
+  <div class="shelf-tag" ref="domElementRef" :data-id="shelfTagData.id">
     <a-card
       v-show="shelfTagData.tagShow"
       :title="'货架 - ' + shelfTagData.name"
@@ -89,8 +89,5 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  /*color: #fff;*/
-  /*background-color: #92a2ba9d;*/
-  /*border-radius: 15px;*/
 }
 </style>

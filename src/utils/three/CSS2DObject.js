@@ -2,7 +2,6 @@ import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 
 // 货架标签
 function shelfTag(domElement, name, position) {
-  // console.log("shelfTagRef", domElement);
   // div元素包装成为css2模型对象CSS2DObject
   const label = new CSS2DObject(domElement);
   label.name = name;
@@ -12,13 +11,11 @@ function shelfTag(domElement, name, position) {
     // 设置HTML元素标签在three.js世界坐标中位置
     label.position.set(position.x, position.y, position.z);
   }
-  // console.log("label", label);
   return label;
 }
 
 // 货物标签
 function goodsTag(domElement, name, position) {
-  // console.log("shelfTagRef", domElement);
   // div元素包装成为css2模型对象CSS2DObject
   const label = new CSS2DObject(domElement);
   label.name = "goodsTag";
@@ -28,7 +25,6 @@ function goodsTag(domElement, name, position) {
     // 设置HTML元素标签在three.js世界坐标中位置
     label.position.set(position.x, position.y, position.z);
   }
-  // console.log("label", label);
   return label;
 }
 
