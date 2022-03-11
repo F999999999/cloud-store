@@ -234,6 +234,7 @@ export default {
     span {
       display: inline-block;
       padding: 45% 0;
+      margin-left: -10px;
     }
   }
 
