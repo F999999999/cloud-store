@@ -162,6 +162,7 @@ export default {
 
     // 当前货物的位置
     const currentShelfGrid = ref({});
+
     // 监听货物位置信息的变化
     watch(
       () => props.shelf.shelf_grid,
@@ -173,6 +174,9 @@ export default {
           currentShelfGrid.value =
             shelf_grid[props.goodsTagData.shelf_grid_id - 1];
         }
+      },
+      {
+        immediate: true,
       }
     );
 
