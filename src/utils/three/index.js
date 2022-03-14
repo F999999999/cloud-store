@@ -42,7 +42,7 @@ export class TEngine {
     this.camera = new OrthographicCamera(-s * k, s * k, s, -s, -s * 10, s * 10);
 
     // 设置相机位置
-    this.camera.position.set(1000, 1000, 1000);
+    this.camera.position.set(2000, 2000, 1000);
     // 设置相机方向(需要指向的场景对象)
     this.camera.lookAt(this.scene.position);
 
@@ -55,10 +55,6 @@ export class TEngine {
         });
       }
 
-      // labelRenderer.render(this.scene, this.camera);
-
-      // this.renderer.autoClear = false;
-      // this.renderer.render(this.scene, this.camera1);
       requestAnimationFrame(anim);
     };
     anim();
