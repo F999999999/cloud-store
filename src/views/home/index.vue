@@ -4,15 +4,13 @@
     <div class="home_left">
       <ul>
         <!-- 动态环形图 -->
-        <li>
-          <store-tag
-            v-for="i in 3"
-            :key="i"
-            :id="i"
-            :storeTotal="100 * i"
-            :useGoods="50 + i"
-          />
-        </li>
+        <store-tag
+          v-for="i in 3"
+          :key="i"
+          :id="i"
+          :storeTotal="100 * i"
+          :useGoods="50 + i"
+        />
       </ul>
     </div>
     <div class="home_right">
@@ -24,10 +22,10 @@
             </span>
             <p class="warn_tt">故障信息</p>
             <img src="~@/assets/image/box1_bg.png" alt="" />
-          </div>
-          <div class="context">
-            <!--信息滚动-->
-            <TextTag></TextTag>
+            <div class="context">
+              <!--信息滚动-->
+              <TextTag></TextTag>
+            </div>
           </div>
         </li>
         <li>
@@ -91,6 +89,7 @@ export default {
 }
 
 .header {
+  position: absolute;
   width: 100%;
   height: 60px;
   line-height: 68px;
@@ -100,20 +99,31 @@ export default {
 }
 
 .home_left {
-  position: absolute;
-  top: 11%;
-  left: 5%;
-  li {
-    padding: 6% 0;
+  float: left;
+  margin-top: 200px;
+  margin-left: 5%;
+  height: calc(100% - 400px);
+  ul {
+    height: 100%;
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    flex-direction: column;
+    justify-content: space-between; /* 子元素在横轴上两端对齐 */
   }
 }
 .home_right {
-  position: absolute;
-  top: 13%;
-  right: 5%;
-  li {
-    padding: 4% 0 40% 0;
+  float: right;
+  margin-top: 200px;
+  margin-right: 5%;
+  height: calc(100% - 400px);
+  ul {
+    height: 100%;
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    flex-direction: column;
+    justify-content: space-between; /* 子元素在横轴上两端对齐 */
   }
+
   .home_right_warn {
     position: relative;
     > span {
@@ -142,7 +152,7 @@ export default {
 }
 .context {
   position: absolute;
-  top: 9%;
+  top: 60px;
   left: 7%;
   li {
     padding: 5px 0;
