@@ -1,4 +1,5 @@
 import { getGoodsListApi } from "@/api/goods";
+import { updateGoodsModelPosition } from "@/hooks/useGoods";
 
 const goods = {
   namespaced: true,
@@ -21,6 +22,22 @@ const goods = {
         }
         return item;
       });
+    },
+    // 移动货物
+    moveGoods(state, { id, shelfId, shelfGridId, scene, shelfList }) {
+      state.goodsList = state.goodsList.map((item) => {
+        if (item.id === id) {
+          item.shelf_id = shelfId || item.shelf_id;
+          item.shelf_grid_id = shelfGridId || item.shelf_grid_id;
+        }
+        return item;
+      });
+      // 刷新货架位置
+      if (scene && shelfList) updateGoodsModelPosition(scene, shelfList);
+    },
+    // 删除货物
+    removeGoods(state, id) {
+      state.goodsList = state.goodsList.filter((item) => item.id !== id);
     },
   },
   actions: {

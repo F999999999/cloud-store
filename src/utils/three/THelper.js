@@ -5,7 +5,7 @@ import {
   PointLightHelper,
   SpotLightHelper,
 } from "three";
-import { pointLight, spotLight } from "@/utils/three/TLinghts";
+import { pointLight, pointLight2, spotLight } from "@/utils/three/TLinghts";
 
 export const helperList = [];
 
@@ -22,6 +22,11 @@ const pointLightHelper = new PointLightHelper(
   pointLight.distance,
   pointLight.color
 );
+const pointLightHelper2 = new PointLightHelper(
+  pointLight2,
+  pointLight2.distance,
+  pointLight2.color
+);
 
 // 聚光灯
 const spotLightHelper = new SpotLightHelper(
@@ -30,4 +35,10 @@ const spotLightHelper = new SpotLightHelper(
   spotLight.color
 );
 
-helperList.push(axisHelper, gridHelper, pointLightHelper, spotLightHelper);
+helperList.push(
+  axisHelper,
+  gridHelper,
+  pointLightHelper,
+  pointLightHelper2,
+  spotLightHelper
+);

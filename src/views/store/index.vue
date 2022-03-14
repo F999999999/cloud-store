@@ -430,17 +430,45 @@ export default {
         return goodsModel;
       };
 
+      // 监听货物列表数据渲染模型
       watch(
-        () => goodsList.value.length,
-        () => {
+        () => goodsList.value,
+        (newValue, oldValue) => {
           if (shelfList.value.length > 0) {
-            // 根据数据渲染货物模型
-            goodsList.value.forEach((item) => {
-              addGoodsModel(item).then((goodsModel) => {
-                // 添加货物到场景中
-                TE.addObject(goodsModel);
+            if (newValue.length > oldValue.length) {
+              // 新增
+              // 根据数据渲染货物模型
+              newValue.forEach((item) => {
+                addGoodsModel(item).then((goodsModel) => {
+                  // 添加货物到场景中
+                  TE.addObject(goodsModel);
+                });
               });
-            });
+            } else if (newValue.length < oldValue.length) {
+              // 删除
+              // 被移除的货物
+              const removeGoods = oldValue.filter(
+                (oldGoods) =>
+                  !newValue.find((newGoods) => newGoods.id === oldGoods.id)
+              );
+              // 递归遍历组对象group释放所有后代网格模型绑定几何体占用内存
+              TE.scene.children.forEach((obj) => {
+                if (obj.type === "Mesh" && obj.name === "goods") {
+                  // 当前货物是否是被删除的货物
+                  const remove =
+                    removeGoods.findIndex(
+                      (goods) => goods.id === obj.data.id
+                    ) >= 0;
+                  if (remove) {
+                    // 从内存中删除对象
+                    obj.geometry.dispose();
+                    obj.material.dispose();
+                    // 删除场景对象scene的子对象group
+                    TE.scene.remove(obj);
+                  }
+                }
+              });
+            }
           }
         }
       );

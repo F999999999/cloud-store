@@ -37,4 +37,23 @@ const useGoodsModel = async ({ shelfList, goods, groupScale = 100 }) => {
   return newGroup;
 };
 
-export { useGoodsModel };
+// 更新货物模型位置
+const updateGoodsModelPosition = (scene, shelfList) => {
+  scene.children.forEach((item) => {
+    if (item.type === "Mesh" && item.name === "goods") {
+      // 查找货架
+      const shelf = shelfList.find((shelf) => shelf.id === item.data.shelf_id);
+      // 设置货物的位置
+      item.position.set(
+        shelf.position.x * shelfSpacing.x +
+          shelfLocation[item.data.shelf_grid_id - 1].x,
+        shelf.position.y * shelfSpacing.y +
+          shelfLocation[item.data.shelf_grid_id - 1].y,
+        shelf.position.z * shelfSpacing.z +
+          shelfLocation[item.data.shelf_grid_id - 1].z
+      );
+    }
+  });
+};
+
+export { useGoodsModel, updateGoodsModelPosition };
