@@ -55,13 +55,18 @@
       </ul>
     </div>
     <div class="home_bottom">
-      <div class="home_bottom_button">
-        <ul>
-          <li class="button button_1"><span>仓库A</span></li>
-          <li class="button button_2"><span>仓库A</span></li>
-          <li class="button button_3"><span>仓库A</span></li>
-        </ul>
-      </div>
+      <ul>
+        <li
+          class="button button_1"
+          :style="{ '--transform': 'rotate(' + Math.random() * 360 + 'deg)' }"
+          v-for="store in storeList"
+          :key="store.id"
+        >
+          <router-link :to="'/store?id=' + store.id">
+            {{ store.name }}
+          </router-link>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -70,10 +75,18 @@
 import StoreTag from "@/views/home/components/storeTag";
 import TextTag from "@/views/home/components/textScrolling";
 import histogram from "@/views/home/components/histogram";
+import { computed } from "vue";
+import { useStore } from "vuex";
 export default {
   components: { StoreTag, TextTag, histogram },
   setup() {
-    return {};
+    const store = useStore();
+    // 获取仓库列表
+    store.dispatch("store/getStoreList");
+
+    const storeList = computed(() => store.state.store.storeList);
+
+    return { storeList };
   },
 };
 </script>
@@ -246,29 +259,13 @@ export default {
       position: absolute;
       top: 0;
       left: 0;
+      transform: var(--transform);
     }
-    span {
+    a {
       display: inline-block;
       padding: 45% 0;
       margin-left: -10px;
-    }
-  }
-
-  .button_1 {
-    ::before {
-      transform: rotate(0deg);
-    }
-  }
-
-  .button_2 {
-    ::before {
-      transform: rotate(80deg);
-    }
-  }
-
-  .button_3 {
-    ::before {
-      transform: rotate(130deg);
+      color: #fff;
     }
   }
 }

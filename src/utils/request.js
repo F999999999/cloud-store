@@ -1,5 +1,6 @@
 import axios from "axios";
 import router from "@/router";
+import { message } from "ant-design-vue";
 
 // 配置基准请求地址
 export const baseURL = process.env.VUE_APP_API;
@@ -36,14 +37,10 @@ instanceWithToken.interceptors.response.use(
           // 删除 用户信息
           window.localStorage.removeItem("token");
           // 跳转到登录页面
-          router
-            .push("/login")
-            .then(() => {
-              console.log("跳转成功");
-            })
-            .catch(() => {
-              console.log("跳转失败");
-            });
+          router.push("/login").then(() => {
+            // 提示信息
+            message.success("登录已失效，请重新登录");
+          });
           return;
         default:
           break;

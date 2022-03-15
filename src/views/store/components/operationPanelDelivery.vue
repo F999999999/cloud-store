@@ -65,8 +65,12 @@ export default {
       type: Number,
       default: 0,
     },
+    storeId: {
+      type: Number,
+      default: null,
+    },
   },
-  setup() {
+  setup(props) {
     const store = useStore();
     // 搜索关键字
     const searchValue = ref("");
@@ -77,7 +81,10 @@ export default {
     // 点击搜索或按下回车键时的回调
     const onSearch = () => {
       // 根据商品名称搜索商品列表
-      searchDeliveryNameApi(searchValue.value).then((data) => {
+      searchDeliveryNameApi({
+        store_id: props.storeId,
+        name: searchValue.value,
+      }).then((data) => {
         if (data.status === 200) {
           // 存储商品列表(商品出库)
           deliveryList.value = data.data;
@@ -98,6 +105,7 @@ export default {
     const removeGoods = () => {
       // 根据商品id移除商品
       removeGoodsByIdApi({
+        store_id: props.storeId,
         ids: selectedDeliveryIdList.value,
         takeout_time: new Date().toLocaleString() / 1000,
       }).then((data) => {

@@ -31,8 +31,8 @@ const shelf = {
   },
   actions: {
     // 获取货架列表数据
-    getShelfList({ commit }) {
-      getShelfListApi().then((res) => {
+    getShelfList({ commit }, storeId) {
+      getShelfListApi(storeId).then((res) => {
         console.log(res);
         if (res.status === 200) {
           // 更新数据
