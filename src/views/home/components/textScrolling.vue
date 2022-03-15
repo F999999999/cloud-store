@@ -33,6 +33,10 @@ export default defineComponent({
         title: "无缝滚动展示数据第4条",
         date: "2022/03/09",
       },
+      {
+        title: "无缝滚动展示数据第5条",
+        date: "2022/03/09",
+      },
     ]);
     return { list };
   },
@@ -41,8 +45,7 @@ export default defineComponent({
 
 <style>
 .scroll {
-  height: 105px;
-  width: 280px;
+  height: 100%;
   overflow: hidden;
   color: #fff;
 }
