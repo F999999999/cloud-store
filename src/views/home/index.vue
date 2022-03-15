@@ -100,9 +100,9 @@ export default {
 
 .home_left {
   float: left;
-  margin-top: 200px;
+  margin-top: 5%;
   margin-left: 5%;
-  height: calc(100% - 400px);
+  height: calc(100% - 20%);
   ul {
     height: 100%;
     display: flex;
@@ -113,9 +113,9 @@ export default {
 }
 .home_right {
   float: right;
-  margin-top: 200px;
+  margin-top: 10%;
   margin-right: 5%;
-  height: calc(100% - 400px);
+  height: calc(100% - 200px);
   ul {
     height: 100%;
     display: flex;
