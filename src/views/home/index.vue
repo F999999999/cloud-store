@@ -31,10 +31,10 @@
         <li>
           <div class="home_right_status">
             <!-- 标题 -->
-            <div class="home_right_status_p">
-              <i><img src="~@/assets/image/run.png" alt="" /></i>
-              运行状态
-            </div>
+            <span>
+              <img src="~@/assets/image/run.png" alt="" />
+            </span>
+            <p class="status_tt">运行状态</p>
             <!-- 背景 -->
             <div class="home_right_status_img">
               <img src="~@/assets/image/box3_bg.png" alt="" />
@@ -100,10 +100,12 @@ export default {
 
 .home_left {
   float: left;
-  margin-top: 5%;
+  margin-top: 8%;
   margin-left: 5%;
-  height: calc(100% - 20%);
+  width: 20%;
+  height: 80%;
   ul {
+    width: 100%;
     height: 100%;
     display: flex;
     align-items: center; /* 垂直居中 */
@@ -113,19 +115,25 @@ export default {
 }
 .home_right {
   float: right;
-  margin-top: 10%;
+  margin-top: 8%;
   margin-right: 5%;
-  height: calc(100% - 200px);
+  width: 20%;
+  height: 80%;
   ul {
     height: 100%;
     display: flex;
     align-items: center; /* 垂直居中 */
     flex-direction: column;
     justify-content: space-between; /* 子元素在横轴上两端对齐 */
+
+    li {
+      width: 100%;
+    }
   }
 
   .home_right_warn {
     position: relative;
+    width: 100%;
     > span {
       position: absolute;
       top: 10%;
@@ -149,11 +157,14 @@ export default {
 // 图片的处理
 .home img {
   border-radius: 7%;
+  width: 100%;
 }
 .context {
   position: absolute;
   top: 60px;
-  left: 7%;
+  left: 8%;
+  width: 84%;
+  height: 60%;
   li {
     padding: 5px 0;
     color: #fff;
@@ -165,42 +176,37 @@ export default {
 // 运行状态
 .home_right_status {
   position: relative;
-}
-.home_right_status_p {
-  position: absolute;
-  top: 10px;
-  left: 38%;
-  color: #00ffff;
-  z-index: 9999;
-  i {
-    display: inline-block;
-    width: 21px;
-    height: 25px;
-    margin: 0 0 0 -10px;
+  width: 100%;
+  > span {
+    position: absolute;
+    top: 3%;
+    left: 35%;
+    width: 20px;
+    height: 18px;
     img {
       width: 100%;
-      margin: 3px 0 0 0;
+      height: 100%;
     }
+  }
+  .status_tt {
+    position: absolute;
+    top: 3%;
+    left: 44%;
+    color: #00ffff;
   }
 }
-.home_right_status_img {
-  position: relative;
-  .home_right_status_img_context {
-    position: absolute;
-    top: 15%;
-    left: 5%;
-    color: #fff;
-    height: 110px;
-    //background-color: red;
-    li {
-      padding: 0;
-    }
-  }
+
+.home_right_status_img_context {
+  position: absolute;
+  top: 16%;
+  left: 30px;
+  width: 100%;
 }
 
 .home_right_status_img_context_title {
   //margin:0 0 0 -70%
   text-align: left;
+  color: #fff;
   ::before {
     content: " ";
     display: inline-block;

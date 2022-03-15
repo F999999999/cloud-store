@@ -301,11 +301,9 @@ export default {
 <style lang="less" scoped>
 .ball {
   position: absolute;
-  margin-top: 44px;
-  margin-left: 30px;
-  right: 3%;
+  top: 30%;
+  right: 4%;
   width: 150px;
   height: 150px;
-  //background-color: red;
 }
 </style>
