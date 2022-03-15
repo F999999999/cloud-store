@@ -1,24 +1,22 @@
 <template>
   <li class="box">
-    <div>
-      <div class="box_context">
-        <h3>仓库A</h3>
-        <div class="box_context_p1">
-          <p>货位总量</p>
-          <span>{{ storeTotal }}</span>
-        </div>
-        <div class="box_context_p2">
-          <p>已使用</p>
-          <span>{{ useGoods }}</span>
-        </div>
+    <div class="box_context">
+      <h3>仓库A</h3>
+      <div class="box_context_p1">
+        <p>货位总量</p>
+        <span>{{ storeTotal }}</span>
       </div>
-      <progress-ball
-        :ballId="'ball' + id"
-        :storeTotal="storeTotal"
-        :useGoods="useGoods"
-      />
-      <img src="@/assets/image/box2_bg.png" alt="" />
+      <div class="box_context_p2">
+        <p>已使用</p>
+        <span>{{ useGoods }}</span>
+      </div>
     </div>
+    <progress-ball
+      :ballId="'ball' + id"
+      :storeTotal="storeTotal"
+      :useGoods="useGoods"
+    />
+    <img src="@/assets/image/box2_bg.png" alt="" />
   </li>
 </template>
 
@@ -46,33 +44,40 @@ export default {
 <style lang="less" scoped>
 .box {
   position: relative;
+  width: 100%;
+  /*字体颜色大小*/
   .box_context {
-    width: 358px;
-    height: 213px;
     position: absolute;
-    //top: 14%;
     margin-top: 18px;
+    width: 100%;
+    height: 100%;
+    text-align: center;
     .box_context_p1 {
       position: absolute;
       top: 20%;
       left: 10%;
       span {
         position: absolute;
-        top: 160%;
-        left: 95%;
+        top: 30px;
+        left: 60px;
+      }
+    }
+    .box_context_p2 {
+      position: absolute;
+      top: 58%;
+      left: 10%;
+      span {
+        position: absolute;
+        top: 30px;
+        left: 60px;
       }
     }
     h3 {
-      position: absolute;
-      top: 0;
-      left: 37%;
+      font-size: 20px;
       color: #00ffff;
     }
-  }
-  /*字体颜色大小*/
-  .box_context {
     p {
-      font-size: 12px;
+      font-size: 18px;
       color: #4f7399;
     }
     span {
@@ -80,16 +85,9 @@ export default {
       font-size: 28px;
       font-weight: bolder;
     }
-    .box_context_p2 {
-      position: absolute;
-      top: 52%;
-      left: 10%;
-    }
-    .box_context_p2 span {
-      position: absolute;
-      top: 160%;
-      left: 115%;
-    }
+  }
+  img {
+    width: 100%;
   }
 }
 </style>

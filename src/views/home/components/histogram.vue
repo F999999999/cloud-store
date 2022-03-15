@@ -28,7 +28,7 @@ export default {
       };
       const option = {
         grid: {
-          left: "-10",
+          left: "-10px",
           right: "0%",
           bottom: "1%",
           top: "5%",
@@ -44,11 +44,11 @@ export default {
             inverse: true,
             axisLabel: {
               align: "left",
-              margin: 35,
+              margin: 50,
               show: true,
               textStyle: {
                 color: "#60ACF7",
-                fontSize: 10,
+                fontSize: 14,
               },
             },
             splitLine: {
@@ -72,18 +72,18 @@ export default {
               margin: 10,
               textStyle: {
                 color: "#60ACF7",
-                fontSize: "10",
+                fontSize: 14,
               },
               formatter: function (value) {
                 return "{a|" + value.toLocaleString() + "}{b|}";
               },
               rich: {
                 a: {
-                  fontSize: 10,
+                  fontSize: 14,
                   color: "#60ACF7",
                 },
                 b: {
-                  fontSize: 10,
+                  fontSize: 14,
                   color: "#60ACF7",
                 },
               },
@@ -125,7 +125,7 @@ export default {
 
 <style scoped>
 .histogram {
-  width: 280px;
+  width: 80%;
   height: 100px;
 }
 </style>
