@@ -42,8 +42,8 @@ const goods = {
   },
   actions: {
     // 获取商品数据
-    getGoodsList({ commit }) {
-      getGoodsListApi().then((res) => {
+    getGoodsList({ commit }, storeId) {
+      getGoodsListApi(storeId).then((res) => {
         console.log(res);
         if (res.status === 200) {
           // 更新数据

@@ -42,10 +42,18 @@ import { useStore } from "vuex";
 
 export default {
   name: "operationPanelStorage",
-  setup() {
+  props: {
+    storeId: {
+      type: Number,
+      default: null,
+    },
+  },
+  setup(props) {
     const store = useStore();
     // 入库表单字段
     const formState = ref({
+      // 仓库ID
+      store_id: props.storeId,
       // 商品名称
       name: "",
       // 商品重量
@@ -81,7 +89,7 @@ export default {
           // 提示信息
           message.success(data.message);
           // 刷新商品列表
-          store.dispatch("goods/getGoodsList");
+          store.dispatch("goods/getGoodsList", props.storeId);
           // 将表单内容清空
           formState.value = {
             name: "",

@@ -5,23 +5,34 @@
   >
     <a-row class="container">
       <a-col :span="4" class="operationPanel-left">
-        <div class="operationPanel-left-item active">
-          <HomeOutlined :style="{ fontSize: 'large' }" /><span>库存</span>
-        </div>
-        <div class="operationPanel-left-item">
-          <HomeOutlined :style="{ fontSize: 'large' }" /><span>入库</span>
-        </div>
-        <div class="operationPanel-left-item">
-          <HomeOutlined :style="{ fontSize: 'large' }" /><span>出库</span>
+        <div
+          class="operationPanel-left-item"
+          :class="{ active: currentPanelId === item.id }"
+          style="cursor: Pointer"
+          v-for="item in panelList"
+          :key="item.id"
+          @click="handlePanelClick(item.id)"
+        >
+          <HomeOutlined :style="{ fontSize: 'large' }" />
+          <span>{{ item.title }}</span>
         </div>
       </a-col>
       <a-col :span="20" class="operationPanel-right">
         <!--  库存  -->
-        <operation-panel-inventory />
+        <operation-panel-inventory
+          :storeId="storeId"
+          v-show="currentPanelId === 'inventory'"
+        />
         <!--  入库  -->
-        <operation-panel-storage />
+        <operation-panel-storage
+          :storeId="storeId"
+          v-show="currentPanelId === 'storage'"
+        />
         <!--  出库  -->
-        <operation-panel-delivery />
+        <operation-panel-delivery
+          :storeId="storeId"
+          v-show="currentPanelId === 'delivery'"
+        />
       </a-col>
     </a-row>
   </div>
@@ -32,6 +43,7 @@ import { HomeOutlined } from "@ant-design/icons-vue";
 import OperationPanelInventory from "@/views/store/components/operationPanelInventory";
 import OperationPanelStorage from "@/views/store/components/operationPanelStorage";
 import OperationPanelDelivery from "@/views/store/components/operationPanelDelivery";
+import { ref } from "vue";
 export default {
   name: "operationPanel",
   components: {
@@ -49,30 +61,36 @@ export default {
       type: Number,
       default: 0,
     },
+    storeId: {
+      type: Number,
+      default: null,
+    },
   },
-};
+  setup() {
+    const panelList = ref([
+      {
+        id: "inventory",
+        title: "库存",
+      },
+      {
+        id: "storage",
+        title: "入库",
+      },
+      {
+        id: "delivery",
+        title: "出库",
+      },
+    ]);
+    // 当前选中的操作面板
+    const currentPanelId = ref(panelList.value[0].id);
 
-// 实现tabs切换(排他思想)
-window.onload = () => {
-  let titleName = document.getElementsByClassName("operationPanel-left-item");
-  // console.log(titleName, "titleName");
-  let tabContent = document.querySelectorAll(".operationPanel-right>div");
-  // console.log(tabContent, "tabContent");
-  if (titleName.length !== tabContent.length) {
-    return;
-  }
-  for (let i = 0; i < titleName.length; i++) {
-    titleName[i].id = i;
-    titleName[i].onclick = function () {
-      for (let j = 0; j < titleName.length; j++) {
-        titleName[j].className = "operationPanel-left-item";
-        tabContent[j].style.display = "none";
-      }
-      // console.log(this, "this");
-      this.className = "operationPanel-left-item active";
-      tabContent[this.id].style.display = "block";
+    // 切换操作面板
+    const handlePanelClick = (panelId) => {
+      currentPanelId.value = panelId;
     };
-  }
+
+    return { panelList, currentPanelId, handlePanelClick };
+  },
 };
 </script>
 

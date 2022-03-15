@@ -1,7 +1,11 @@
 <template>
   <div class="store">
     <div class="three-canvas" ref="threeRef"></div>
-    <operation-panel :height="fullHeight - 160" style="top: 80px; left: 40px" />
+    <operation-panel
+      :storeId="storeId"
+      :height="fullHeight - 160"
+      style="top: 80px; left: 40px"
+    />
     <template ref="shelfTagRef">
       <shelf-tag
         v-for="shelfTagData in shelfList"
@@ -42,17 +46,32 @@ import ShelfTag from "@/components/shelfTag";
 import GoodsTag from "@/components/goodsTag";
 import { useGoodsModel } from "@/hooks/useGoods";
 import { useShelfModel } from "@/hooks/useShelf";
+import { useRoute } from "vue-router";
+import router from "@/router";
+import { message } from "ant-design-vue";
 
 export default {
   name: "Store",
   components: { GoodsTag, ShelfTag, OperationPanel },
   setup() {
+    // 获取路由
+    const route = useRoute();
+    // 仓库ID
+    const storeId = route.params.id;
+    if (!route.query.id) {
+      // 跳转到登录页面
+      router.push("/login").then(() => {
+        // 提示信息
+        message.success("仓库不存在");
+      });
+    }
+
+    // 获取 store
+    const store = useStore();
     // three 绑定的元素
     const threeRef = ref(null);
     // 实例化的 ThreeJS
     let ThreeJs = ref(null);
-    // 获取 store
-    const store = useStore();
 
     // 货架 Tag
     const shelfTagRef = ref(null);
@@ -63,7 +82,7 @@ export default {
     // 货架列表数据
     const shelfList = computed(() => store.state.shelf.shelfList);
     // 获取货架列表数据
-    store.dispatch("shelf/getShelfList");
+    store.dispatch("shelf/getShelfList", route.query.id);
     // 货物列表数据
     const goodsList = computed(() => store.state.goods.goodsList);
 
@@ -385,7 +404,7 @@ export default {
         () => shelfList.value.length,
         () => {
           // 获取商品列表数据
-          store.dispatch("goods/getGoodsList");
+          store.dispatch("goods/getGoodsList", route.query.id);
           shelfList.value.forEach((item) => {
             // 添加货架模型
             addShelfModel(item).then((shelfModel) => {
@@ -484,6 +503,7 @@ export default {
     });
 
     return {
+      storeId,
       threeRef,
       shelfTagRef,
       shelfList,
