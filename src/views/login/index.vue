@@ -42,13 +42,14 @@ const {
 } = useFormValidate();
 //验证通过之后
 const onSubmit = usernameFormHandleSubmit(({ username, password }) => {
-  // console.log(username, password);
   //登录接口
   loginByAccountAndPasswordApi({ username, password })
     .then((res) => {
       if (res.status === 200) {
-        // 设置一个sessionStorage(sessionStorage存储数据的时间是打开浏览器存储 关闭浏览器 数据消失)
+        // 保存 token 到 localStorage
         window.localStorage.setItem("token", res.data.token);
+        // 保存用户信息到 localStorage
+        window.localStorage.setItem("userInfo", JSON.stringify(res.data));
         message.success(res.message);
         //路由跳转
         router.push("/");

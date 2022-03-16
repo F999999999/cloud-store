@@ -15,10 +15,7 @@ export default {
     },
   },
   setup(props) {
-    console.log(props);
-
     onMounted(() => {
-      // console.log(document.getElementById('histogram'+props.histogramId));
       const myChart = echarts.init(
         document.getElementById("histogram" + props.histogramId)
       );
