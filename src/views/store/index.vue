@@ -57,7 +57,7 @@ export default {
     // 获取路由
     const route = useRoute();
     // 仓库ID
-    const storeId = route.params.id;
+    const storeId = route.query.id;
     if (!route.query.id) {
       // 跳转到登录页面
       router.push("/login").then(() => {

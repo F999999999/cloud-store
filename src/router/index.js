@@ -34,7 +34,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // 获取存储在 localStorage 里的 token 用于判断是否登录
   const token = window.localStorage.getItem("token");
-  console.log(token);
   // 判断如果准备去的路由的name不是Login登入页面 并且没有授权的时候 强制跳转至name为Login的路由页面
   if (to.name !== "Login" && !token) {
     next({ name: "Login" });

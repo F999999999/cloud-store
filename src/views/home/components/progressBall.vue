@@ -29,10 +29,6 @@ export default {
     onMounted(() => {
       // const roseCharts = document.getElementsByClassName("ball");
       const myChart = echarts.init(document.getElementById(props.ballId));
-      // for (var i = 0; i < roseCharts.length; i++) {
-      // 通过for循环，在相同class的dom内绘制元素
-      // var myChart = echarts.init(roseCharts[i]);
-      // console.log(roseCharts[i]);
       let angle = 0; //角度，用来做简单的动画效果的
       const value = ((props.useGoods / props.storeTotal) * 100).toFixed(2);
       const option = {
