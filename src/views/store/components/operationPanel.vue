@@ -13,7 +13,22 @@
           :key="item.id"
           @click="handlePanelClick(item.id)"
         >
-          <HomeOutlined :style="{ fontSize: 'large' }" />
+          <HomeOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'inventory'"
+          />
+          <CloudUploadOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'storage'"
+          />
+          <CloudDownloadOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'delivery'"
+          />
+          <SettingOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'setting'"
+          />
           <span>{{ item.title }}</span>
         </div>
       </a-col>
@@ -33,24 +48,40 @@
           :storeId="storeId"
           v-show="currentPanelId === 'delivery'"
         />
+        <!-- 设置 -->
+        <operation-panel-setting
+          :storeId="storeId"
+          v-show="currentPanelId === 'setting'"
+        />
       </a-col>
     </a-row>
   </div>
 </template>
 
 <script>
-import { HomeOutlined } from "@ant-design/icons-vue";
+import {
+  CloudDownloadOutlined,
+  CloudUploadOutlined,
+  HomeOutlined,
+  SettingOutlined,
+} from "@ant-design/icons-vue";
+import { ref } from "vue";
 import OperationPanelInventory from "@/views/store/components/operationPanelInventory";
 import OperationPanelStorage from "@/views/store/components/operationPanelStorage";
 import OperationPanelDelivery from "@/views/store/components/operationPanelDelivery";
-import { ref } from "vue";
+import OperationPanelSetting from "@/views/store/components/operationPanelSetting";
+
 export default {
   name: "operationPanel",
   components: {
+    OperationPanelSetting,
     OperationPanelDelivery,
     OperationPanelStorage,
     OperationPanelInventory,
     HomeOutlined,
+    CloudDownloadOutlined,
+    CloudUploadOutlined,
+    SettingOutlined,
   },
   props: {
     width: {
@@ -79,6 +110,10 @@ export default {
       {
         id: "delivery",
         title: "出库",
+      },
+      {
+        id: "setting",
+        title: "设置",
       },
     ]);
     // 当前选中的操作面板

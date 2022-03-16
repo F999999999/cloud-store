@@ -44,7 +44,7 @@
       v-if="deliveryList?.length > 0"
       @click="removeGoods"
     >
-      移除商品
+      商品出库
     </a-button>
   </div>
 </template>
@@ -57,14 +57,6 @@ import { useStore } from "vuex";
 export default {
   name: "operationPanelDelivery",
   props: {
-    width: {
-      type: Number,
-      default: 340,
-    },
-    height: {
-      type: Number,
-      default: 0,
-    },
     storeId: {
       type: Number,
       default: null,
