@@ -24,6 +24,7 @@ export default {
     const logout = () => {
       // 删除 用户信息
       window.localStorage.removeItem("token");
+      window.localStorage.removeItem("userInfo");
       // 跳转到登录页面
       router.push("/login").then(() => {
         // 提示信息

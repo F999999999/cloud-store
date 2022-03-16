@@ -13,7 +13,12 @@ export const getGoodsListApi = (store_id) => {
  * @returns {Promise}
  */
 export const addGoodsApi = (params) => {
-  return requestWithToken("/store/add_goods", "post", { params });
+  // 添加操作员ID到请求参数中
+  return requestWithToken("/store/add_goods", "post", {
+    ...params,
+    // 添加操作员ID到请求参数中
+    operate_id: JSON.parse(window.localStorage.getItem("userInfo")).id,
+  });
 };
 /**
  * 根据商品名搜索商品列表(商品出库)
@@ -36,5 +41,7 @@ export const removeGoodsByIdApi = ({ store_id, ids, takeout_time }) => {
     store_id,
     ids,
     takeout_time,
+    // 添加操作员ID到请求参数中
+    operate_id: JSON.parse(window.localStorage.getItem("userInfo")).id,
   });
 };

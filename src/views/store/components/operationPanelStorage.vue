@@ -82,7 +82,7 @@ export default {
         new Date(values.storage_time).valueOf() / 1000
       );
       // 将货架ID添加到表单数据中
-      values.shelf_id = formState.value.position;
+      values.shelf_id = formState.value.shelf_id;
       // 将货架格子ID添加进请求数据
       values.shelf_grid_id = formState.value.shelf_grid_id;
       // 商品入库
