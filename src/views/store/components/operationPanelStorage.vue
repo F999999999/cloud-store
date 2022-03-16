@@ -18,7 +18,7 @@
         <a-date-picker show-time v-model:value="formState.storage_time">
         </a-date-picker>
       </a-form-item>
-      <a-form-item label="货架：" name="shelf_id">
+      <a-form-item label="存储位置：" name="position">
         <a-cascader
           v-model:value="shelfOptionsValue"
           :options="shelfOptions"
@@ -28,17 +28,18 @@
         />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit">添加商品</a-button>
+        <a-button type="primary" html-type="submit">商品入库</a-button>
       </a-form-item>
     </a-form>
   </div>
 </template>
 
 <script>
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { addGoodsApi } from "@/api/goods";
 import { message } from "ant-design-vue";
 import { useStore } from "vuex";
+import moment from "moment";
 
 export default {
   name: "operationPanelStorage",
@@ -52,8 +53,6 @@ export default {
     const store = useStore();
     // 入库表单字段
     const formState = ref({
-      // 仓库ID
-      store_id: props.storeId,
       // 商品名称
       name: "",
       // 商品重量
@@ -63,7 +62,9 @@ export default {
       // 商品生产日期
       production_date: "",
       // 商品入库时间
-      storage_time: "",
+      storage_time: moment(),
+      // 存储位置
+      position: "",
       // 货架ID
       shelf_id: "",
       // 货架格子ID
@@ -71,6 +72,8 @@ export default {
     });
     // 提交表单且数据验证成功后回调事件
     const onFinish = (values) => {
+      // 将仓库ID添加到表单数据中
+      values.store_id = props.storeId;
       // 将时间进行处理 处理为时间戳
       values.production_date = Math.floor(
         new Date(values.production_date).valueOf() / 1000
@@ -78,13 +81,12 @@ export default {
       values.storage_time = Math.floor(
         new Date(values.storage_time).valueOf() / 1000
       );
+      // 将货架ID添加到表单数据中
+      values.shelf_id = formState.value.position;
       // 将货架格子ID添加进请求数据
       values.shelf_grid_id = formState.value.shelf_grid_id;
-      console.log(values, "values2");
-      console.log("shelfOptionsValue", shelfOptionsValue.value);
       // 商品入库
       addGoodsApi(values).then((data) => {
-        console.log(data, "data");
         if (data.status === 200) {
           // 提示信息
           message.success(data.message);
@@ -96,7 +98,8 @@ export default {
             weight: "",
             shelflife: "",
             production_date: "",
-            storage_time: "",
+            storage_time: moment(),
+            position: "",
             shelf_id: "",
             shelf_grid_id: "",
           };
@@ -105,38 +108,14 @@ export default {
       });
     };
 
-    // 货架列表
-    const shelfList = computed(() => store.state.shelf.shelfList);
     // 选中的货架
     const shelfOptionsValue = ref(null);
     // 货架信息
-    const shelfOptions = ref([]);
-    // 监听货物的变化
-    watch(
-      () => shelfList.value,
-      (value) => {
-        shelfOptions.value = [];
-        value.forEach((item) => {
-          const obj = {
-            value: item.id,
-            label: item.name,
-            children: [],
-          };
-          item.shelf_grid.forEach((item2) => {
-            if (item.goods_id == null) {
-              obj.children.push({
-                value: item2.shelf_grid_id,
-                label: `${item2.position.y + 1}层 ${item2.position.x + 1}行 ${
-                  item2.position.z + 1
-                }列(${item2.shelf_grid_id})`,
-              });
-            }
-          });
-          if (obj.children.length > 0) shelfOptions.value.push(obj);
-        });
-      }
+    const shelfOptions = computed(
+      () => store.getters["shelf/getEmptyShelfGridList"]
     );
 
+    // 选中位置后的回调事件
     const displayRender = ({ labels, selectedOptions }) => {
       if (selectedOptions.length > 0) {
         formState.value.shelf_id = selectedOptions[0].value;
@@ -145,12 +124,18 @@ export default {
       return labels.join(" / ");
     };
 
+    // 更新入库时间
+    const updateStorageTime = (date = new Date()) => {
+      formState.value.storage_time = moment(date);
+    };
+
     return {
       formState,
       onFinish,
       shelfOptionsValue,
       shelfOptions,
       displayRender,
+      updateStorageTime,
     };
   },
 };

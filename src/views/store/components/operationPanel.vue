@@ -13,7 +13,22 @@
           :key="item.id"
           @click="handlePanelClick(item.id)"
         >
-          <HomeOutlined :style="{ fontSize: 'large' }" />
+          <HomeOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'inventory'"
+          />
+          <CloudUploadOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'storage'"
+          />
+          <CloudDownloadOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'delivery'"
+          />
+          <SettingOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'setting'"
+          />
           <span>{{ item.title }}</span>
         </div>
       </a-col>
@@ -27,11 +42,17 @@
         <operation-panel-storage
           :storeId="storeId"
           v-show="currentPanelId === 'storage'"
+          ref="storagePanelRef"
         />
         <!--  出库  -->
         <operation-panel-delivery
           :storeId="storeId"
           v-show="currentPanelId === 'delivery'"
+        />
+        <!-- 设置 -->
+        <operation-panel-setting
+          :storeId="storeId"
+          v-show="currentPanelId === 'setting'"
         />
       </a-col>
     </a-row>
@@ -39,18 +60,29 @@
 </template>
 
 <script>
-import { HomeOutlined } from "@ant-design/icons-vue";
+import {
+  CloudDownloadOutlined,
+  CloudUploadOutlined,
+  HomeOutlined,
+  SettingOutlined,
+} from "@ant-design/icons-vue";
+import { ref } from "vue";
 import OperationPanelInventory from "@/views/store/components/operationPanelInventory";
 import OperationPanelStorage from "@/views/store/components/operationPanelStorage";
 import OperationPanelDelivery from "@/views/store/components/operationPanelDelivery";
-import { ref } from "vue";
+import OperationPanelSetting from "@/views/store/components/operationPanelSetting";
+
 export default {
   name: "operationPanel",
   components: {
+    OperationPanelSetting,
     OperationPanelDelivery,
     OperationPanelStorage,
     OperationPanelInventory,
     HomeOutlined,
+    CloudDownloadOutlined,
+    CloudUploadOutlined,
+    SettingOutlined,
   },
   props: {
     width: {
@@ -80,6 +112,10 @@ export default {
         id: "delivery",
         title: "出库",
       },
+      {
+        id: "setting",
+        title: "设置",
+      },
     ]);
     // 当前选中的操作面板
     const currentPanelId = ref(panelList.value[0].id);
@@ -87,9 +123,21 @@ export default {
     // 切换操作面板
     const handlePanelClick = (panelId) => {
       currentPanelId.value = panelId;
+      if (panelId === "storage") {
+        // 切换到入库面板时，更新入库时间
+        storagePanelRef.value.updateStorageTime();
+      }
     };
+    const storagePanelRef = ref(null);
+    const currentDate = ref(new Date());
 
-    return { panelList, currentPanelId, handlePanelClick };
+    return {
+      panelList,
+      currentPanelId,
+      handlePanelClick,
+      currentDate,
+      storagePanelRef,
+    };
   },
 };
 </script>
