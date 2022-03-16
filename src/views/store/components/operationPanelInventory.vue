@@ -85,6 +85,12 @@ export default {
     ArrowRightOutlined,
     ArrowUpOutlined,
   },
+  props: {
+    storeId: {
+      type: Number,
+      default: null,
+    },
+  },
   setup() {
     const store = useStore();
     // 货架统计数据
