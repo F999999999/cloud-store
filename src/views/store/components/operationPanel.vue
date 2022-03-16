@@ -42,6 +42,7 @@
         <operation-panel-storage
           :storeId="storeId"
           v-show="currentPanelId === 'storage'"
+          ref="storagePanelRef"
         />
         <!--  出库  -->
         <operation-panel-delivery
@@ -122,9 +123,21 @@ export default {
     // 切换操作面板
     const handlePanelClick = (panelId) => {
       currentPanelId.value = panelId;
+      if (panelId === "storage") {
+        // 切换到入库面板时，更新入库时间
+        storagePanelRef.value.updateStorageTime();
+      }
     };
+    const storagePanelRef = ref(null);
+    const currentDate = ref(new Date());
 
-    return { panelList, currentPanelId, handlePanelClick };
+    return {
+      panelList,
+      currentPanelId,
+      handlePanelClick,
+      currentDate,
+      storagePanelRef,
+    };
   },
 };
 </script>

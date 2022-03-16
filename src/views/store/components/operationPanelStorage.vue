@@ -115,6 +115,7 @@ export default {
       () => store.getters["shelf/getEmptyShelfGridList"]
     );
 
+    // 选中位置后的回调事件
     const displayRender = ({ labels, selectedOptions }) => {
       if (selectedOptions.length > 0) {
         formState.value.shelf_id = selectedOptions[0].value;
@@ -123,12 +124,18 @@ export default {
       return labels.join(" / ");
     };
 
+    // 更新入库时间
+    const updateStorageTime = (date = new Date()) => {
+      formState.value.storage_time = moment(date);
+    };
+
     return {
       formState,
       onFinish,
       shelfOptionsValue,
       shelfOptions,
       displayRender,
+      updateStorageTime,
     };
   },
 };
