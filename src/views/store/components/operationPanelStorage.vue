@@ -143,10 +143,10 @@ export default {
 
 <style scoped lang="less">
 .operationPanel-right-storage {
-  /deep/ .ant-input {
+  :deep(.ant-input) {
     padding: 4px;
   }
-  /deep/ .ant-calendar-picker {
+  :deep(.ant-calendar-picker) {
     width: 239px;
   }
 }
