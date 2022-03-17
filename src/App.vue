@@ -30,7 +30,7 @@ export default {
   /*滚动条整体样式*/
   /*高宽分别对应横竖滚动条的尺寸*/
   width: 6px;
-  /* height: 4px; */
+  height: 6px;
   overflow: auto;
 }
 ::-webkit-scrollbar-thumb {

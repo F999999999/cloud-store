@@ -91,6 +91,23 @@ export default {
       // 实例化 ThreeJs
       const TE = new TEngine(threeRef.value);
       ThreeJs.value = TE;
+
+      window.onresize = () => {
+        return (() => {
+          // 设置正投影相机大小
+          TE.setOrthographicCameraSize(
+            document.body.clientWidth,
+            document.body.clientHeight
+          );
+
+          // 设置 Tag 标签的渲染大小参数
+          labelRenderer.setSize(
+            window.innerWidth - 240,
+            window.innerHeight - 240
+          );
+        })();
+      };
+
       // 辅助工具
       // TE.addObject(...helperList);
       // 光源
@@ -515,7 +532,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .store {
   position: relative;
   width: 100%;
