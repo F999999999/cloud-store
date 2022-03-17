@@ -3,7 +3,12 @@
     <!-- 用户信息 -->
 
     <!--  退出登陆  -->
-    <a-button type="danger" :style="{ marginTop: '8px' }" @click="logout">
+    <a-button
+      type="primary"
+      danger
+      :style="{ marginTop: '8px' }"
+      @click="logout"
+    >
       退出登陆
     </a-button>
   </div>
