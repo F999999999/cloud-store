@@ -1,5 +1,7 @@
-import { getGoodsListApi } from "@/api/goods";
+import { getGoodsListApi, moveGoodsByIdApi } from "@/api/goods";
 import { updateGoodsModelPosition } from "@/hooks/useGoods";
+import store from "@/store";
+import { ThreeJS } from "@/hooks/useTEngine";
 
 const goods = {
   namespaced: true,
@@ -24,7 +26,7 @@ const goods = {
       });
     },
     // 移动货物
-    moveGoods(state, { id, shelfId, shelfGridId, scene, shelfList }) {
+    moveGoods(state, { id, shelfId, shelfGridId }) {
       state.goodsList = state.goodsList.map((item) => {
         if (item.id === id) {
           item.shelf_id = shelfId || item.shelf_id;
@@ -33,7 +35,7 @@ const goods = {
         return item;
       });
       // 刷新货架位置
-      if (scene && shelfList) updateGoodsModelPosition(scene, shelfList);
+      updateGoodsModelPosition(ThreeJS.scene, store.state.shelf.shelfList);
     },
     // 删除货物
     removeGoods(state, id) {
@@ -48,6 +50,26 @@ const goods = {
         if (res.status === 200) {
           // 更新数据
           commit("changeGoods", res.data);
+        }
+      });
+    },
+    // 移动货物
+    moveGoods({ commit }, { id, storeId, shelfId, shelfGridId }) {
+      // 发送请求更新货架位置
+      moveGoodsByIdApi({
+        id,
+        store_id: storeId,
+        shelf_id: shelfId,
+        shelf_grid_id: shelfGridId,
+      }).then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          // 更新数据
+          commit("moveGoods", {
+            id,
+            shelfId,
+            shelfGridId,
+          });
         }
       });
     },

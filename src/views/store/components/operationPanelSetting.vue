@@ -1,5 +1,5 @@
 <template>
-  <div class="operationPanel-right-setting" style="display: none">
+  <div class="operationPanel-setting" style="display: none">
     <!-- 用户信息 -->
 
     <!--  退出登陆  -->
@@ -43,7 +43,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-.operationPanel-right-setting {
+.operationPanel-setting {
   height: 100%;
 }
 </style>

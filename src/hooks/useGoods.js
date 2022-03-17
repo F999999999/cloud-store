@@ -1,6 +1,9 @@
 import { ContainerMobile } from "@/utils/three/loadModel/containerMobile";
 import { shelfLocation } from "@/utils/modelLocation/shelfModelLocation";
 import { shelfSpacing } from "@/hooks/useShelf";
+import { goodsTag } from "@/utils/three/CSS2DObject";
+import { computed } from "vue";
+import store from "@/store";
 
 const useGoodsModel = async ({ shelfList, goods, groupScale = 100 }) => {
   let newGroup = null;
@@ -37,6 +40,39 @@ const useGoodsModel = async ({ shelfList, goods, groupScale = 100 }) => {
   return newGroup;
 };
 
+// 渲染货物模型
+const addGoodsModel = async (goods, goodsTagRef, show = false) => {
+  // 货架列表数据
+  const shelfList = computed(() => store.state.shelf.shelfList);
+
+  const goodsModel = await useGoodsModel({
+    shelfList: shelfList.value,
+    goods,
+    groupScale: 80,
+  });
+
+  // 添加货物 Tag 标签显示状态
+  store.commit("goods/changeGoodsTagShow", {
+    id: goods.id,
+    tagShow: show,
+  });
+
+  // 添加 CSS2DObject 标签
+  Promise.resolve(goodsModel).then((goods) => {
+    // 查找货物的 domElement 元素
+    for (let domElement of goodsTagRef.children) {
+      if (Number(domElement.getAttribute("data-id")) === goods.data.id) {
+        // 生成货架的 Tag 标签
+        const tag = goodsTag(domElement, goods.data.name, goods.data.position);
+        // 添加货架的 Tag 标签
+        goods.add(tag);
+      }
+    }
+  });
+
+  return goodsModel;
+};
+
 // 更新货物模型位置
 const updateGoodsModelPosition = (scene, shelfList) => {
   scene.children.forEach((item) => {
@@ -56,4 +92,4 @@ const updateGoodsModelPosition = (scene, shelfList) => {
   });
 };
 
-export { useGoodsModel, updateGoodsModelPosition };
+export { useGoodsModel, addGoodsModel, updateGoodsModelPosition };

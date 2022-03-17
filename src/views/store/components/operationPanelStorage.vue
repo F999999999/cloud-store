@@ -1,5 +1,5 @@
 <template>
-  <div class="operationPanel-right-storage" style="display: none">
+  <div class="operationPanel-storage" style="display: none">
     <a-form layout="vertical" :model="formState" @finish="onFinish">
       <a-form-item label="商品名称：" name="name">
         <a-input v-model:value="formState.name" required />
@@ -142,7 +142,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-.operationPanel-right-storage {
+.operationPanel-storage {
   :deep(.ant-input) {
     padding: 4px;
   }

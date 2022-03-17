@@ -191,7 +191,7 @@ export default {
 <style scoped>
 .goods-tag {
   position: absolute;
-  top: 0;
+  top: -220px;
   left: 0;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="operationPanel-right-delivery" style="display: none">
+  <div class="operationPanel-delivery" style="display: none">
     <!--  搜索框  -->
     <a-input-search
       v-model:value="searchValue"
@@ -8,13 +8,10 @@
       @search="onSearch"
     />
     <!--  搜索出的商品列表  -->
-    <div
-      class="operationPanel-right-delivery-list"
-      v-if="deliveryList?.length > 0"
-    >
+    <div class="operationPanel-delivery-list" v-if="deliveryList?.length > 0">
       <a-card
         :class="[
-          'operationPanel-right-delivery-item',
+          'operationPanel-delivery-item',
           selectedDeliveryIdList.indexOf(item.id) !== -1 ? 'active' : '',
         ]"
         size="small"
@@ -141,9 +138,9 @@ export default {
 </script>
 
 <style scoped lang="less">
-.operationPanel-right-delivery {
+.operationPanel-delivery {
   height: 100%;
-  .operationPanel-right-delivery-list {
+  .operationPanel-delivery-list {
     text-align: left;
     height: calc(100% - 32px - 32px - 30px);
     overflow-y: auto;
@@ -151,7 +148,7 @@ export default {
     p {
       margin-bottom: 8px;
     }
-    .operationPanel-right-delivery-item {
+    .operationPanel-delivery-item {
       opacity: 0.7;
       &:hover,
       &.active {
