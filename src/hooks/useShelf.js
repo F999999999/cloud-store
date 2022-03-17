@@ -1,5 +1,7 @@
 // 货架模型间距
 import { ShelfMobile } from "@/utils/three/loadModel/shelfMobile";
+import { shelfTag } from "@/utils/three/CSS2DObject";
+import store from "@/store";
 
 const shelfSpacing = { x: 240 + 260, y: 466, z: -1000 };
 
@@ -41,4 +43,29 @@ const useShelfModel = async ({ shelf, groupScale = 100 }) => {
   return newGroup;
 };
 
-export { shelfSpacing, useShelfModel };
+// 渲染货架模型
+const addShelfModel = async (shelf, shelfTagRef, show = false) => {
+  const shelfModel = await useShelfModel({ shelf });
+  // 添加货架 Tag 标签显示状态
+  store.commit("shelf/changeShelfTagShow", {
+    id: shelf.id,
+    tagShow: show,
+  });
+
+  // 添加 CSS2DObject 标签
+  Promise.resolve(shelfModel).then((shelf) => {
+    // 查找货架的 domElement 元素
+    for (let domElement of shelfTagRef.children) {
+      if (Number(domElement.getAttribute("data-id")) === shelf.data.id) {
+        // 生成货架的 Tag 标签
+        const tag = shelfTag(domElement, shelf.data.name, shelf.data.position);
+        // 添加货架的 Tag 标签
+        shelf.add(tag);
+      }
+    }
+  });
+
+  return shelfModel;
+};
+
+export { shelfSpacing, useShelfModel, addShelfModel };

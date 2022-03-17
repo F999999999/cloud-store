@@ -44,6 +44,33 @@ const shelf = {
     },
   },
   getters: {
+    // 获取已使用的货架格子
+    getUseShelfGridList(state) {
+      // 如果货架列表为空 则返回空数组
+      if (state.shelfList.length === 0) return [];
+      // 计算已使用的货架格子
+      const UseShelfGridList = [];
+      state.shelfList.forEach((shelf) => {
+        const obj = {
+          value: shelf.id,
+          label: shelf.name,
+          children: [],
+        };
+        shelf.shelf_grid.forEach((grid) => {
+          if (grid.goods_id !== null) {
+            obj.children.push({
+              value: grid.shelf_grid_id,
+              label: `${grid.position.y + 1}层 ${grid.position.x + 1}行 ${
+                grid.position.z + 1
+              }列(${grid.shelf_grid_id})`,
+              goods_id: grid.goods_id,
+            });
+          }
+        });
+        if (obj.children.length > 0) UseShelfGridList.push(obj);
+      });
+      return UseShelfGridList;
+    },
     // 获取未使用的货架格子
     getEmptyShelfGridList(state) {
       // 如果货架列表为空 则返回空数组
