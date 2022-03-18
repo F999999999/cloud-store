@@ -5,11 +5,12 @@
       <ul>
         <!-- 动态环形图 -->
         <store-tag
-          v-for="i in 3"
-          :key="i"
-          :id="i"
-          :storeTotal="100 * i"
-          :useGoods="50 + i"
+          v-for="item in getStoreListDate"
+          :key="item.store_id"
+          :id="item.store_id"
+          :storeTotal="100 * item.total_grid"
+          :useGoods="50 + item.use_grid"
+          :store_name="item.store_name"
         />
       </ul>
     </div>
@@ -75,18 +76,35 @@
 import StoreTag from "@/views/home/components/storeTag";
 import TextTag from "@/views/home/components/textScrolling";
 import histogram from "@/views/home/components/histogram";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import { getStoreListDateApi, getStoreShelfDateApi } from "@/api/store";
 export default {
   components: { StoreTag, TextTag, histogram },
   setup() {
+    const getStoreListDate = ref("");
+    const getStoreShelfDate = ref("");
     const store = useStore();
+    //获取仓库使用数据信息
+    getStoreListDateApi().then((res) => {
+      // console.log(res);
+      if (res.status === 200) {
+        getStoreListDate.value = res.data.list;
+      }
+    });
+    //获取仓库运行状态
+    getStoreShelfDateApi().then((res) => {
+      console.log(res);
+      if (res.status === 200) {
+        getStoreShelfDate.value = res.data.list;
+      }
+    });
     // 获取仓库列表
     store.dispatch("store/getStoreList");
 
     const storeList = computed(() => store.state.store.storeList);
 
-    return { storeList };
+    return { storeList, getStoreListDate, getStoreShelfDate };
   },
 };
 </script>
