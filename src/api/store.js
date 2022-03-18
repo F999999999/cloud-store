@@ -7,3 +7,7 @@ import { requestWithToken } from "@/utils/request";
 export const getStoreListApi = () => {
   return requestWithToken("/store", "get");
 };
+
+export const getStoreDataApi = () => {
+  return requestWithToken("/store/store_total", "get");
+};
