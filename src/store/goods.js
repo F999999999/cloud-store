@@ -26,16 +26,22 @@ const goods = {
       });
     },
     // 移动货物
-    moveGoods(state, { id, shelfId, shelfGridId }) {
+    moveGoods(state, { goodsId, shelfId, shelfGridId }) {
       state.goodsList = state.goodsList.map((item) => {
-        if (item.id === id) {
+        if (item.id === goodsId) {
           item.shelf_id = shelfId || item.shelf_id;
           item.shelf_grid_id = shelfGridId || item.shelf_grid_id;
         }
         return item;
       });
-      // 刷新货架位置
+      // 刷新货架模型位置
       updateGoodsModelPosition(ThreeJS.scene, store.state.shelf.shelfList);
+      // 更新货物位置
+      store.commit("shelf/changeShelfPosition", {
+        goodsId,
+        shelfId,
+        shelfGridId,
+      });
     },
     // 删除货物
     removeGoods(state, id) {
@@ -54,10 +60,10 @@ const goods = {
       });
     },
     // 移动货物
-    moveGoods({ commit }, { id, storeId, shelfId, shelfGridId }) {
+    moveGoods({ commit }, { goodsId, storeId, shelfId, shelfGridId }) {
       // 发送请求更新货架位置
       moveGoodsByIdApi({
-        id,
+        id: goodsId,
         store_id: storeId,
         shelf_id: shelfId,
         shelf_grid_id: shelfGridId,
@@ -66,7 +72,7 @@ const goods = {
         if (res.status === 200) {
           // 更新数据
           commit("moveGoods", {
-            id,
+            goodsId,
             shelfId,
             shelfGridId,
           });
