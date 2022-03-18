@@ -154,11 +154,15 @@ export default {
     // 移动货物
     const moveGoods = () => {
       store.dispatch("goods/moveGoods", {
-        id: goodsFormState.value.id,
+        goodsId: goodsFormState.value.id,
         storeId: goodsFormState.value.store_id,
         shelfId: goodsFormState.value.shelf_id,
         shelfGridId: goodsFormState.value.shelf_grid_id,
       });
+
+      // 清空表单
+      oldShelfOptionsValue.value = null;
+      newShelfOptionsValue.value = null;
     };
 
     return {
@@ -177,20 +181,17 @@ export default {
 </script>
 
 <style scoped lang="less">
-:deep(.ant-input) {
-  // 清除 input 的边框
-  border: 0;
-  &:focus {
-    // 清除 input 的蓝色边框
-    box-shadow: 0 0 0 0;
-  }
-}
+:deep(.ant-input),
 :deep(.ant-cascader-picker) {
   // 设置 input 的圆角
   border-radius: 15px;
-  &:focus .ant-cascader-input {
-    // 清除 input 的蓝色边框
-    box-shadow: 0 0 0 0;
+  &:focus {
+    // 设置 input 的蓝色边框的圆角
+    border-radius: 15px;
+    .ant-cascader-input {
+      // 设置 input 的蓝色边框的圆角
+      border-radius: 15px;
+    }
   }
 }
 .operationPanel-inventory {
