@@ -5,11 +5,13 @@
       <ul>
         <!-- 动态环形图 -->
         <store-tag
-          v-for="i in 3"
-          :key="i"
-          :id="i"
-          :storeTotal="100 * i"
-          :useGoods="50 + i"
+          v-for="item in getStoreData"
+          :key="item.store_id"
+          :id="item.store_id"
+          :storeTotal="item.total_grid"
+          :useGoods="item.use_grid"
+          :store_name="item.store_name"
+          :getStoreData="item"
         />
       </ul>
     </div>
@@ -75,18 +77,29 @@
 import StoreTag from "@/views/home/components/storeTag";
 import TextTag from "@/views/home/components/textScrolling";
 import histogram from "@/views/home/components/histogram";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import { getStoreDataApi } from "@/api/store";
 export default {
   components: { StoreTag, TextTag, histogram },
   setup() {
+    const getStoreData = ref();
     const store = useStore();
+
     // 获取仓库列表
     store.dispatch("store/getStoreList");
+    //获取仓库使用数据
+    getStoreDataApi().then((res) => {
+      console.log(res);
 
+      if (res.status == 200) {
+        getStoreData.value = res.data.list;
+        console.log(getStoreData.value);
+      }
+    });
     const storeList = computed(() => store.state.store.storeList);
 
-    return { storeList };
+    return { storeList, getStoreData };
   },
 };
 </script>
