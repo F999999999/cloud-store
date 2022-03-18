@@ -3,40 +3,43 @@
     <div class="operationPanel-overview">
       <h3>货物总览</h3>
       <a-row class="operationPanel-overview-content">
-        <a-col :span="8" class="operationPanel-overview-left">
-          <a-tag color="#f66">已用：{{ shelfTotal?.useGrid }}</a-tag>
-          <a-tag color="#18e">空闲：{{ shelfTotal?.emptyGrid }}</a-tag>
-        </a-col>
-        <a-col :span="8" class="operationPanel-overview-center">
+        <a-col :span="12" class="operationPanel-overview-usage">
           <a-progress
             type="circle"
-            strokeColor="#f66"
+            strokeColor="#f33"
             trailColor="#18e"
             :percent="
-              shelfTotal?.useGrid /
-              (shelfTotal?.useGrid + shelfTotal?.emptyGrid)
+              (shelfTotal?.useGrid /
+                (shelfTotal?.useGrid + shelfTotal?.emptyGrid)) *
+              100
             "
-            :width="80"
+            :width="100"
             :showInfo="false"
+            class="operationPanel-overview-usage-progress"
           />
-          <div class="inside">
+          <div class="operationPanel-overview-usage-inside">
             <span>使用率</span>
-            <span class="number">{{
-              (
-                shelfTotal?.useGrid /
-                (shelfTotal?.useGrid + shelfTotal?.emptyGrid)
-              ).toFixed(2)
-            }}</span>
+            <span class="number">
+              {{
+                (
+                  (shelfTotal?.useGrid /
+                    (shelfTotal?.useGrid + shelfTotal?.emptyGrid)) *
+                  100
+                ).toFixed(2)
+              }}%
+            </span>
           </div>
         </a-col>
-        <a-col :span="8" class="operationPanel-overview">
-          <p>XX数量</p>
-          <span>XX</span>
+        <a-col :span="12" class="operationPanel-overview-overview">
+          <div>
+            <a-tag color="#f33">已用：{{ shelfTotal?.useGrid }}</a-tag>
+            <a-tag color="#18e">空闲：{{ shelfTotal?.emptyGrid }}</a-tag>
+          </div>
         </a-col>
       </a-row>
     </div>
     <div class="operationPanel-logistics">
-      <h3>智能流配</h3>
+      <h3>智能调度</h3>
       <a-row>
         <a-col :span="24">
           <a-cascader
@@ -207,43 +210,54 @@ export default {
   .operationPanel-overview {
     .operationPanel-overview-content {
       height: 120px;
-      .operationPanel-overview-left {
+      .operationPanel-overview-overview {
+        > div {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
         span {
           display: block;
-          width: 74px;
-          height: 20px;
-          margin-top: 20px;
+          width: 100%;
           color: white;
-        }
-      }
-      .operationPanel-overview-center {
-        position: relative;
-        padding-top: 10px;
-        .inside {
-          position: absolute;
-          top: 20px;
-          left: 10px;
-          height: 60px;
-          width: 60px;
-          border-radius: 50%;
-          background-color: #ffffffac;
-          padding-top: 10px;
-          span {
-            display: block;
-            font-size: 12px;
-            &.number {
-              font-size: 16px;
-              font-weight: bold;
-            }
+          font-size: 16px;
+          padding-top: 4px;
+          padding-bottom: 4px;
+          margin-top: 20px;
+          &:nth-child(1) {
+            margin-top: 0;
           }
         }
       }
-      .operationPanel-overview {
-        p {
-          margin: 20px 0 10px 0;
+      .operationPanel-overview-usage {
+        position: relative;
+        .operationPanel-overview-usage-progress {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
-        span {
-          font-weight: bold;
+        .operationPanel-overview-usage-inside {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          height: 70px;
+          width: 70px;
+          border-radius: 50%;
+          background-color: #ffffffac;
+          padding-top: 10px;
+
+          span {
+            width: 100%;
+            display: block;
+            font-size: 14px;
+            &.number {
+              font-size: 18px;
+              font-weight: bold;
+            }
+          }
         }
       }
     }
