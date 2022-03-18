@@ -22,3 +22,10 @@ export const getStoreListDateApi = () => {
 export const getStoreShelfDateApi = () => {
   return requestWithToken("/store/shelf_total", "get");
 };
+/**
+ * 获取商品日志
+ * @returns {Promise}
+ */
+export const getGoodsLogDateApi = () => {
+  return requestWithToken("/store/goods_log", "get");
+};

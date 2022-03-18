@@ -84,6 +84,7 @@ export default {
   setup() {
     const getStoreListDate = ref("");
     const getStoreShelfDate = ref("");
+    const getGoodsLogDate = ref("");
     const store = useStore();
     //获取仓库使用数据信息
     getStoreListDateApi().then((res) => {
@@ -99,12 +100,13 @@ export default {
         getStoreShelfDate.value = res.data.list;
       }
     });
+
     // 获取仓库列表
     store.dispatch("store/getStoreList");
 
     const storeList = computed(() => store.state.store.storeList);
 
-    return { storeList, getStoreListDate, getStoreShelfDate };
+    return { storeList, getStoreListDate, getStoreShelfDate, getGoodsLogDate };
   },
 };
 </script>
