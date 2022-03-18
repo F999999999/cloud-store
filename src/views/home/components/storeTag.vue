@@ -1,7 +1,7 @@
 <template>
   <li class="box">
     <div class="box_context">
-      <h3>仓库A</h3>
+      <h3>{{ store_name }}</h3>
       <div class="box_context_p1">
         <p>货位总量</p>
         <span>{{ storeTotal }}</span>
@@ -37,6 +37,13 @@ export default {
       type: Number,
       default: 0,
     },
+    store_name: {
+      type: String,
+      default: "",
+    },
+  },
+  setup(props) {
+    console.log(props);
   },
 };
 </script>
