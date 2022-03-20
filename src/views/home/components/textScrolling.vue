@@ -1,8 +1,16 @@
 <template>
-  <vue3-seamless-scroll :list="list" class="scroll" hover :step="0.5">
-    <div class="item" v-for="item in list" :key="item.goods_id">
-      <span>商品:{{ item.goods_name + goodsStatus }}</span>
-      <span>{{ formatDate(item.operate_time) }}</span>
+  <vue3-seamless-scroll :list="goodsLogList" class="scroll" hover :step="0.5">
+    <div class="item" v-for="item in goodsLogList" :key="item.goods_id">
+      <span>
+        {{ item.now_store_name }}：{{ item.goods_name }} => {{ item.status }}
+      </span>
+      <span>
+        {{
+          new Date(item.operate_time * 1000)
+            .toLocaleString()
+            .replaceAll("/", "-")
+        }}
+      </span>
     </div>
   </vue3-seamless-scroll>
 </template>
@@ -17,81 +25,55 @@ export default defineComponent({
     Vue3SeamlessScroll,
   },
   setup() {
-    const list = ref([]);
-    const goodsStatus = ref("");
-    //获取商品日志
-    getGoodsLogDateApi().then((res) => {
-      console.log(res);
-      if (res.status === 200) {
-        list.value = res.data;
-        console.log(list.value);
-        if (list.value) {
-          list.value.forEach((item) => {
-            //入库
-            if (
-              !(
-                item.before_shelf_grid_id &&
-                item.before_shelf_id &&
-                item.before_store_id
-              )
-            ) {
-              goodsStatus.value = "入库";
-            }
-            //  出库
-            if (
-              !(
-                item.now_shelf_grid_id &&
-                item.now_shelf_id &&
-                item.now_store_id
-              )
-            ) {
-              goodsStatus.value = "出库";
-            }
-            //  移动
-            if (
-              item.before_shelf_grid_id &&
-              item.before_shelf_id &&
-              item.before_store_id &&
-              item.now_shelf_grid_id &&
-              item.now_shelf_id &&
-              item.now_store_id
-            ) {
-              goodsStatus.value = "移动";
-            }
-          });
-        }
-      }
-    });
-    //时间格式转化
-    function formatDate(value) {
-      let date = new Date(value);
-      let y = date.getFullYear(),
-        m = date.getMonth() + 1,
-        d = date.getDate(),
-        h = date.getHours(),
-        i = date.getMinutes(),
-        s = date.getSeconds();
-      if (m < 10) {
-        m = "0" + m;
-      }
-      if (d < 10) {
-        d = "0" + d;
-      }
-      if (h < 10) {
-        h = "0" + h;
-      }
-      if (i < 10) {
-        i = "0" + i;
-      }
-      if (s < 10) {
-        s = "0" + s;
-      }
-      let t = y + "-" + m + "-" + d + " " + h + ":" + i + ":" + s;
-      return t;
-    }
-    return { list, formatDate, goodsStatus };
+    // 获取商品日志
+    const { goodsLogList } = useGoodsLog();
+
+    return { goodsLogList };
   },
 });
+
+//获取商品日志
+const useGoodsLog = () => {
+  const goodsLogList = ref([]);
+  const getGoodsLog = async () => {
+    const res = await getGoodsLogDateApi();
+    console.log(res);
+    if (res.status === 200) {
+      goodsLogList.value = res.data.map((item) => {
+        //入库
+        if (
+          !(
+            item.before_shelf_grid_id &&
+            item.before_shelf_id &&
+            item.before_store_id
+          )
+        ) {
+          item.status = "入库";
+        }
+        //  出库
+        if (
+          !(item.now_shelf_grid_id && item.now_shelf_id && item.now_store_id)
+        ) {
+          item.status = "出库";
+        }
+        //  移动
+        if (
+          item.before_shelf_grid_id &&
+          item.before_shelf_id &&
+          item.before_store_id &&
+          item.now_shelf_grid_id &&
+          item.now_shelf_id &&
+          item.now_store_id
+        ) {
+          item.status = "移动";
+        }
+        return item;
+      });
+    }
+  };
+  getGoodsLog();
+  return { goodsLogList };
+};
 </script>
 
 <style>

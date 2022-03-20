@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div class="header">云仓</div>
+    <div class="header">云仓 - 智能仓储</div>
     <div class="home_left">
       <ul>
         <!-- 动态环形图 -->
@@ -8,8 +8,8 @@
           v-for="item in getStoreListDate"
           :key="item.store_id"
           :id="item.store_id"
-          :storeTotal="100 * item.total_grid"
-          :useGoods="50 + item.use_grid"
+          :storeTotal="item.total_grid"
+          :useGoods="item.use_grid"
           :store_name="item.store_name"
         />
       </ul>
@@ -19,9 +19,9 @@
         <li>
           <div class="home_right_warn">
             <span>
-              <img src="@/assets/image/warn.png" alt="" />
+              <img src="@/assets/image/run.png" alt="" />
             </span>
-            <p class="warn_tt">故障信息</p>
+            <p class="warn_tt">仓库日志</p>
             <img src="~@/assets/image/box1_bg.png" alt="" />
             <div class="context">
               <!--信息滚动-->
@@ -124,8 +124,7 @@ export default {
 .header {
   position: absolute;
   width: 100%;
-  height: 60px;
-  line-height: 68px;
+  line-height: 100px;
   text-align: center;
   color: #fff;
   font-size: 28px;
