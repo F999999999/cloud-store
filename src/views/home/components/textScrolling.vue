@@ -1,14 +1,23 @@
 <template>
-  <vue3-seamless-scroll :list="list" class="scroll" hover :step="0.5">
-    <div class="item" v-for="(item, index) in list" :key="index">
-      <span>{{ item.title }}</span>
-      <span>{{ item.date }}</span>
+  <vue3-seamless-scroll :list="goodsLogList" class="scroll" hover :step="0.5">
+    <div class="item" v-for="item in goodsLogList" :key="item.goods_id">
+      <span>
+        {{ item.now_store_name }}：{{ item.goods_name }} => {{ item.status }}
+      </span>
+      <span>
+        {{
+          new Date(item.operate_time * 1000)
+            .toLocaleString()
+            .replaceAll("/", "-")
+        }}
+      </span>
     </div>
   </vue3-seamless-scroll>
 </template>
 <script>
 import { defineComponent, ref } from "vue";
 import { Vue3SeamlessScroll } from "vue3-seamless-scroll";
+import { getGoodsLogDateApi } from "@/api/store";
 
 export default defineComponent({
   name: "App",
@@ -16,31 +25,55 @@ export default defineComponent({
     Vue3SeamlessScroll,
   },
   setup() {
-    const list = ref([
-      {
-        title: "无缝滚动展示数据第1条",
-        date: "2022/03/09",
-      },
-      {
-        title: "无缝滚动展示数据第2条",
-        date: "2022/03/09",
-      },
-      {
-        title: "无缝滚动展示数据第3条",
-        date: "2022/03/09",
-      },
-      {
-        title: "无缝滚动展示数据第4条",
-        date: "2022/03/09",
-      },
-      {
-        title: "无缝滚动展示数据第5条",
-        date: "2022/03/09",
-      },
-    ]);
-    return { list };
+    // 获取商品日志
+    const { goodsLogList } = useGoodsLog();
+
+    return { goodsLogList };
   },
 });
+
+//获取商品日志
+const useGoodsLog = () => {
+  const goodsLogList = ref([]);
+  const getGoodsLog = async () => {
+    const res = await getGoodsLogDateApi();
+    console.log(res);
+    if (res.status === 200) {
+      goodsLogList.value = res.data.map((item) => {
+        //入库
+        if (
+          !(
+            item.before_shelf_grid_id &&
+            item.before_shelf_id &&
+            item.before_store_id
+          )
+        ) {
+          item.status = "入库";
+        }
+        //  出库
+        if (
+          !(item.now_shelf_grid_id && item.now_shelf_id && item.now_store_id)
+        ) {
+          item.status = "出库";
+        }
+        //  移动
+        if (
+          item.before_shelf_grid_id &&
+          item.before_shelf_id &&
+          item.before_store_id &&
+          item.now_shelf_grid_id &&
+          item.now_shelf_id &&
+          item.now_store_id
+        ) {
+          item.status = "移动";
+        }
+        return item;
+      });
+    }
+  };
+  getGoodsLog();
+  return { goodsLogList };
+};
 </script>
 
 <style>
@@ -55,5 +88,12 @@ export default defineComponent({
   align-items: center;
   justify-content: space-between;
   padding: 4px 0;
+}
+.scroll .item span {
+  white-space: nowrap;
+  /*溢出部分文字隐藏*/
+  overflow: hidden;
+  /*溢出部分省略号处理*/
+  text-overflow: ellipsis;
 }
 </style>

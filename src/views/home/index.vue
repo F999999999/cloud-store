@@ -1,15 +1,16 @@
 <template>
   <div class="home">
-    <div class="header">云仓</div>
+    <div class="header">云仓 - 智能仓储</div>
     <div class="home_left">
       <ul>
         <!-- 动态环形图 -->
         <store-tag
-          v-for="i in 3"
-          :key="i"
-          :id="i"
-          :storeTotal="100 * i"
-          :useGoods="50 + i"
+          v-for="item in getStoreListDate"
+          :key="item.store_id"
+          :id="item.store_id"
+          :storeTotal="item.total_grid"
+          :useGoods="item.use_grid"
+          :store_name="item.store_name"
         />
       </ul>
     </div>
@@ -18,9 +19,9 @@
         <li>
           <div class="home_right_warn">
             <span>
-              <img src="@/assets/image/warn.png" alt="" />
+              <img src="@/assets/image/run.png" alt="" />
             </span>
-            <p class="warn_tt">故障信息</p>
+            <p class="warn_tt">仓库日志</p>
             <img src="~@/assets/image/box1_bg.png" alt="" />
             <div class="context">
               <!--信息滚动-->
@@ -75,18 +76,37 @@
 import StoreTag from "@/views/home/components/storeTag";
 import TextTag from "@/views/home/components/textScrolling";
 import histogram from "@/views/home/components/histogram";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import { getStoreListDateApi, getStoreShelfDateApi } from "@/api/store";
 export default {
   components: { StoreTag, TextTag, histogram },
   setup() {
+    const getStoreListDate = ref("");
+    const getStoreShelfDate = ref("");
+    const getGoodsLogDate = ref("");
     const store = useStore();
+    //获取仓库使用数据信息
+    getStoreListDateApi().then((res) => {
+      // console.log(res);
+      if (res.status === 200) {
+        getStoreListDate.value = res.data.list;
+      }
+    });
+    //获取仓库运行状态
+    getStoreShelfDateApi().then((res) => {
+      console.log(res);
+      if (res.status === 200) {
+        getStoreShelfDate.value = res.data.list;
+      }
+    });
+
     // 获取仓库列表
     store.dispatch("store/getStoreList");
 
     const storeList = computed(() => store.state.store.storeList);
 
-    return { storeList };
+    return { storeList, getStoreListDate, getStoreShelfDate, getGoodsLogDate };
   },
 };
 </script>
@@ -104,8 +124,7 @@ export default {
 .header {
   position: absolute;
   width: 100%;
-  height: 60px;
-  line-height: 68px;
+  line-height: 100px;
   text-align: center;
   color: #fff;
   font-size: 28px;
