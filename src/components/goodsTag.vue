@@ -143,7 +143,11 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
+import { getGoodsPosition } from "@/hooks/useGoods";
+import { goodsTag } from "@/utils/three/CSS2DObject";
+import { ThreeJS } from "@/hooks/useTEngine";
+import store from "@/store";
 
 export default {
   name: "goodsTag",
@@ -159,6 +163,26 @@ export default {
   },
   setup(props) {
     const domElementRef = ref(null);
+
+    // 添加货物 Tag 标签显示状态
+    store.commit("goods/changeGoodsTagShow", {
+      id: props.goodsTagData.id,
+      tagShow: props.goodsTagData.tagShow,
+    });
+
+    onMounted(() => {
+      // 渲染 Tag 标签
+      ThreeJS.addObject(
+        goodsTag(
+          domElementRef.value,
+          getGoodsPosition(
+            props.goodsTagData.id,
+            props.goodsTagData.shelf_id,
+            props.goodsTagData.shelf_grid_id
+          )
+        )
+      );
+    });
 
     // 当前货物的位置
     const currentShelfGrid = ref({});

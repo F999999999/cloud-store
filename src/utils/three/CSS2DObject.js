@@ -1,10 +1,10 @@
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 
 // 货架标签
-function shelfTag(domElement, name, position) {
+function shelfTag(domElement, position) {
   // div元素包装成为css2模型对象CSS2DObject
   const label = new CSS2DObject(domElement);
-  label.name = name;
+  label.name = "shelfTag";
   //避免HTML标签遮挡三维场景的鼠标事件
   // domElement.style.pointerEvents = "none";
   if (position) {
@@ -15,7 +15,7 @@ function shelfTag(domElement, name, position) {
 }
 
 // 货物标签
-function goodsTag(domElement, name, position) {
+function goodsTag(domElement, position) {
   // div元素包装成为css2模型对象CSS2DObject
   const label = new CSS2DObject(domElement);
   label.name = "goodsTag";

@@ -11,9 +11,9 @@ const store = {
     };
   },
   mutations: {
-    // 修改仓库数据
-    changeStore(state, store) {
-      state.storeList = store;
+    // 添加仓库
+    addStore(state, store) {
+      state.storeList.push(store);
     },
     // 修改统计信息
     changeTotal(state, total) {
@@ -22,14 +22,14 @@ const store = {
   },
   actions: {
     // 获取仓库列表数据
-    getStoreList({ commit }) {
-      getStoreListApi().then((res) => {
-        console.log(res);
-        if (res.status === 200) {
-          // 更新数据
-          commit("changeStore", res.data);
-        }
-      });
+    async getStoreList({ commit }) {
+      const result = await getStoreListApi();
+      console.log(result);
+      if (result.status === 200) {
+        result.data.forEach((store) => {
+          commit("addStore", store);
+        });
+      }
     },
   },
 };

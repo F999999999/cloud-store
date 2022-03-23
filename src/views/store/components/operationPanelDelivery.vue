@@ -48,7 +48,7 @@
 
 <script>
 import { ref } from "vue";
-import { searchDeliveryNameApi, removeGoodsByIdApi } from "@/api/goods";
+import { searchDeliveryNameApi } from "@/api/goods";
 import { message } from "ant-design-vue";
 import { useStore } from "vuex";
 export default {
@@ -92,25 +92,21 @@ export default {
     };
     // 点击移除商品按钮 移除商品
     const removeGoods = () => {
-      // 根据商品id移除商品
-      removeGoodsByIdApi({
-        store_id: props.storeId,
-        ids: selectedDeliveryIdList.value,
-        takeout_time: new Date().toLocaleString() / 1000,
-      }).then((data) => {
-        if (data.status === 200) {
-          // 提示信息
-          message.success(data.message);
-          // 删除搜索结果中移除的商品
-          deliveryList.value = deliveryList.value.filter(
-            (item) => !data.data.find((goods) => goods.goods_id === item.id)
-          );
-          // 删除货物列表中移除的商品
-          data.data.forEach((goods) => {
-            store.commit("goods/removeGoods", goods.goods_id);
-          });
-        }
-      });
+      store
+        .dispatch("goods/removeGoods", {
+          storeId: props.storeId,
+          ids: selectedDeliveryIdList.value,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            // 删除搜索结果中移除的商品
+            deliveryList.value = deliveryList.value.filter(
+              (item) => !res.data.find((goods) => goods.goods_id === item.id)
+            );
+          }
+        });
+      // 清空选中的商品
+      selectedDeliveryIdList.value = [];
     };
 
     // 选中商品
