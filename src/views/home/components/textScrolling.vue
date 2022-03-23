@@ -8,7 +8,10 @@
   >
     <div class="item" v-for="item in goodsLogList" :key="item.goods_id">
       <span>
-        {{ item.now_store_name }}：{{ item.goods_name }} => {{ item.status }}
+        {{ item.now_store_name || item.before_store_name }}：{{
+          item.goods_name
+        }}
+        => {{ item.status }}
       </span>
       <span>
         {{
@@ -42,10 +45,10 @@ export default defineComponent({
 const useGoodsLog = () => {
   const goodsLogList = ref([]);
   const getGoodsLog = async () => {
-    const res = await getGoodsLogDateApi();
-    console.log(res);
-    if (res.status === 200) {
-      goodsLogList.value = res.data.map((item) => {
+    const result = await getGoodsLogDateApi();
+    console.log(result);
+    if (result.status === 200) {
+      goodsLogList.value = result.data.map((item) => {
         //入库
         if (
           !(

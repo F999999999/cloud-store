@@ -88,7 +88,7 @@ export default {
     const store = useStore();
     //获取仓库使用数据信息
     getStoreListDateApi().then((res) => {
-      // console.log(res);
+      console.log(res);
       if (res.status === 200) {
         getStoreListDate.value = res.data.list;
       }
