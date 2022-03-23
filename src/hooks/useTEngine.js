@@ -301,7 +301,7 @@ const useTEngine = (threeRef) => {
     }
   });
 
-  console.log("TEngine", TEngine);
+  console.log("TE", TE);
   return TE;
 };
 

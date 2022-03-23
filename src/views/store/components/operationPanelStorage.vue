@@ -5,10 +5,10 @@
         <a-input v-model:value="formState.name" required />
       </a-form-item>
       <a-form-item label="商品重量（单位：kg）：" name="weight">
-        <a-input v-model:value="formState.weight" />
+        <a-input v-model:value="formState.weight" type="number" />
       </a-form-item>
       <a-form-item label="商品保质期（单位：天）：" name="shelflife">
-        <a-input v-model:value="formState.shelflife" />
+        <a-input v-model:value="formState.shelflife" type="number" />
       </a-form-item>
       <a-form-item label="商品生产日期：" name="production_date">
         <a-date-picker v-model:value="formState.production_date">
@@ -36,8 +36,6 @@
 
 <script>
 import { computed, ref } from "vue";
-import { addGoodsApi } from "@/api/goods";
-import { message } from "ant-design-vue";
 import { useStore } from "vuex";
 import moment from "moment";
 
@@ -56,57 +54,20 @@ export default {
       // 商品名称
       name: "",
       // 商品重量
-      weight: "",
+      weight: null,
       // 商品保质期
-      shelflife: "",
+      shelflife: null,
       // 商品生产日期
-      production_date: "",
+      production_date: null,
       // 商品入库时间
       storage_time: moment(),
       // 存储位置
       position: "",
       // 货架ID
-      shelf_id: "",
+      shelf_id: null,
       // 货架格子ID
-      shelf_grid_id: "",
+      shelf_grid_id: null,
     });
-    // 提交表单且数据验证成功后回调事件
-    const onFinish = (values) => {
-      // 将仓库ID添加到表单数据中
-      values.store_id = props.storeId;
-      // 将时间进行处理 处理为时间戳
-      values.production_date = Math.floor(
-        new Date(values.production_date).valueOf() / 1000
-      );
-      values.storage_time = Math.floor(
-        new Date(values.storage_time).valueOf() / 1000
-      );
-      // 将货架ID添加到表单数据中
-      values.shelf_id = formState.value.shelf_id;
-      // 将货架格子ID添加进请求数据
-      values.shelf_grid_id = formState.value.shelf_grid_id;
-      // 商品入库
-      addGoodsApi(values).then((data) => {
-        if (data.status === 200) {
-          // 提示信息
-          message.success(data.message);
-          // 刷新商品列表
-          store.dispatch("goods/getGoodsList", props.storeId);
-          // 将表单内容清空
-          formState.value = {
-            name: "",
-            weight: "",
-            shelflife: "",
-            production_date: "",
-            storage_time: moment(),
-            position: "",
-            shelf_id: "",
-            shelf_grid_id: "",
-          };
-          shelfOptionsValue.value = null;
-        }
-      });
-    };
 
     // 选中的货架
     const shelfOptionsValue = ref(null);
@@ -117,6 +78,7 @@ export default {
 
     // 选中位置后的回调事件
     const displayRender = ({ labels, selectedOptions }) => {
+      console.log("selectedOptions", selectedOptions);
       if (selectedOptions.length > 0) {
         formState.value.shelf_id = selectedOptions[0].value;
         formState.value.shelf_grid_id = selectedOptions[1].value;
@@ -127,6 +89,44 @@ export default {
     // 更新入库时间
     const updateStorageTime = (date = new Date()) => {
       formState.value.storage_time = moment(date);
+    };
+
+    // 提交表单且数据验证成功后回调事件
+    const onFinish = (values) => {
+      // 清空当前选中的货物
+      shelfOptionsValue.value = null;
+      // 将时间进行处理 处理为时间戳
+      values.production_date = Math.floor(
+        new Date(values.production_date).valueOf() / 1000
+      );
+      values.storage_time = Math.floor(
+        new Date(values.storage_time).valueOf() / 1000
+      );
+      // 添加货物
+      store
+        .dispatch("goods/addGoods", {
+          storeId: props.storeId,
+          name: values.name,
+          weight: values.weight,
+          shelflife: values.shelflife,
+          productionDate: values.production_date,
+          storageTime: values.storage_time,
+          shelfId: formState.value.shelf_id,
+          shelfGridId: formState.value.shelf_grid_id,
+        })
+        .then(() => {
+          // 将表单内容清空
+          formState.value = {
+            name: "",
+            weight: null,
+            shelflife: null,
+            production_date: null,
+            storage_time: moment(),
+            position: "",
+            shelf_id: null,
+            shelf_grid_id: null,
+          };
+        });
     };
 
     return {

@@ -65,7 +65,11 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import store from "@/store";
+import { ThreeJS } from "@/hooks/useTEngine";
+import { shelfTag } from "@/utils/three/CSS2DObject";
+import { getShelfPosition } from "@/hooks/useShelf";
 
 export default {
   name: "shelfTag",
@@ -75,8 +79,22 @@ export default {
       default: () => ({}),
     },
   },
-  setup() {
+  setup(props) {
     const domElementRef = ref(null);
+
+    // 添加货物 Tag 标签显示状态
+    store.commit("shelf/changeShelfTagShow", {
+      id: props.shelfTagData.id,
+      tagShow: props.shelfTagData.tagShow,
+    });
+
+    onMounted(() => {
+      // 渲染 Tag 标签
+      ThreeJS.addObject(
+        shelfTag(domElementRef.value, getShelfPosition(props.shelfTagData.id))
+      );
+    });
+
     return {
       domElementRef,
     };
