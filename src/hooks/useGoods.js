@@ -36,25 +36,31 @@ const useGoodsModel = async ({ shelfList, goods, groupScale = 100 }) => {
   return newGroup;
 };
 
-// 更新货物模型位置
-const updateGoodsModelPosition = (scene) => {
+// 更新单个货物模型位置
+const updateOneGoodsModelPosition = (mesh) => {
   // 货架列表数据
   const shelfList = computed(() => store.state.shelf.shelfList);
+  // 查找货架
+  const shelf = shelfList.value.find(
+    (shelf) => shelf.id === mesh.data.shelf_id
+  );
+  // 设置货物的位置
+  mesh.position.set(
+    shelf.position.x * shelfSpacing.x +
+      shelfLocation[mesh.data.shelf_grid_id - 1].x,
+    shelf.position.y * shelfSpacing.y +
+      shelfLocation[mesh.data.shelf_grid_id - 1].y,
+    shelf.position.z * shelfSpacing.z +
+      shelfLocation[mesh.data.shelf_grid_id - 1].z
+  );
+};
+
+// 更新货物模型位置
+const updateAllGoodsModelPosition = (scene) => {
   scene.children.forEach((item) => {
     if (item.type === "Mesh" && item.name === "goods") {
-      // 查找货架
-      const shelf = shelfList.value.find(
-        (shelf) => shelf.id === item.data.shelf_id
-      );
-      // 设置货物的位置
-      item.position.set(
-        shelf.position.x * shelfSpacing.x +
-          shelfLocation[item.data.shelf_grid_id - 1].x,
-        shelf.position.y * shelfSpacing.y +
-          shelfLocation[item.data.shelf_grid_id - 1].y,
-        shelf.position.z * shelfSpacing.z +
-          shelfLocation[item.data.shelf_grid_id - 1].z
-      );
+      // 更新货物位置
+      updateOneGoodsModelPosition(item);
     }
   });
 };
@@ -73,4 +79,70 @@ const getGoodsPosition = (goodsId, shelfId, shelfGridId) => {
   };
 };
 
-export { useGoodsModel, updateGoodsModelPosition, getGoodsPosition };
+// 判断货物是否移动
+const isShelfMove = (oldGoodsMesh, newGoodsMesh, shelfMesh) => {
+  if (
+    shelfMesh.data.id === newGoodsMesh.data.shelf_grid_id &&
+    shelfMesh.data.shelf_id === newGoodsMesh.data.shelf_id
+  ) {
+    // 货架格子未进行更改
+    console.log("货架格子未进行更改");
+    // 货物位置还原
+    updateOneGoodsModelPosition(oldGoodsMesh);
+    return false;
+  } else {
+    return true;
+  }
+};
+
+// 判断货物是否重叠
+const isShelfOverlap = (goodsMesh, shelfBaseMesh) => {
+  // 货物列表数据
+  const goodsList = computed(() => store.state.goods.goodsList);
+  if (
+    goodsList.value.filter(
+      (item) =>
+        item.shelf_id === shelfBaseMesh.data.shelf_id &&
+        item.shelf_grid_id === shelfBaseMesh.data.id
+    ).length >= 1
+  ) {
+    // 该货架格子已被使用
+    console.log("该货架格子已被使用");
+    // 物体闪烁
+    twinkleMesh(goodsMesh, 0xff0000).then((mesh) => {
+      // 货物位置还原
+      updateOneGoodsModelPosition(mesh);
+    });
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// 物体闪烁
+const twinkleMesh = (mesh, emissive) => {
+  const rawEmissive = mesh.material.emissive.clone();
+  return new Promise((resolve) => {
+    mesh.material.emissive.set(emissive);
+    setTimeout(() => {
+      mesh.material.emissive.set(rawEmissive);
+      setTimeout(() => {
+        mesh.material.emissive.set(emissive);
+        setTimeout(() => {
+          mesh.material.emissive.set(rawEmissive);
+          resolve(mesh);
+        }, 200);
+      }, 200);
+    }, 200);
+  });
+};
+
+export {
+  useGoodsModel,
+  updateOneGoodsModelPosition,
+  updateAllGoodsModelPosition,
+  getGoodsPosition,
+  isShelfMove,
+  isShelfOverlap,
+  twinkleMesh,
+};

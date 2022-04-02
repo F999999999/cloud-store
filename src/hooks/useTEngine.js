@@ -5,15 +5,18 @@ import cameraControls from "@/utils/three/CameraControls";
 import TRaycaster from "@/utils/three/TRaycaster";
 import Outline from "@/utils/three/TOutline";
 import TDragControls from "@/utils/three/TDragControls";
-import { shelfLocation } from "@/utils/modelLocation/shelfModelLocation";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import {
+  isShelfMove,
+  isShelfOverlap,
+  updateOneGoodsModelPosition,
+} from "@/hooks/useGoods";
 
 let ThreeJS = null;
 const useTEngine = (threeRef) => {
   // 实例化 ThreeJs
   const TE = new TEngine(threeRef);
-
   ThreeJS = TE;
 
   // 获取 store
@@ -24,12 +27,12 @@ const useTEngine = (threeRef) => {
 
   // 辅助工具
   // TE.addObject(...helperList);
+  // 相机辅助
+  // TE.addObject(new CameraHelper(TE.camera));
   // 光源
   TE.addObject(...lightsList);
   // 基本网格模型
   TE.addObject(...basicObjectList);
-  // 相机辅助
-  // TE.addObject(new CameraHelper(TE.camera));
 
   // 相机控制器
   const TCameraControls = cameraControls(TE.renderer, TE.scene, TE.camera);
@@ -118,11 +121,6 @@ const useTEngine = (threeRef) => {
             id: selectedObject.data.id,
             tagShow: true,
           });
-          // 显示货物详情
-          // goodsList.value.forEach((item, i) => {
-          //   // 隐藏未选中的并显示选中的
-          //   goodsList.value[i].tagShow = item.id === selectedObject.data.id;
-          // });
         }
       } else {
         // 清除描边效果
@@ -151,6 +149,7 @@ const useTEngine = (threeRef) => {
 
   // 监听鼠标左键按下事件
   TE.renderer.domElement.addEventListener("mousedown", () => {
+    console.log("mousedown", intersectObjects);
     const _goodsObjects = [];
     // 遍历相交的模型
     intersectObjects.forEach((intersect) => {
@@ -169,10 +168,8 @@ const useTEngine = (threeRef) => {
     });
     // 判断是否捕获到货物
     if (_goodsObjects.length > 0) {
-      // 当前货物
-      const selectedObject = _goodsObjects[0].object;
-      // 添加到可拖放列表
-      dragControls.addDragControlsObject(selectedObject);
+      // 将当前货物添加到可拖放列表
+      dragControls.addDragControlsObject(_goodsObjects[0].object);
     }
   });
 
@@ -197,112 +194,59 @@ const useTEngine = (threeRef) => {
     });
   });
 
-  // dragControls.addEventListener("drag", () => {});
+  // 拖拽中执行
+  dragControls.addEventListener("drag", () => {
+    // 获取与射线相交的物体
+    intersectObjects = raycaster.updateIntersects(event);
+    const currentMesh = intersectObjects.find(
+      (object) => object.object.name.slice(0, 11) === "shelf_base_"
+    )?.object;
+    if (currentMesh) {
+      console.log(currentMesh);
+    }
+  });
 
   // 完成拖拽时执行
   dragControls.addEventListener("dragend", (event) => {
     // 设置拖放状态为未在拖放
     dragControls.setDragState(false);
 
-    // 过滤鼠标指向的货架格子
+    // 获取鼠标指向的货架格子
     const shelfBaseMesh = intersectObjects.find(
       (item) => item.object.name.slice(0, 11) === "shelf_base_"
-    );
-
+    )?.object;
+    console.log("shelfBaseMesh", shelfBaseMesh, event);
     // 判断是否拖拽到货架格子
     if (shelfBaseMesh) {
-      // 判断货架格子是否更改
+      // 判断货物是否移动
       if (
-        shelfBaseMesh.object.data.id ===
-          dragControls.getCurrentDragControls().data.shelf_grid_id &&
-        shelfBaseMesh.object.data.shelf_id ===
-          dragControls.getCurrentDragControls().data.shelf_id
-      ) {
-        // 货架格子未进行更改
-        console.log("货架格子未进行更改");
-        // 货物位置还原
-        event.object.position.set(
-          dragControls.getCurrentDragControls().position.x,
-          dragControls.getCurrentDragControls().position.y,
-          dragControls.getCurrentDragControls().position.z
-        );
+        !isShelfMove(
+          event.object,
+          dragControls.getCurrentDragControls(),
+          shelfBaseMesh
+        )
+      )
         return;
-      }
-
-      // 生成新的货物列表
-      const newGoodList = goodsList.value.map((item) => {
-        if (
-          item.shelf_id === event.object.data.shelf_id &&
-          item.shelf_grid_id === event.object.data.shelf_grid_id
-        ) {
-          item.shelf_id = shelfBaseMesh.object.data.shelf_id;
-          item.shelf_grid_id = shelfBaseMesh.object.data.id;
-          return item;
-        } else {
-          return item;
-        }
-      });
 
       // 判断货物是否重叠
-      if (
-        newGoodList.filter(
-          (item) =>
-            item.shelf_id === event.object.data.shelf_id &&
-            item.shelf_grid_id === event.object.data.shelf_grid_id
-        ).length > 1
-      ) {
-        // 货物重叠
-        console.log("货物重叠");
+      if (isShelfOverlap(event.object, shelfBaseMesh)) return;
 
-        // 物体闪烁
-        event.object.material.emissive.set(0xff0000);
-        setTimeout(() => {
-          event.object.material.emissive.set(0x000000);
-          setTimeout(() => {
-            event.object.material.emissive.set(0xff0000);
-            setTimeout(() => {
-              event.object.material.emissive.set(0x000000);
-              // 货物位置还原
-              event.object.position.set(
-                dragControls.getCurrentDragControls().position.x,
-                dragControls.getCurrentDragControls().position.y,
-                dragControls.getCurrentDragControls().position.z
-              );
-            }, 200);
-          }, 200);
-        }, 200);
-
-        return;
-      }
-      // 更新数据
-      store.commit("goods/changeGoods", newGoodList);
-      // 更新货物数据
-      event.object.data = {
-        ...event.object.data,
-        shelf_id: shelfBaseMesh.object.data.shelf_id,
-        shelf_grid_id: shelfBaseMesh.object.data.id,
-      };
-      // 把货物放入货架格子
-      event.object.position.set(
-        shelfBaseMesh.object.parent.position.x +
-          shelfLocation[shelfBaseMesh.object.data.id - 1].x,
-        shelfBaseMesh.object.parent.position.y +
-          shelfLocation[shelfBaseMesh.object.data.id - 1].y,
-        shelfBaseMesh.object.parent.position.z +
-          shelfLocation[shelfBaseMesh.object.data.id - 1].z
-      );
+      // 移动货物
+      store.dispatch("goods/moveGoods", {
+        goodsId: event.object.data.id,
+        storeId: shelfBaseMesh.data.store_id,
+        shelfId: shelfBaseMesh.data.shelf_id,
+        shelfGridId: shelfBaseMesh.data.id,
+      });
     } else {
+      console.log("event.object", event.object);
       // 还原货物位置
-      event.object.position.set(
-        dragControls.getCurrentDragControls().position.x,
-        dragControls.getCurrentDragControls().position.y,
-        dragControls.getCurrentDragControls().position.z
-      );
+      updateOneGoodsModelPosition(event.object);
     }
   });
 
   console.log("TE", TE);
-  return TE;
+  return { ThreeJS: TE, raycaster };
 };
 
 export { useTEngine, ThreeJS };

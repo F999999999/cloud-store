@@ -4,7 +4,7 @@ import {
   moveGoodsByIdApi,
   removeGoodsByIdApi,
 } from "@/api/goods";
-import { updateGoodsModelPosition, useGoodsModel } from "@/hooks/useGoods";
+import { updateAllGoodsModelPosition, useGoodsModel } from "@/hooks/useGoods";
 import store from "@/store";
 import { ThreeJS } from "@/hooks/useTEngine";
 import { message } from "ant-design-vue";
@@ -79,7 +79,7 @@ const goods = {
         shelfGridId,
       });
       // 刷新货架模型位置
-      updateGoodsModelPosition(ThreeJS.scene, store.state.shelf.shelfList);
+      updateAllGoodsModelPosition(ThreeJS.scene, store.state.shelf.shelfList);
     },
     // 移除货物
     removeGoods(state, { goodsId }) {

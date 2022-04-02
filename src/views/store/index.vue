@@ -56,8 +56,6 @@ export default {
     const store = useStore();
     // three 绑定的元素
     const threeRef = ref(null);
-    // 实例化的 ThreeJS 引擎
-    let TE = null;
 
     // 货架 Tag
     const shelfTagRef = ref(null);
@@ -75,13 +73,13 @@ export default {
 
     // DOM 渲染完成后执行
     onMounted(() => {
-      TE = useTEngine(threeRef.value);
+      const { ThreeJS, raycaster } = useTEngine(threeRef.value);
 
       // 自动调整渲染器大小
       window.onresize = () => {
         return (() => {
           // 设置正投影相机大小
-          TE.setOrthographicCameraSize(
+          ThreeJS.setOrthographicCameraSize(
             document.body.clientWidth,
             document.body.clientHeight
           );
@@ -91,8 +89,37 @@ export default {
         })();
       };
 
+      // 与射线相交的物体
+      let intersectObjects = [];
+
       // 添加 CSS2D 渲染器到渲染列表
-      TE.addRenderAnim(() => labelRenderer.render(TE.scene, TE.camera));
+      ThreeJS.addRenderAnim(() =>
+        labelRenderer.render(ThreeJS.scene, ThreeJS.camera)
+      );
+
+      // 监听鼠标指针移动事件
+      ThreeJS.renderer.domElement.addEventListener("pointermove", (event) => {
+        // 获取与射线相交的物体
+        intersectObjects = raycaster.updateIntersects(event);
+        // 判断是否有与射线相交的模型
+        if (intersectObjects.length > 0) {
+          // console.log(intersectObjects);
+        }
+      });
+
+      // 监听鼠标左键按下事件
+      ThreeJS.renderer.domElement.addEventListener("mousedown", () => {
+        // 判断是否有与射线相交的模型
+        if (intersectObjects.length > 0) {
+          const currentGoodsObject = intersectObjects.find(
+            (object) => object?.object?.name === "goods"
+          );
+          // 判断是否有货物
+          if (currentGoodsObject) {
+            console.log("currentGoodsObject", currentGoodsObject);
+          }
+        }
+      });
     });
 
     return {
