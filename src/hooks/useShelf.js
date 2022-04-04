@@ -55,4 +55,24 @@ const getShelfPosition = (shelfId) => {
   };
 };
 
-export { shelfSpacing, useShelfModel, getShelfPosition };
+const toggleShelfBaseEmissive = (oldMesh, newMesh, color, addColor) => {
+  // 清除之前被选中的货架格子的自发光属性
+  oldMesh?.material?.emissive.set(0x000000);
+
+  // 判断是否要添加颜色并且有捕获到货架格子
+  if (addColor && newMesh.length > 0) {
+    // 修改货架格子的自发光属性让其高亮 只渲染第一个货架格子
+    newMesh[0].object.material.emissive.set(color);
+    // 返回被选中的货架格子
+    return newMesh[0].object;
+  } else {
+    return {};
+  }
+};
+
+export {
+  shelfSpacing,
+  useShelfModel,
+  getShelfPosition,
+  toggleShelfBaseEmissive,
+};
