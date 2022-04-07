@@ -20,6 +20,8 @@ export class TEngine {
       // 抗锯齿
       antialias: true,
     });
+    // 设置像素密度
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     // 是否渲染阴影
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
@@ -44,6 +46,8 @@ export class TEngine {
     this.camera.position.set(2000, 2000, 1000);
     // 设置相机方向(需要指向的场景对象)
     this.camera.lookAt(this.scene.position);
+    // 设置相机垂直旋转的角度的上限
+    this.camera.maxPolarAngle = Math.PI / 2;
 
     const anim = () => {
       if (this.renderFnArr.length > 0) {
