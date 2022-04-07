@@ -8,7 +8,10 @@
   >
     <div class="item" v-for="(item, index) in goodsLogList" :key="index">
       <span>
-        {{ item.now_store_name }}：{{ item.goods_name }} => {{ item.status }}
+        {{ item.now_store_name || item.before_store_name }}：{{
+          item.goods_name
+        }}
+        => {{ item.status }}
       </span>
       <span>
         {{

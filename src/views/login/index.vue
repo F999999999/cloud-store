@@ -108,7 +108,9 @@ button {
 
 .content {
   height: 100vh;
-  background: linear-gradient(#141e30, #243b55);
+  /* background: linear-gradient(#141e30, #243b55); */
+  background-image: url(https://woyebuzhidaoyaoqiyigeshenmemingzi.oss-cn-hangzhou.aliyuncs.com/login.gif);
+  background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -120,6 +122,7 @@ button {
   width: 400px;
   height: 364px;
   background-color: #0c1622;
+  background: rgba(12, 22, 34, 0.6);
   margin: 100px auto;
   border-radius: 10px;
   box-shadow: 0 15px 25px 0 rgba(0, 0, 0, 0.6);
@@ -129,7 +132,7 @@ button {
 
 h2 {
   text-align: center;
-  color: aliceblue;
+  color: #fff;
   margin-bottom: 30px;
   font-family: "Courier New", Courier, monospace;
 }
