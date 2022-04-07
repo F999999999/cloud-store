@@ -6,6 +6,7 @@
       :height="fullHeight - 160"
       style="top: 80px; left: 40px"
     />
+    <!--货架标签-->
     <template ref="shelfTagRef">
       <shelf-tag
         v-for="shelfTagData in shelfList"
@@ -13,14 +14,27 @@
         :shelfTagData="shelfTagData"
       />
     </template>
+    <!--货物标签-->
     <goods-tag
       v-for="goodsTagData in goodsList"
       :key="goodsTagData.id"
       :goodsTagData="goodsTagData"
       :shelf="shelfList.find((item) => item.id === goodsTagData.shelf_id)"
     >
-      <a-tag color="orange">双击并拖动可以移动货物位置</a-tag>
+      <a-tag color="orange">拖动可以移动货物位置</a-tag>
     </goods-tag>
+    <!--移动确认框-->
+    <div
+      class="confirm-box"
+      v-show="goodsMoveConfirmVisible"
+      :style="{
+        top: mousePosition.y + 'px',
+        left: mousePosition.x + 'px',
+      }"
+    >
+      <a-button type="primary" @click="goodsMoveOk">确认</a-button>
+      <a-button type="primary" danger @click="goodsMoveCancel">取消</a-button>
+    </div>
   </div>
 </template>
 
@@ -44,11 +58,15 @@ import {
   updateOneGoodsModelPosition,
 } from "@/hooks/useGoods";
 import TRaycaster from "@/utils/three/TRaycaster";
+import getMousePosition from "@/utils/getMousePosition";
 
 export default {
   name: "Store",
   components: { GoodsTag, ShelfTag, OperationPanel },
   setup() {
+    // 鼠标位置
+    const mousePosition = ref({ x: 0, y: 0 });
+
     // 获取路由
     const route = useRoute();
     // 仓库ID
@@ -80,6 +98,38 @@ export default {
       store.dispatch("goods/getGoodsList", route.query.id);
     });
 
+    // 拖放控制器
+    let dragControls = null;
+    // 移动的货物的事件对象
+    let goodsMoveEvent = null;
+    // 货物移动后的货架格子
+    let goodsMoveShelfBaseMesh = null;
+    // 货物移动确认框
+    const goodsMoveConfirmVisible = ref(false);
+    // 确认移动货物
+    const goodsMoveOk = () => {
+      // 移动货物
+      store.dispatch("goods/moveGoods", {
+        goodsId: dragControls.getCurrentDragControls().data.id,
+        storeId: goodsMoveShelfBaseMesh.data.store_id,
+        shelfId: goodsMoveShelfBaseMesh.data.shelf_id,
+        shelfGridId: goodsMoveShelfBaseMesh.data.id,
+      });
+      // 清除货架格子的自发光
+      toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
+      // 关闭确认框
+      goodsMoveConfirmVisible.value = false;
+    };
+    // 取消货物移动
+    const goodsMoveCancel = () => {
+      // 还原货物位置
+      updateOneGoodsModelPosition(goodsMoveEvent.object);
+      // 清除货架格子的自发光
+      toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
+      // 关闭确认框
+      goodsMoveConfirmVisible.value = false;
+    };
+
     // DOM 渲染完成后执行
     onMounted(() => {
       const ThreeJS = useTEngine(threeRef.value);
@@ -107,7 +157,7 @@ export default {
       );
 
       // 拖放控制器
-      const dragControls = TDragControls(ThreeJS.camera, ThreeJS.renderer);
+      dragControls = TDragControls(ThreeJS.camera, ThreeJS.renderer);
 
       // 轮廓线渲染
       const outline = Outline(ThreeJS.renderer, ThreeJS.scene, ThreeJS.camera);
@@ -147,13 +197,16 @@ export default {
           });
         }
 
-        // 如果拖放控制器处于拖放状态则添加货架格子自发光属性
-        beforeShelfBaseObjects = toggleShelfBaseEmissive(
-          beforeShelfBaseObjects,
-          shelfBaseObjects,
-          0x118ee9,
-          dragControls.getDragState()
-        );
+        // 判断移动确认框是否显示
+        if (!goodsMoveConfirmVisible.value) {
+          // 如果拖放控制器处于拖放状态则添加货架格子自发光属性
+          beforeShelfBaseObjects = toggleShelfBaseEmissive(
+            beforeShelfBaseObjects,
+            shelfBaseObjects,
+            0x118ee9,
+            dragControls.getDragState()
+          );
+        }
 
         // 清空货架格子列表
         shelfBaseObjects = [];
@@ -267,7 +320,18 @@ export default {
           (object) => object.object.name.slice(0, 11) === "shelf_base_"
         )?.object;
         if (currentMesh) {
-          console.log(currentMesh);
+          const shelf = shelfList.value.find(
+            (shelf) => shelf.id === currentMesh.data.shelf_id
+          );
+          const grid = shelf.shelf_grid.find(
+            (grid) => grid.shelf_grid_id === currentMesh.data.id
+          );
+          console.log(
+            currentMesh,
+            `${grid.position.y + 1}层 ${grid.position.x + 1}行 ${
+              grid.position.z + 1
+            }列(${grid.shelf_grid_id})`
+          );
         }
       });
 
@@ -276,32 +340,34 @@ export default {
         // 设置拖放状态为未在拖放
         dragControls.setDragState(false);
 
+        // 保存当前移移动的货物的事件对象
+        goodsMoveEvent = event;
+
+        // 获取鼠标位置
+        mousePosition.value = getMousePosition();
+        console.log("mousePosition", mousePosition.value);
+
         // 获取鼠标指向的货架格子
-        const shelfBaseMesh = intersectObjects.find(
+        goodsMoveShelfBaseMesh = intersectObjects.find(
           (item) => item.object.name.slice(0, 11) === "shelf_base_"
         )?.object;
         // 判断是否拖拽到货架格子
-        if (shelfBaseMesh) {
+        if (goodsMoveShelfBaseMesh) {
           // 判断货物是否移动
           if (
             !isShelfMove(
               event.object,
               dragControls.getCurrentDragControls(),
-              shelfBaseMesh
+              goodsMoveShelfBaseMesh
             )
           )
             return;
 
           // 判断货物是否重叠
-          if (isShelfOverlap(event.object, shelfBaseMesh)) return;
+          if (isShelfOverlap(event.object, goodsMoveShelfBaseMesh)) return;
 
-          // 移动货物
-          store.dispatch("goods/moveGoods", {
-            goodsId: event.object.data.id,
-            storeId: shelfBaseMesh.data.store_id,
-            shelfId: shelfBaseMesh.data.shelf_id,
-            shelfGridId: shelfBaseMesh.data.id,
-          });
+          // 弹出确认框
+          goodsMoveConfirmVisible.value = true;
         } else {
           // 还原货物位置
           updateOneGoodsModelPosition(event.object);
@@ -316,6 +382,10 @@ export default {
       shelfList,
       goodsList,
       fullHeight: window.innerHeight,
+      goodsMoveConfirmVisible,
+      goodsMoveOk,
+      goodsMoveCancel,
+      mousePosition,
     };
   },
 };
@@ -331,5 +401,11 @@ export default {
 .three-canvas {
   width: 100%;
   height: 100%;
+}
+
+.confirm-box {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
 }
 </style>
