@@ -119,6 +119,8 @@ export default {
       toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
       // 关闭确认框
       goodsMoveConfirmVisible.value = false;
+      // 提示消息
+      message.success("移动成功");
     };
     // 取消货物移动
     const goodsMoveCancel = () => {
@@ -128,6 +130,8 @@ export default {
       toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
       // 关闭确认框
       goodsMoveConfirmVisible.value = false;
+      // 提示消息
+      message.warning("取消移动");
     };
 
     // DOM 渲染完成后执行
@@ -294,8 +298,15 @@ export default {
 
       // 开始拖拽时执行
       dragControls.addEventListener("dragstart", (event) => {
+        if (goodsMoveConfirmVisible.value === true) {
+          goodsMoveCancel();
+        }
+
         // 设置拖放状态为正在拖放
         dragControls.setDragState(true);
+
+        // 隐藏移动确认框
+        goodsMoveConfirmVisible.value = false;
 
         // 保存当前被拖放的物体
         dragControls.setCurrentDragControls({
@@ -361,10 +372,11 @@ export default {
               goodsMoveShelfBaseMesh
             )
           )
-            return;
+            return message.warning("货架格子未进行更改");
 
           // 判断货物是否重叠
-          if (isShelfOverlap(event.object, goodsMoveShelfBaseMesh)) return;
+          if (isShelfOverlap(event.object, goodsMoveShelfBaseMesh))
+            return message.warning("该货架格子已被使用");
 
           // 弹出确认框
           goodsMoveConfirmVisible.value = true;
