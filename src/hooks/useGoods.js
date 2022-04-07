@@ -85,8 +85,6 @@ const isShelfMove = (oldGoodsMesh, newGoodsMesh, shelfMesh) => {
     shelfMesh.data.id === newGoodsMesh.data.shelf_grid_id &&
     shelfMesh.data.shelf_id === newGoodsMesh.data.shelf_id
   ) {
-    // 货架格子未进行更改
-    console.log("货架格子未进行更改");
     // 货物位置还原
     updateOneGoodsModelPosition(oldGoodsMesh);
     return false;
@@ -106,10 +104,8 @@ const isShelfOverlap = (goodsMesh, shelfBaseMesh) => {
         item.shelf_grid_id === shelfBaseMesh.data.id
     ).length >= 1
   ) {
-    // 该货架格子已被使用
-    console.log("该货架格子已被使用");
     // 物体闪烁
-    twinkleMesh(goodsMesh, 0xff0000).then((mesh) => {
+    twinkleMesh(goodsMesh, 0xff0000, "color").then((mesh) => {
       // 货物位置还原
       updateOneGoodsModelPosition(mesh);
     });
@@ -120,16 +116,16 @@ const isShelfOverlap = (goodsMesh, shelfBaseMesh) => {
 };
 
 // 物体闪烁
-const twinkleMesh = (mesh, emissive) => {
-  const rawEmissive = mesh.material.emissive.clone();
+const twinkleMesh = (mesh, value, attribute = "emissive") => {
+  const rawValue = mesh.material[attribute].clone();
   return new Promise((resolve) => {
-    mesh.material.emissive.set(emissive);
+    mesh.material[attribute].set(value);
     setTimeout(() => {
-      mesh.material.emissive.set(rawEmissive);
+      mesh.material[attribute].set(rawValue);
       setTimeout(() => {
-        mesh.material.emissive.set(emissive);
+        mesh.material[attribute].set(value);
         setTimeout(() => {
-          mesh.material.emissive.set(rawEmissive);
+          mesh.material[attribute].set(rawValue);
           resolve(mesh);
         }, 200);
       }, 200);
