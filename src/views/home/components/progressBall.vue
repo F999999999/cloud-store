@@ -297,9 +297,9 @@ export default {
 <style lang="less" scoped>
 .ball {
   position: absolute;
-  top: 30%;
+  top: 22%;
   right: 4%;
-  width: 150px;
-  height: 150px;
+  width: 10rem;
+  height: 10rem;
 }
 </style>

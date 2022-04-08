@@ -62,8 +62,8 @@ export default {
       left: 10%;
       span {
         position: absolute;
-        top: 30px;
-        left: 60px;
+        top: 2rem;
+        left: 3rem;
       }
     }
     .box_context_p2 {
@@ -72,21 +72,21 @@ export default {
       left: 10%;
       span {
         position: absolute;
-        top: 30px;
-        left: 60px;
+        top: 1.6rem;
+        left: 3.5rem;
       }
     }
     h3 {
-      font-size: 20px;
+      font-size: 1rem;
       color: #00ffff;
     }
     p {
-      font-size: 18px;
+      font-size: 1rem;
       color: #4f7399;
     }
     span {
       color: #fff;
-      font-size: 28px;
+      font-size: 1.5rem;
       font-weight: bolder;
     }
   }

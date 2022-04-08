@@ -45,7 +45,7 @@ export default {
               show: true,
               textStyle: {
                 color: "#60ACF7",
-                fontSize: 14,
+                fontSize: 13,
               },
             },
             splitLine: {
@@ -123,6 +123,6 @@ export default {
 <style scoped>
 .histogram {
   width: 80%;
-  height: 100px;
+  height: 6.2rem;
 }
 </style>
