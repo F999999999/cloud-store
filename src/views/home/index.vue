@@ -116,7 +116,7 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-  background-image: url("~@/assets/image/bg.jpg");
+  background-image: url("~@/assets/image/bg.png");
   background-size: 100% 100%;
   overflow: hidden;
 }
@@ -124,11 +124,14 @@ export default {
 .header {
   position: absolute;
   width: 100%;
-  height: 7%;
-  line-height: 4rem;
+  height: 100px;
+  line-height: 6rem;
   text-align: center;
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 2rem;
+  background-image: url("~@/assets/image/title_bg.png");
+  background-size: 100% 100%;
+  user-select: none;
 }
 
 .home_left {
