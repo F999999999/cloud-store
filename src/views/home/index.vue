@@ -124,10 +124,11 @@ export default {
 .header {
   position: absolute;
   width: 100%;
-  line-height: 100px;
+  height: 7%;
+  line-height: 4rem;
   text-align: center;
   color: #fff;
-  font-size: 28px;
+  font-size: 1.4rem;
 }
 
 .home_left {
@@ -170,8 +171,8 @@ export default {
       position: absolute;
       top: 10%;
       left: 35%;
-      width: 20px;
-      height: 18px;
+      width: 1rem;
+      height: 1rem;
       img {
         width: 100%;
         height: 100%;
@@ -182,6 +183,7 @@ export default {
       top: 10%;
       left: 44%;
       color: #00ffff;
+      font-size: 1rem;
     }
   }
 }
@@ -193,16 +195,10 @@ export default {
 }
 .context {
   position: absolute;
-  top: 60px;
+  top: 3.5rem;
   left: 8%;
   width: 84%;
   height: 60%;
-  li {
-    padding: 5px 0;
-    color: #fff;
-    font-size: 14px;
-    line-height: 16px;
-  }
 }
 
 // 运行状态
@@ -213,8 +209,8 @@ export default {
     position: absolute;
     top: 3%;
     left: 35%;
-    width: 20px;
-    height: 18px;
+    width: 1rem;
+    height: 1rem;
     img {
       width: 100%;
       height: 100%;
@@ -225,14 +221,18 @@ export default {
     top: 3%;
     left: 44%;
     color: #00ffff;
+    font-size: 1rem;
   }
 }
 
 .home_right_status_img_context {
   position: absolute;
   top: 16%;
-  left: 30px;
+  left: 2rem;
   width: 100%;
+  li {
+    height: 30%;
+  }
 }
 
 .home_right_status_img_context_title {
@@ -242,39 +242,37 @@ export default {
   ::before {
     content: " ";
     display: inline-block;
-    width: 10px;
-    height: 10px;
+    width: 0.5rem;
+    height: 0.3rem;
     border-radius: 50%;
-    color: #00fbff;
-    z-index: 1;
   }
 }
 
 .home_bottom {
-  width: 800px;
-  height: 80px;
+  width: 50rem;
+  height: 5rem;
   //background-color:red;
   position: absolute;
   left: 50%;
-  bottom: 6%;
+  bottom: 3%;
   transform: translate(-50%, -50%);
   color: #fff;
   li {
     float: left;
     margin: 0 10%;
     text-align: center;
-    padding-left: 10px;
+    padding-left: 1rem;
   }
   .button {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 6rem;
+    height: 6rem;
     ::before {
       content: "";
-      width: 100px;
-      height: 100px;
+      width: 6rem;
+      height: 6rem;
       background-image: url("~@/assets/image/circle.png");
-      background-size: 100px 100px;
+      background-size: 6rem;
       position: absolute;
       top: 0;
       left: 0;
@@ -282,30 +280,9 @@ export default {
     }
     a {
       display: inline-block;
-      padding: 45% 0;
-      margin-left: -10px;
+      padding: 50% 0;
+      margin-left: -1rem;
       color: #fff;
-    }
-  }
-}
-
-// 运行状态
-.home_right_status {
-  position: relative;
-}
-.home_right_status_p {
-  position: absolute;
-  top: 10px;
-  left: 38%;
-  color: #00ffff;
-  .home_right_status_p i {
-    display: inline-block;
-    width: 21px;
-    height: 25px;
-    margin: 0 0 0 -10px;
-    img {
-      width: 100%;
-      margin: 3px 0 0 0;
     }
   }
 }
