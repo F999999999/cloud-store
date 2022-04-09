@@ -144,7 +144,7 @@
 
 <script>
 import { onMounted, ref, watch } from "vue";
-import { getGoodsPosition } from "@/hooks/useGoods";
+import { getGridPosition } from "@/hooks/useShelf";
 import { goodsTag } from "@/utils/three/CSS2DObject";
 import { ThreeJS } from "@/hooks/useTEngine";
 import store from "@/store";
@@ -175,8 +175,7 @@ export default {
       ThreeJS.addObject(
         goodsTag(
           domElementRef.value,
-          getGoodsPosition(
-            props.goodsTagData.id,
+          getGridPosition(
             props.goodsTagData.shelf_id,
             props.goodsTagData.shelf_grid_id
           )
