@@ -114,7 +114,7 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: 14px;
   color: #03e9f4;
 }
 
@@ -135,6 +135,7 @@ h2 {
   color: #fff;
   margin-bottom: 30px;
   font-family: "Courier New", Courier, monospace;
+  font-size: 1.6rem;
 }
 
 .item {
