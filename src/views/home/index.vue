@@ -273,6 +273,8 @@ export default {
 
 .home_right_status_img_context_title {
   //margin:0 0 0 -70%
+  margin-top: -0.3rem;
+  margin-bottom: 0;
   text-align: left;
   color: #fff;
   ::before {
