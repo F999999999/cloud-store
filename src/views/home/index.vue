@@ -82,9 +82,9 @@ import { getStoreListDateApi, getStoreShelfDateApi } from "@/api/store";
 export default {
   components: { StoreTag, TextTag, histogram },
   setup() {
-    const getStoreListDate = ref("");
-    const getStoreShelfDate = ref("");
-    const getGoodsLogDate = ref("");
+    const getStoreListDate = ref([]);
+    const getStoreShelfDate = ref([]);
+    const getGoodsLogDate = ref([]);
     const store = useStore();
     //获取仓库使用数据信息
     getStoreListDateApi().then((res) => {
@@ -100,13 +100,16 @@ export default {
         getStoreShelfDate.value = res.data.list;
       }
     });
-
     // 获取仓库列表
     store.dispatch("store/getStoreList");
-
     const storeList = computed(() => store.state.store.storeList);
 
-    return { storeList, getStoreListDate, getStoreShelfDate, getGoodsLogDate };
+    return {
+      storeList,
+      getStoreListDate,
+      getStoreShelfDate,
+      getGoodsLogDate,
+    };
   },
 };
 </script>
@@ -128,7 +131,7 @@ export default {
   line-height: 6rem;
   text-align: center;
   color: #fff;
-  font-size: 2rem;
+  font-size: 1.8rem;
   background-image: url("~@/assets/image/title_bg.png");
   background-size: 100% 100%;
   user-select: none;

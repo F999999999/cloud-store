@@ -4,7 +4,7 @@ const store = {
   namespaced: true,
   state() {
     return {
-      // 仓库数据
+      // 仓库列表数据
       storeList: [],
       // 统计信息
       storeTotal: {},
@@ -14,6 +14,10 @@ const store = {
     // 添加仓库
     addStore(state, store) {
       state.storeList.push(store);
+    },
+    // 清空仓库列表
+    clearStore(state) {
+      state.storeList = [];
     },
     // 修改统计信息
     changeTotal(state, total) {
@@ -26,6 +30,7 @@ const store = {
       const result = await getStoreListApi();
       console.log(result);
       if (result.status === 200) {
+        commit("clearStore");
         result.data.forEach((store) => {
           commit("addStore", store);
         });
