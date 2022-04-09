@@ -29,3 +29,10 @@ export const getStoreShelfDateApi = () => {
 export const getGoodsLogDateApi = () => {
   return requestWithToken("/store/goods_log", "get");
 };
+/**
+ * 获取临期商品日期
+ * @returns {Promise}
+ */
+export const getGoodsLogDateTimeApi = () => {
+  return requestWithToken("/store/expire_goods_total", "get");
+};
