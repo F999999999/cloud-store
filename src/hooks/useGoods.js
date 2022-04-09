@@ -3,6 +3,7 @@ import { shelfLocation } from "@/utils/modelLocation/shelfModelLocation";
 import { shelfSpacing } from "@/hooks/useShelf";
 import { computed } from "vue";
 import store from "@/store";
+import { ThreeJS } from "@/hooks/useTEngine";
 
 const useGoodsModel = async ({ shelfList, goods, groupScale = 100 }) => {
   shelfList = shelfList || computed(() => store.state.shelf.shelfList).value;
@@ -119,6 +120,29 @@ const twinkleMesh = (mesh, value, attribute = "emissive") => {
   });
 };
 
+// 设置货物属性
+const setGoodsAttribute = (goodsIdList, value, attribute = "emissive") => {
+  const goodsMesh = [];
+  // 递归遍历 children 给选中的商品添加或者还原自发光效果
+  ThreeJS.scene.children.forEach((obj) => {
+    // 判断是否是货物
+    if (obj.type === "Mesh" && obj.name === "goods") {
+      // 判断传入的货物列表是否是数组
+      if (Array.isArray(goodsIdList)) {
+        // 判断该货物ID是否在传入的列表中
+        if (goodsIdList.find((goodsId) => goodsId === obj.data.id)) {
+          obj.material[attribute].set(value);
+          goodsMesh.push(obj);
+        }
+      } else if (obj.data.id === goodsIdList) {
+        obj.material[attribute].set(value);
+        goodsMesh.push(obj);
+      }
+    }
+  });
+  return goodsMesh;
+};
+
 export {
   useGoodsModel,
   updateOneGoodsModelPosition,
@@ -126,4 +150,5 @@ export {
   isShelfMove,
   isShelfOverlap,
   twinkleMesh,
+  setGoodsAttribute,
 };

@@ -35,6 +35,17 @@
       <a-button type="primary" @click="goodsMoveOk">确认</a-button>
       <a-button type="primary" danger @click="goodsMoveCancel">取消</a-button>
     </div>
+    <!-- 拖拽时货架格子位置 Tag -->
+    <div
+      class="grid-tag-box"
+      v-show="gridPositionTagVisible"
+      :style="{
+        top: mousePosition.y - 30 + 'px',
+        left: mousePosition.x + 'px',
+      }"
+    >
+      <a-tag color="green">{{ gridPositionTagValue }}</a-tag>
+    </div>
   </div>
 </template>
 
@@ -106,6 +117,10 @@ export default {
     let goodsMoveShelfBaseMesh = null;
     // 货物移动确认框
     const goodsMoveConfirmVisible = ref(false);
+    // 货架格子位置 Tag 是否显示
+    const gridPositionTagVisible = ref(false);
+    // 货架格子位置 Tag 的内容
+    const gridPositionTagValue = ref("");
     // 确认移动货物
     const goodsMoveOk = () => {
       // 移动货物
@@ -119,6 +134,8 @@ export default {
       toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
       // 关闭确认框
       goodsMoveConfirmVisible.value = false;
+      // 隐藏货架格子 Tag
+      gridPositionTagVisible.value = false;
       // 提示消息
       message.success("移动成功");
     };
@@ -130,6 +147,8 @@ export default {
       toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
       // 关闭确认框
       goodsMoveConfirmVisible.value = false;
+      // 隐藏货架格子 Tag
+      gridPositionTagVisible.value = false;
       // 提示消息
       message.warning("取消移动");
     };
@@ -323,6 +342,7 @@ export default {
         });
       });
 
+      let oldMesh = null;
       // 拖拽中执行
       dragControls.addEventListener("drag", () => {
         // 获取与射线相交的物体
@@ -330,19 +350,32 @@ export default {
         const currentMesh = intersectObjects.find(
           (object) => object.object.name.slice(0, 11) === "shelf_base_"
         )?.object;
+        console.log(currentMesh);
+        // 判断是否获取到货架格子
         if (currentMesh) {
-          const shelf = shelfList.value.find(
-            (shelf) => shelf.id === currentMesh.data.shelf_id
-          );
-          const grid = shelf.shelf_grid.find(
-            (grid) => grid.shelf_grid_id === currentMesh.data.id
-          );
-          console.log(
-            currentMesh,
-            `${grid.position.y + 1}层 ${grid.position.x + 1}行 ${
-              grid.position.z + 1
-            }列(${grid.shelf_grid_id})`
-          );
+          // 判断当前获取到的货架格子是否与上一次的一样
+          if (currentMesh?.data?.id !== oldMesh?.data?.id) {
+            const shelf = shelfList.value.find(
+              (shelf) => shelf.id === currentMesh.data.shelf_id
+            );
+            const grid = shelf.shelf_grid.find(
+              (grid) => grid.shelf_grid_id === currentMesh.data.id
+            );
+
+            // 设置货架格子 Tag 的内容
+            gridPositionTagValue.value = `${grid.position.y + 1}层 ${
+              grid.position.x + 1
+            }行 ${grid.position.z + 1}列(${grid.shelf_grid_id})`;
+            // 更新鼠标位置
+            mousePosition.value = getMousePosition();
+            // 保存当前 mesh
+            oldMesh = currentMesh;
+          }
+          // 显示货架格子 Tag
+          gridPositionTagVisible.value = true;
+        } else {
+          // 隐藏货架格子 Tag
+          gridPositionTagVisible.value = false;
         }
       });
 
@@ -350,14 +383,10 @@ export default {
       dragControls.addEventListener("dragend", (event) => {
         // 设置拖放状态为未在拖放
         dragControls.setDragState(false);
-
         // 保存当前移移动的货物的事件对象
         goodsMoveEvent = event;
-
         // 获取鼠标位置
         mousePosition.value = getMousePosition();
-        console.log("mousePosition", mousePosition.value);
-
         // 获取鼠标指向的货架格子
         goodsMoveShelfBaseMesh = intersectObjects.find(
           (item) => item.object.name.slice(0, 11) === "shelf_base_"
@@ -398,6 +427,8 @@ export default {
       goodsMoveOk,
       goodsMoveCancel,
       mousePosition,
+      gridPositionTagVisible,
+      gridPositionTagValue,
     };
   },
 };
@@ -419,5 +450,10 @@ export default {
   position: absolute;
   display: flex;
   flex-direction: column;
+}
+
+.grid-tag-box {
+  position: absolute;
+  pointer-events: none;
 }
 </style>

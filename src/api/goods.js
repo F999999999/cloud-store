@@ -26,7 +26,7 @@ export const addGoodsApi = (params) => {
  * @param name 商品名
  * @returns {Promise}
  */
-export const searchDeliveryNameApi = ({ store_id, name }) => {
+export const searchGoodsNameApi = ({ store_id, name }) => {
   return requestWithToken("/store/search_goods", "get", { store_id, name });
 };
 /**
