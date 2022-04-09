@@ -106,7 +106,7 @@ section {
 
 body {
   line-height: 1;
-  overflow:scroll;
+  overflow:hidden;
 }
 
 blockquote,
