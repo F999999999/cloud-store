@@ -6,6 +6,7 @@
       :height="fullHeight - 160"
       style="top: 80px; left: 40px"
     />
+    <!--货架标签-->
     <template ref="shelfTagRef">
       <shelf-tag
         v-for="shelfTagData in shelfList"
@@ -13,44 +14,66 @@
         :shelfTagData="shelfTagData"
       />
     </template>
-    <div ref="goodsTagRef">
-      <goods-tag
-        v-for="goodsTagData in goodsList"
-        :key="goodsTagData.id"
-        :goodsTagData="goodsTagData"
-        :shelf="shelfList.find((item) => item.id === goodsTagData.shelf_id)"
-      >
-        <a-tag color="orange">双击并拖动可以移动货物位置</a-tag>
-      </goods-tag>
+    <!--货物标签-->
+    <goods-tag
+      v-for="goodsTagData in goodsList"
+      :key="goodsTagData.id"
+      :goodsTagData="goodsTagData"
+      :shelf="shelfList.find((item) => item.id === goodsTagData.shelf_id)"
+    >
+      <a-tag color="orange">拖动可以移动货物位置</a-tag>
+    </goods-tag>
+    <!--移动确认框-->
+    <div
+      class="confirm-box"
+      v-show="goodsMoveConfirmVisible"
+      :style="{
+        top: mousePosition.y + 'px',
+        left: mousePosition.x + 'px',
+      }"
+    >
+      <a-button type="primary" @click="goodsMoveOk">确认</a-button>
+      <a-button type="primary" danger @click="goodsMoveCancel">取消</a-button>
     </div>
   </div>
 </template>
 
 <script>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref } from "vue";
 import OperationPanel from "@/views/store/components/operationPanel";
-import { useStore } from "vuex";
 import ShelfTag from "@/components/shelfTag";
 import GoodsTag from "@/components/goodsTag";
+import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import { message } from "ant-design-vue";
 import { useTEngine } from "@/hooks/useTEngine";
-import { addGoodsModel } from "@/hooks/useGoods";
-import { addShelfModel } from "@/hooks/useShelf";
 import labelRenderer from "@/utils/three/CSS2DRenderer";
+import { toggleShelfBaseEmissive } from "@/hooks/useShelf";
+import TDragControls from "@/utils/three/TDragControls";
+import Outline from "@/utils/three/TOutline";
+import {
+  isShelfMove,
+  isShelfOverlap,
+  updateOneGoodsModelPosition,
+} from "@/hooks/useGoods";
+import TRaycaster from "@/utils/three/TRaycaster";
+import getMousePosition from "@/utils/getMousePosition";
 
 export default {
   name: "Store",
   components: { GoodsTag, ShelfTag, OperationPanel },
   setup() {
+    // 鼠标位置
+    const mousePosition = ref({ x: 0, y: 0 });
+
     // 获取路由
     const route = useRoute();
     // 仓库ID
     const storeId = Number(route.query.id);
     if (!route.query.id) {
-      // 跳转到登录页面
-      router.push("/login").then(() => {
+      // 跳转到首页
+      router.push("/").then(() => {
         // 提示信息
         message.success("仓库不存在");
       });
@@ -60,13 +83,9 @@ export default {
     const store = useStore();
     // three 绑定的元素
     const threeRef = ref(null);
-    // 实例化的 ThreeJS 引擎
-    let TE = null;
 
     // 货架 Tag
     const shelfTagRef = ref(null);
-    // 货物 Tag
-    const goodsTagRef = ref(null);
 
     // 货架列表数据
     const shelfList = computed(() => store.state.shelf.shelfList);
@@ -74,17 +93,56 @@ export default {
     const goodsList = computed(() => store.state.goods.goodsList);
 
     // 获取货架列表数据
-    store.dispatch("shelf/getShelfList", route.query.id);
+    store.dispatch("shelf/getShelfList", route.query.id).then(() => {
+      // 获取商品列表数据
+      store.dispatch("goods/getGoodsList", route.query.id);
+    });
+
+    // 拖放控制器
+    let dragControls = null;
+    // 移动的货物的事件对象
+    let goodsMoveEvent = null;
+    // 货物移动后的货架格子
+    let goodsMoveShelfBaseMesh = null;
+    // 货物移动确认框
+    const goodsMoveConfirmVisible = ref(false);
+    // 确认移动货物
+    const goodsMoveOk = () => {
+      // 移动货物
+      store.dispatch("goods/moveGoods", {
+        goodsId: dragControls.getCurrentDragControls().data.id,
+        storeId: goodsMoveShelfBaseMesh.data.store_id,
+        shelfId: goodsMoveShelfBaseMesh.data.shelf_id,
+        shelfGridId: goodsMoveShelfBaseMesh.data.id,
+      });
+      // 清除货架格子的自发光
+      toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
+      // 关闭确认框
+      goodsMoveConfirmVisible.value = false;
+      // 提示消息
+      message.success("移动成功");
+    };
+    // 取消货物移动
+    const goodsMoveCancel = () => {
+      // 还原货物位置
+      updateOneGoodsModelPosition(goodsMoveEvent.object);
+      // 清除货架格子的自发光
+      toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
+      // 关闭确认框
+      goodsMoveConfirmVisible.value = false;
+      // 提示消息
+      message.warning("取消移动");
+    };
 
     // DOM 渲染完成后执行
     onMounted(() => {
-      TE = useTEngine(threeRef.value);
+      const ThreeJS = useTEngine(threeRef.value);
 
       // 自动调整渲染器大小
       window.onresize = () => {
         return (() => {
           // 设置正投影相机大小
-          TE.setOrthographicCameraSize(
+          ThreeJS.setOrthographicCameraSize(
             document.body.clientWidth,
             document.body.clientHeight
           );
@@ -94,67 +152,239 @@ export default {
         })();
       };
 
-      // 添加 CSS 2D渲染器到渲染列表
-      TE.addRenderAnim(() => labelRenderer.render(TE.scene, TE.camera));
+      // 射线投射器(鼠标选中模型对象)
+      const raycaster = TRaycaster(
+        ThreeJS.dom,
+        ThreeJS.renderer,
+        ThreeJS.scene,
+        ThreeJS.camera
+      );
 
-      // 监听货架列表数据变化
-      watch(
-        () => shelfList.value.length,
-        () => {
-          // 获取商品列表数据
-          store.dispatch("goods/getGoodsList", route.query.id);
-          shelfList.value.forEach((item) => {
-            // 添加货架模型
-            addShelfModel(item, shelfTagRef.value).then((shelfModel) => {
-              // 添加货架到场景中
-              TE.addObject(shelfModel);
+      // 拖放控制器
+      dragControls = TDragControls(ThreeJS.camera, ThreeJS.renderer);
+
+      // 轮廓线渲染
+      const outline = Outline(ThreeJS.renderer, ThreeJS.scene, ThreeJS.camera);
+      // 添加轮廓线到渲染列表
+      ThreeJS.addRenderAnim(outline.renderOutline);
+
+      // 与射线相交的物体
+      let intersectObjects = [];
+      // 货物
+      let goodsObjects = [];
+      // 货架格子
+      let shelfBaseObjects = [];
+      // 拖放前的货架格子
+      let beforeShelfBaseObjects = {};
+
+      // 添加 CSS2D 渲染器到渲染列表
+      ThreeJS.addRenderAnim(() =>
+        labelRenderer.render(ThreeJS.scene, ThreeJS.camera)
+      );
+
+      // 监听鼠标指针移动事件
+      ThreeJS.renderer.domElement.addEventListener("pointermove", (event) => {
+        // 获取与射线相交的物体
+        intersectObjects = raycaster.updateIntersects(event);
+        // 判断是否有与射线相交的模型
+        if (intersectObjects.length > 0) {
+          // 遍历相交的模型
+          intersectObjects.forEach((intersect) => {
+            // 获取货架格子
+            if (intersect?.object?.name.slice(0, 11) === "shelf_base_") {
+              shelfBaseObjects.push(intersect);
+            }
+            // 获取货物
+            if (intersect?.object?.name === "goods") {
+              goodsObjects.push(intersect);
+            }
+          });
+        }
+
+        // 判断移动确认框是否显示
+        if (!goodsMoveConfirmVisible.value) {
+          // 如果拖放控制器处于拖放状态则添加货架格子自发光属性
+          beforeShelfBaseObjects = toggleShelfBaseEmissive(
+            beforeShelfBaseObjects,
+            shelfBaseObjects,
+            0x118ee9,
+            dragControls.getDragState()
+          );
+        }
+
+        // 清空货架格子列表
+        shelfBaseObjects = [];
+
+        // 判断是否捕获到货物
+        if (goodsObjects.length > 0) {
+          // 当前货物
+          const selectedObject = goodsObjects[0].object;
+          // 添加到描边列表
+          outline.outlinePass.selectedObjects = [selectedObject];
+          // 判断是否处于拖放状态
+          if (!dragControls.getDragState()) {
+            // 隐藏货物 Tag 标签
+            store.commit("goods/changeGoodsTagShow", {
+              all: true,
+              tagShow: false,
+            });
+            // 显示货物 Tag 标签
+            store.commit("goods/changeGoodsTagShow", {
+              id: selectedObject.data.id,
+              tagShow: true,
+            });
+          }
+
+          // 将当前货物添加到可拖放列表
+          dragControls.addDragControlsObject(selectedObject);
+        } else {
+          // 清除描边效果
+          outline.outlinePass.selectedObjects = [];
+          // 清空被拖放的物体
+          dragControls.clearDragControlsObject();
+
+          // 隐藏货物详情
+          goodsList.value.forEach((item) => {
+            // 隐藏货物 Tag 标签显示状态
+            store.commit("goods/changeGoodsTagShow", {
+              id: item.id,
+              tagShow: false,
             });
           });
         }
-      );
+        // 清空货物列表
+        goodsObjects = [];
+      });
 
-      // 监听货物列表数据变化
-      watch(
-        () => goodsList.value,
-        (newValue, oldValue) => {
-          if (shelfList.value.length > 0) {
-            if (newValue.length > oldValue.length) {
-              // 新增
-              // 根据数据渲染货物模型
-              newValue.forEach((item) => {
-                addGoodsModel(item, goodsTagRef.value).then((goodsModel) => {
-                  // 添加货物到场景中
-                  TE.addObject(goodsModel);
-                });
-              });
-            } else if (newValue.length < oldValue.length) {
-              // 删除
-              // 被移除的货物
-              const removeGoods = oldValue.filter(
-                (oldGoods) =>
-                  !newValue.find((newGoods) => newGoods.id === oldGoods.id)
-              );
-              // 递归遍历组对象group释放所有后代网格模型绑定几何体占用内存
-              TE.scene.children.forEach((obj) => {
-                if (obj.type === "Mesh" && obj.name === "goods") {
-                  // 当前货物是否是被删除的货物
-                  const remove =
-                    removeGoods.findIndex(
-                      (goods) => goods.id === obj.data.id
-                    ) >= 0;
-                  if (remove) {
-                    // 从内存中删除对象
-                    obj.geometry.dispose();
-                    obj.material.dispose();
-                    // 删除场景对象scene的子对象group
-                    TE.scene.remove(obj);
-                  }
-                }
-              });
-            }
+      // 监听鼠标左键按下事件
+      // TE.renderer.domElement.addEventListener("mousedown", () => {
+      //   console.log("mousedown", intersectObjects);
+      //   const _goodsObjects = [];
+      //   // 遍历相交的模型
+      //   intersectObjects.forEach((intersect) => {
+      //     // 判断是否是货物
+      //     if (intersect?.object?.name === "goods") {
+      //       // 判断是否处于拖放状态
+      //       if (!dragControls.getDragState()) {
+      //         // 显示货物 Tag 标签
+      //         store.commit("goods/changeGoodsTagShow", {
+      //           id: intersect.object.data.id,
+      //           tagShow: true,
+      //         });
+      //       }
+      //       _goodsObjects.push(intersect);
+      //     }
+      //   });
+      //   // 判断是否捕获到货物
+      //   if (_goodsObjects.length > 0) {
+      //     // 将当前货物添加到可拖放列表
+      //     dragControls.addDragControlsObject(_goodsObjects[0].object);
+      //   }
+      // });
+
+      // 监听鼠标左键按下事件
+      ThreeJS.renderer.domElement.addEventListener("mousedown", () => {
+        // 判断是否有与射线相交的模型
+        if (intersectObjects.length > 0) {
+          const currentGoodsObject = intersectObjects.find(
+            (object) => object?.object?.name === "goods"
+          );
+          // 判断是否有货物
+          if (currentGoodsObject) {
+            console.log("currentGoodsObject", currentGoodsObject);
           }
         }
-      );
+      });
+
+      // 开始拖拽时执行
+      dragControls.addEventListener("dragstart", (event) => {
+        if (goodsMoveConfirmVisible.value === true) {
+          goodsMoveCancel();
+        }
+
+        // 设置拖放状态为正在拖放
+        dragControls.setDragState(true);
+
+        // 隐藏移动确认框
+        goodsMoveConfirmVisible.value = false;
+
+        // 保存当前被拖放的物体
+        dragControls.setCurrentDragControls({
+          // 克隆当前被拖拽的物体
+          ...event.object.clone(),
+          // 附加被拖放物体的自定义数据
+          data: event.object.data,
+        });
+
+        // 隐藏货物 Tag 标签
+        store.commit("goods/changeGoodsTagShow", {
+          id: intersectObjects[0].object.data.id,
+          tagShow: false,
+        });
+      });
+
+      // 拖拽中执行
+      dragControls.addEventListener("drag", () => {
+        // 获取与射线相交的物体
+        intersectObjects = raycaster.updateIntersects(event);
+        const currentMesh = intersectObjects.find(
+          (object) => object.object.name.slice(0, 11) === "shelf_base_"
+        )?.object;
+        if (currentMesh) {
+          const shelf = shelfList.value.find(
+            (shelf) => shelf.id === currentMesh.data.shelf_id
+          );
+          const grid = shelf.shelf_grid.find(
+            (grid) => grid.shelf_grid_id === currentMesh.data.id
+          );
+          console.log(
+            currentMesh,
+            `${grid.position.y + 1}层 ${grid.position.x + 1}行 ${
+              grid.position.z + 1
+            }列(${grid.shelf_grid_id})`
+          );
+        }
+      });
+
+      // 完成拖拽时执行
+      dragControls.addEventListener("dragend", (event) => {
+        // 设置拖放状态为未在拖放
+        dragControls.setDragState(false);
+
+        // 保存当前移移动的货物的事件对象
+        goodsMoveEvent = event;
+
+        // 获取鼠标位置
+        mousePosition.value = getMousePosition();
+        console.log("mousePosition", mousePosition.value);
+
+        // 获取鼠标指向的货架格子
+        goodsMoveShelfBaseMesh = intersectObjects.find(
+          (item) => item.object.name.slice(0, 11) === "shelf_base_"
+        )?.object;
+        // 判断是否拖拽到货架格子
+        if (goodsMoveShelfBaseMesh) {
+          // 判断货物是否移动
+          if (
+            !isShelfMove(
+              event.object,
+              dragControls.getCurrentDragControls(),
+              goodsMoveShelfBaseMesh
+            )
+          )
+            return message.warning("货架格子未进行更改");
+
+          // 判断货物是否重叠
+          if (isShelfOverlap(event.object, goodsMoveShelfBaseMesh))
+            return message.warning("该货架格子已被使用");
+
+          // 弹出确认框
+          goodsMoveConfirmVisible.value = true;
+        } else {
+          // 还原货物位置
+          updateOneGoodsModelPosition(event.object);
+        }
+      });
     });
 
     return {
@@ -162,9 +392,12 @@ export default {
       threeRef,
       shelfTagRef,
       shelfList,
-      goodsTagRef,
       goodsList,
       fullHeight: window.innerHeight,
+      goodsMoveConfirmVisible,
+      goodsMoveOk,
+      goodsMoveCancel,
+      mousePosition,
     };
   },
 };
@@ -180,5 +413,11 @@ export default {
 .three-canvas {
   width: 100%;
   height: 100%;
+}
+
+.confirm-box {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
 }
 </style>

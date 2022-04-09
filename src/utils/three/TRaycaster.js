@@ -1,4 +1,4 @@
-import { Raycaster, Vector2, Vector3 } from "three";
+import { Raycaster, Vector2 } from "three";
 
 const TRaycaster = (
   dom,
@@ -8,7 +8,7 @@ const TRaycaster = (
   intersectObjectsRecursive = true
 ) => {
   // 创建射线投射器对象
-  const raycaster = new Raycaster(new Vector3(0, 10000, 0));
+  const raycaster = new Raycaster();
 
   // 更新标准设备坐标并获取相交对象
   const updateIntersects = (event) => {
@@ -33,7 +33,7 @@ const TRaycaster = (
     );
   };
 
-  return { updateIntersects };
+  return { raycaster, updateIntersects };
 };
 
 export default TRaycaster;
