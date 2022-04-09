@@ -3,8 +3,6 @@
 </template>
 
 <script>
-// 去除公共样式
-import "@/assets/reset.css";
 // 基于准备好的dom，初始化echarts实例
 import * as echarts from "echarts";
 import { onMounted } from "vue";
@@ -66,7 +64,7 @@ export default {
                   cx: api.getWidth() / 2,
                   cy: api.getHeight() / 2,
                   r: (Math.min(api.getWidth(), api.getHeight()) / 2) * 0.6,
-                  startAngle: ((0 + angle) * Math.PI) / 180,
+                  startAngle: (angle * Math.PI) / 180,
                   endAngle: ((90 + angle) * Math.PI) / 180,
                 },
                 style: {

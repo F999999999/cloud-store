@@ -64,3 +64,12 @@ export const moveGoodsByIdApi = ({ id, store_id, shelf_id, shelf_grid_id }) => {
     operate_id: JSON.parse(window.localStorage.getItem("userInfo")).id,
   });
 };
+
+export const expireGoodsApi = ({ store_id, page_num, page_size }) => {
+  console.log("store_id", store_id);
+  return requestWithToken("/store/expire_goods", "get", {
+    store_id,
+    page_num,
+    page_size,
+  });
+};

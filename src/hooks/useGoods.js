@@ -65,20 +65,6 @@ const updateAllGoodsModelPosition = (scene) => {
   });
 };
 
-// 获取货物位置
-const getGoodsPosition = (goodsId, shelfId, shelfGridId) => {
-  // 货架列表数据
-  const shelfList = computed(() => store.state.shelf.shelfList);
-  // 查找货架
-  const shelf = shelfList.value.find((shelf) => shelf.id === shelfId);
-  // 设置货物的位置
-  return {
-    x: shelf.position.x * shelfSpacing.x + shelfLocation[shelfGridId - 1].x,
-    y: shelf.position.y * shelfSpacing.y + shelfLocation[shelfGridId - 1].y,
-    z: shelf.position.z * shelfSpacing.z + shelfLocation[shelfGridId - 1].z,
-  };
-};
-
 // 判断货物是否移动
 const isShelfMove = (oldGoodsMesh, newGoodsMesh, shelfMesh) => {
   if (
@@ -137,7 +123,6 @@ export {
   useGoodsModel,
   updateOneGoodsModelPosition,
   updateAllGoodsModelPosition,
-  getGoodsPosition,
   isShelfMove,
   isShelfOverlap,
   twinkleMesh,
