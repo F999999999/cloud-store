@@ -14,7 +14,7 @@ function shelfTag(domElement, position) {
   return label;
 }
 
-// 货物标签
+// 商品标签
 function goodsTag(domElement, position) {
   // div元素包装成为css2模型对象CSS2DObject
   const label = new CSS2DObject(domElement);

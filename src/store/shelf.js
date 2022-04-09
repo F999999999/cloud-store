@@ -6,7 +6,7 @@ const shelf = {
   namespaced: true,
   state() {
     return {
-      // 货物数据
+      // 商品数据
       shelfList: [],
       // 统计信息
       shelfTotal: {
@@ -57,7 +57,7 @@ const shelf = {
         ThreeJS.addObject(shelfModel);
       });
     },
-    // 修改货架格子的货物ID
+    // 修改货架格子的商品ID
     changeShelfPosition(state, { goodsId, shelfId, shelfGridId }) {
       // 遍历货架列表
       state.shelfList = state.shelfList.map((shelf) => {
@@ -65,11 +65,11 @@ const shelf = {
           ...shelf,
           // 遍历货架格子列表
           shelf_grid: shelf.shelf_grid.map((shelfGrid) => {
-            // 移除货架原有货架格子上的货物
+            // 移除货架原有货架格子上的商品
             if (shelfGrid.goods_id === goodsId) {
               shelfGrid.goods_id = null;
             }
-            // 在新的货架格子上添加货物
+            // 在新的货架格子上添加商品
             if (
               shelf.id === shelfId &&
               shelfGrid.shelf_grid_id === shelfGridId

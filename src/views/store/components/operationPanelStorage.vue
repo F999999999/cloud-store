@@ -93,7 +93,7 @@ export default {
 
     // 提交表单且数据验证成功后回调事件
     const onFinish = (values) => {
-      // 清空当前选中的货物
+      // 清空当前选中的商品
       shelfOptionsValue.value = null;
       // 将时间进行处理 处理为时间戳
       values.production_date = Math.floor(
@@ -102,7 +102,7 @@ export default {
       values.storage_time = Math.floor(
         new Date(values.storage_time).valueOf() / 1000
       );
-      // 添加货物
+      // 添加商品
       store
         .dispatch("goods/addGoods", {
           storeId: props.storeId,

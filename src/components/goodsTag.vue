@@ -2,7 +2,7 @@
   <div class="goods-tag" ref="domElementRef" :data-id="goodsTagData.id">
     <div v-show="goodsTagData.tagShow">
       <a-card
-        :title="'货物 - ' + goodsTagData.name"
+        :title="'商品 - ' + goodsTagData.name"
         style="width: 260px; opacity: 0.9"
         headStyle="color: #000; background-color: #fff;"
         bodyStyle="color: #fff; background-color: #92a2ba;"
@@ -164,7 +164,7 @@ export default {
   setup(props) {
     const domElementRef = ref(null);
 
-    // 添加货物 Tag 标签显示状态
+    // 添加商品 Tag 标签显示状态
     store.commit("goods/changeGoodsTagShow", {
       id: props.goodsTagData.id,
       tagShow: props.goodsTagData.tagShow,
@@ -183,10 +183,10 @@ export default {
       );
     });
 
-    // 当前货物的位置
+    // 当前商品的位置
     const currentShelfGrid = ref({});
 
-    // 监听货物位置信息的变化
+    // 监听商品位置信息的变化
     watch(
       () => props.shelf.shelf_grid,
       (shelf_grid) => {

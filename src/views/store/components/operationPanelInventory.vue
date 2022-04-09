@@ -1,7 +1,7 @@
 <template>
   <div class="operationPanel-inventory" style="display: block">
     <div class="operationPanel-overview">
-      <h3>货物总览</h3>
+      <h3>商品总览</h3>
       <a-row class="operationPanel-overview-content">
         <a-col :span="12" class="operationPanel-overview-usage">
           <a-progress
@@ -47,7 +47,7 @@
             :options="useShelfOptions"
             :display-render="oldDisplayRender"
             expand-trigger="hover"
-            placeholder="请选择原货物"
+            placeholder="请选择原商品"
           />
         </a-col>
         <a-col :span="20" :offset="2">
@@ -61,7 +61,7 @@
             :options="emptyShelfOptions"
             :display-render="newDisplayRender"
             expand-trigger="hover"
-            placeholder="请选择新货物位置"
+            placeholder="请选择新商品位置"
           />
         </a-col>
       </a-row>
@@ -163,7 +163,7 @@ export default {
     // 货架统计数据
     const shelfTotal = computed(() => store.state.shelf.shelfTotal);
 
-    // 货物移动表单字段
+    // 商品移动表单字段
     const goodsFormState = ref({
       // 商品ID
       goods_id: "",
@@ -207,7 +207,7 @@ export default {
       return labels.join(" / ");
     };
 
-    // 移动货物
+    // 移动商品
     const moveGoods = () => {
       store.dispatch("goods/moveGoods", {
         goodsId: goodsFormState.value.goods_id,

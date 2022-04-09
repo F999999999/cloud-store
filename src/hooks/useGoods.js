@@ -14,11 +14,11 @@ const useGoodsModel = async ({ shelfList, goods, groupScale = 100 }) => {
   newGroup.material = group.scene.children[0].material.clone();
   // 设置名称
   newGroup.name = "goods";
-  // 保存货物数据
+  // 保存商品数据
   newGroup.data = goods;
   // 查找货架
   const shelf = shelfList.find((shelf) => shelf.id === goods.shelf_id);
-  // 设置货物的位置
+  // 设置商品的位置
   newGroup.position.set(
     shelf.position.x * shelfSpacing.x +
       shelfLocation[goods.shelf_grid_id - 1].x,
@@ -37,7 +37,7 @@ const useGoodsModel = async ({ shelfList, goods, groupScale = 100 }) => {
   return newGroup;
 };
 
-// 更新单个货物模型位置
+// 更新单个商品模型位置
 const updateOneGoodsModelPosition = (mesh) => {
   // 货架列表数据
   const shelfList = computed(() => store.state.shelf.shelfList);
@@ -45,7 +45,7 @@ const updateOneGoodsModelPosition = (mesh) => {
   const shelf = shelfList.value.find(
     (shelf) => shelf.id === mesh.data.shelf_id
   );
-  // 设置货物的位置
+  // 设置商品的位置
   mesh.position.set(
     shelf.position.x * shelfSpacing.x +
       shelfLocation[mesh.data.shelf_grid_id - 1].x,
@@ -56,23 +56,23 @@ const updateOneGoodsModelPosition = (mesh) => {
   );
 };
 
-// 更新货物模型位置
+// 更新商品模型位置
 const updateAllGoodsModelPosition = (scene) => {
   scene.children.forEach((item) => {
     if (item.type === "Mesh" && item.name === "goods") {
-      // 更新货物位置
+      // 更新商品位置
       updateOneGoodsModelPosition(item);
     }
   });
 };
 
-// 判断货物是否移动
+// 判断商品是否移动
 const isShelfMove = (oldGoodsMesh, newGoodsMesh, shelfMesh) => {
   if (
     shelfMesh.data.id === newGoodsMesh.data.shelf_grid_id &&
     shelfMesh.data.shelf_id === newGoodsMesh.data.shelf_id
   ) {
-    // 货物位置还原
+    // 商品位置还原
     updateOneGoodsModelPosition(oldGoodsMesh);
     return false;
   } else {
@@ -80,9 +80,9 @@ const isShelfMove = (oldGoodsMesh, newGoodsMesh, shelfMesh) => {
   }
 };
 
-// 判断货物是否重叠
+// 判断商品是否重叠
 const isShelfOverlap = (goodsMesh, shelfBaseMesh) => {
-  // 货物列表数据
+  // 商品列表数据
   const goodsList = computed(() => store.state.goods.goodsList);
   if (
     goodsList.value.filter(
@@ -93,7 +93,7 @@ const isShelfOverlap = (goodsMesh, shelfBaseMesh) => {
   ) {
     // 物体闪烁
     twinkleMesh(goodsMesh, 0xff0000, "color").then((mesh) => {
-      // 货物位置还原
+      // 商品位置还原
       updateOneGoodsModelPosition(mesh);
     });
     return true;
@@ -120,16 +120,16 @@ const twinkleMesh = (mesh, value, attribute = "emissive") => {
   });
 };
 
-// 设置货物属性
+// 设置商品属性
 const setGoodsAttribute = (goodsIdList, value, attribute = "emissive") => {
   const goodsMesh = [];
   // 递归遍历 children 给选中的商品添加或者还原自发光效果
   ThreeJS.scene.children.forEach((obj) => {
-    // 判断是否是货物
+    // 判断是否是商品
     if (obj.type === "Mesh" && obj.name === "goods") {
-      // 判断传入的货物列表是否是数组
+      // 判断传入的商品列表是否是数组
       if (Array.isArray(goodsIdList)) {
-        // 判断该货物ID是否在传入的列表中
+        // 判断该商品ID是否在传入的列表中
         if (goodsIdList.find((goodsId) => goodsId === obj.data.id)) {
           obj.material[attribute].set(value);
           goodsMesh.push(obj);
