@@ -33,20 +33,28 @@
           <div class="home_right_status">
             <!-- 标题 -->
             <span>
-              <img src="~@/assets/image/run.png" alt="" />
+              <img src="~@/assets/image/warn.png" alt="" />
             </span>
-            <p class="status_tt">运行状态</p>
+            <p class="status_tt">商品保质期</p>
             <!-- 背景 -->
             <div class="home_right_status_img">
               <img src="~@/assets/image/box3_bg.png" alt="" />
               <div class="home_right_status_img_context">
                 <!-- 柱状图组件 -->
                 <ul>
-                  <li v-for="i in 3" :key="i">
+                  <li
+                    v-for="item in getGoodsLogDateTimeDate"
+                    :key="item.store_id"
+                  >
                     <p class="home_right_status_img_context_title">
-                      <i></i>仓库A
+                      <i></i>{{ item.store_name }}
                     </p>
-                    <histogram :histogramId="'histogram' + i" />
+                    <histogram
+                      :histogramId="'histogram' + item.store_id"
+                      :expired="item.expired"
+                      :normal="item.normal"
+                      :will_expire="item.will_expire"
+                    />
                   </li>
                 </ul>
               </div>
@@ -76,16 +84,23 @@
 import StoreTag from "@/views/home/components/storeTag";
 import TextTag from "@/views/home/components/textScrolling";
 import histogram from "@/views/home/components/histogram";
-import { computed, ref } from "vue";
-import { useStore } from "vuex";
-import { getStoreListDateApi, getStoreShelfDateApi } from "@/api/store";
+import { ref } from "vue";
+// import { useStore } from "vuex";
+import {
+  getGoodsLogDateTimeApi,
+  getStoreListApi,
+  getStoreListDateApi,
+  getStoreShelfDateApi,
+} from "@/api/store";
 export default {
   components: { StoreTag, TextTag, histogram },
   setup() {
     const getStoreListDate = ref([]);
     const getStoreShelfDate = ref([]);
-    const getGoodsLogDate = ref([]);
-    const store = useStore();
+    const getGoodsLogDate = ref("");
+    const getGoodsLogDateTimeDate = ref([]);
+    const storeList = ref([]);
+    // const store = useStore();
     //获取仓库使用数据信息
     getStoreListDateApi().then((res) => {
       console.log(res);
@@ -100,15 +115,29 @@ export default {
         getStoreShelfDate.value = res.data.list;
       }
     });
+    //获取仓库商品统计
+    getGoodsLogDateTimeApi().then((res) => {
+      if (res.status == 200) {
+        getGoodsLogDateTimeDate.value = res.data.list;
+        console.log(getGoodsLogDateTimeDate.value);
+      }
+    });
     // 获取仓库列表
-    store.dispatch("store/getStoreList");
-    const storeList = computed(() => store.state.store.storeList);
+    // store.dispatch("store/getStoreList");
+    getStoreListApi().then((res) => {
+      console.log(res);
+      if (res.status == 200) {
+        storeList.value = res.data;
+      }
+    });
+    // const storeList = computed(() => store.state.store.storeList);
 
     return {
-      storeList,
       getStoreListDate,
       getStoreShelfDate,
       getGoodsLogDate,
+      getGoodsLogDateTimeDate,
+      storeList,
     };
   },
 };
@@ -127,14 +156,15 @@ export default {
 .header {
   position: absolute;
   width: 100%;
-  height: 100px;
-  line-height: 6rem;
+  height: 7%;
+  line-height: 4rem;
   text-align: center;
   color: #fff;
-  font-size: 1.8rem;
-  background-image: url("~@/assets/image/title_bg.png");
-  background-size: 100% 100%;
-  user-select: none;
+  font-size: 1.4rem;
+  span {
+    float: right;
+    font-size: 1.4rem;
+  }
 }
 
 .home_left {
@@ -213,7 +243,7 @@ export default {
   width: 100%;
   > span {
     position: absolute;
-    top: 3%;
+    top: 4%;
     left: 35%;
     width: 1rem;
     height: 1rem;
@@ -224,7 +254,7 @@ export default {
   }
   .status_tt {
     position: absolute;
-    top: 3%;
+    top: 4%;
     left: 44%;
     color: #00ffff;
     font-size: 1rem;
@@ -243,6 +273,8 @@ export default {
 
 .home_right_status_img_context_title {
   //margin:0 0 0 -70%
+  margin-top: -0.3rem;
+  margin-bottom: 0;
   text-align: left;
   color: #fff;
   ::before {

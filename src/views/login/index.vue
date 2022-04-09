@@ -30,7 +30,7 @@ import { useForm, useField } from "vee-validate";
 import { password, username } from "@/utils/vee-validate-schema";
 import { message } from "ant-design-vue";
 import { useRouter } from "vue-router";
-
+import "@/assets/style/reset.css";
 const router = useRouter();
 //所以需要的字段
 const {
@@ -94,7 +94,15 @@ function useFormValidate() {
   margin: 0;
   padding: 0;
 }
-
+/*html,*/
+/*body {*/
+/*  height: 100%;*/
+/*  overflow: auto;*/
+/*  margin: 0;*/
+/*}*/
+/*html {*/
+/*  min-height: 101%;*/
+/*}*/
 a {
   text-decoration: none;
 }
@@ -114,7 +122,7 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: 14px;
   color: #03e9f4;
 }
 
@@ -135,6 +143,7 @@ h2 {
   color: #fff;
   margin-bottom: 30px;
   font-family: "Courier New", Courier, monospace;
+  font-size: 1.6rem;
 }
 
 .item {
