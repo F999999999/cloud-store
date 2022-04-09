@@ -82,7 +82,7 @@ export default {
   setup(props) {
     const domElementRef = ref(null);
 
-    // 添加货物 Tag 标签显示状态
+    // 添加商品 Tag 标签显示状态
     store.commit("shelf/changeShelfTagShow", {
       id: props.shelfTagData.id,
       tagShow: props.shelfTagData.tagShow,

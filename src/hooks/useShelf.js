@@ -48,7 +48,7 @@ const getShelfPosition = (shelfId) => {
   const shelfList = computed(() => store.state.shelf.shelfList);
   // 查找货架
   const shelf = shelfList.value.find((shelf) => shelf.id === shelfId);
-  // 设置货物的位置
+  // 设置商品的位置
   return {
     x: shelf.position.x * shelfSpacing.x,
     y: shelf.position.y * shelfSpacing.y,
@@ -62,7 +62,7 @@ const getGridPosition = (shelfId, shelfGridId) => {
   const shelfList = computed(() => store.state.shelf.shelfList);
   // 查找货架
   const shelf = shelfList.value.find((shelf) => shelf.id === shelfId);
-  // 设置货物的位置
+  // 设置商品的位置
   return {
     x: shelf.position.x * shelfSpacing.x + shelfLocation[shelfGridId - 1].x,
     y: shelf.position.y * shelfSpacing.y + shelfLocation[shelfGridId - 1].y,

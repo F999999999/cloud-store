@@ -14,14 +14,14 @@ const goods = {
   namespaced: true,
   state() {
     return {
-      // 货物数据
+      // 商品数据
       goodsList: [],
-      // 临期货物数据
+      // 临期商品数据
       expireGoodsList: [],
     };
   },
   mutations: {
-    // 修改货物 Tag 显示状态
+    // 修改商品 Tag 显示状态
     changeGoodsTagShow(state, { id, tagShow, all = false }) {
       state.goodsList = state.goodsList.map((item) => {
         if (item.id === id || all) {
@@ -30,7 +30,7 @@ const goods = {
         return item;
       });
     },
-    // 清空货物
+    // 清空商品
     clearGoods(state) {
       state.goodsList = [];
       // 递归遍历 children 释放网格模型绑定几何体占用内存
@@ -44,15 +44,15 @@ const goods = {
         }
       });
     },
-    // 添加货物
+    // 添加商品
     addGoods(state, goods) {
       state.goodsList.push(goods);
-      // 渲染货物模型
+      // 渲染商品模型
       useGoodsModel({ goods, groupScale: 80 }).then((goodsModel) => {
-        // 添加货物到场景中
+        // 添加商品到场景中
         ThreeJS.addObject(goodsModel);
       });
-      // 更新货物位置
+      // 更新商品位置
       store.commit("shelf/changeShelfPosition", {
         goodsId: goods.id,
         shelfId: goods.shelf_id,
@@ -66,7 +66,7 @@ const goods = {
         });
       }
     },
-    // 移动货物
+    // 移动商品
     moveGoods(state, { goodsId, shelfId, shelfGridId }) {
       state.goodsList = state.goodsList.map((item) => {
         if (item.id === goodsId) {
@@ -75,7 +75,7 @@ const goods = {
         }
         return item;
       });
-      // 更新货物位置
+      // 更新商品位置
       store.commit("shelf/changeShelfPosition", {
         goodsId,
         shelfId,
@@ -84,27 +84,27 @@ const goods = {
       // 刷新货架模型位置
       updateAllGoodsModelPosition(ThreeJS.scene, store.state.shelf.shelfList);
     },
-    // 移除货物
+    // 移除商品
     removeGoods(state, { goodsId }) {
-      // 删除以前的货物列表
+      // 删除以前的商品列表
       const oldGoodsList = state.goodsList;
-      // 新的货物列表
+      // 新的商品列表
       state.goodsList = state.goodsList.filter(
         (oldGoods) => oldGoods.id !== goodsId
       );
-      // 被移除的货物
+      // 被移除的商品
       const removeGoods = oldGoodsList.filter(
         (oldGoods) =>
           !state.goodsList.find((newGoods) => newGoods.id === oldGoods.id)
       );
-      // 更新货物位置
+      // 更新商品位置
       store.commit("shelf/changeShelfPosition", {
         goodsId,
       });
       // 递归遍历 children 释放网格模型绑定几何体占用内存
       ThreeJS.scene.children.forEach((obj) => {
         if (obj.type === "Mesh" && obj.name === "goods") {
-          // 判断当前货物是否是被删除的货物
+          // 判断当前商品是否是被删除的商品
           if (removeGoods.findIndex((goods) => goods.id === obj.data.id) >= 0) {
             // 从内存中删除对象
             obj.geometry.dispose();
@@ -126,15 +126,15 @@ const goods = {
       const result = await getGoodsListApi(storeId);
       console.log(result);
       if (result.status === 200) {
-        // 清空货物数据
+        // 清空商品数据
         commit("clearGoods");
         result.data.forEach((goods) => {
-          // 添加货物
+          // 添加商品
           commit("addGoods", { ...goods, notTotal: true });
         });
       }
     },
-    // 添加货物
+    // 添加商品
     async addGoods(
       { commit },
       {
@@ -172,7 +172,7 @@ const goods = {
         });
       }
     },
-    // 移动货物
+    // 移动商品
     async moveGoods({ commit }, { goodsId, storeId, shelfId, shelfGridId }) {
       // 发送请求更新货架位置
       const result = await moveGoodsByIdApi({
@@ -203,7 +203,7 @@ const goods = {
         // 提示信息
         message.success(result.message);
 
-        // 删除货物列表中移除的商品
+        // 删除商品列表中移除的商品
         result.data.forEach((goods) => {
           commit("removeGoods", { goodsId: goods.goods_id });
           // 判断是否需要更新统计数据

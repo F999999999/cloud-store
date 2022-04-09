@@ -14,14 +14,14 @@
         :shelfTagData="shelfTagData"
       />
     </template>
-    <!--货物标签-->
+    <!--商品标签-->
     <goods-tag
       v-for="goodsTagData in goodsList"
       :key="goodsTagData.id"
       :goodsTagData="goodsTagData"
       :shelf="shelfList.find((item) => item.id === goodsTagData.shelf_id)"
     >
-      <a-tag color="orange">拖动可以移动货物位置</a-tag>
+      <a-tag color="orange">拖动可以移动商品位置</a-tag>
     </goods-tag>
     <!--移动确认框-->
     <div
@@ -100,7 +100,7 @@ export default {
 
     // 货架列表数据
     const shelfList = computed(() => store.state.shelf.shelfList);
-    // 货物列表数据
+    // 商品列表数据
     const goodsList = computed(() => store.state.goods.goodsList);
 
     // 获取货架列表数据
@@ -111,19 +111,19 @@ export default {
 
     // 拖放控制器
     let dragControls = null;
-    // 移动的货物的事件对象
+    // 移动的商品的事件对象
     let goodsMoveEvent = null;
-    // 货物移动后的货架格子
+    // 商品移动后的货架格子
     let goodsMoveShelfBaseMesh = null;
-    // 货物移动确认框
+    // 商品移动确认框
     const goodsMoveConfirmVisible = ref(false);
     // 货架格子位置 Tag 是否显示
     const gridPositionTagVisible = ref(false);
     // 货架格子位置 Tag 的内容
     const gridPositionTagValue = ref("");
-    // 确认移动货物
+    // 确认移动商品
     const goodsMoveOk = () => {
-      // 移动货物
+      // 移动商品
       store.dispatch("goods/moveGoods", {
         goodsId: dragControls.getCurrentDragControls().data.id,
         storeId: goodsMoveShelfBaseMesh.data.store_id,
@@ -139,9 +139,9 @@ export default {
       // 提示消息
       message.success("移动成功");
     };
-    // 取消货物移动
+    // 取消商品移动
     const goodsMoveCancel = () => {
-      // 还原货物位置
+      // 还原商品位置
       updateOneGoodsModelPosition(goodsMoveEvent.object);
       // 清除货架格子的自发光
       toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
@@ -189,7 +189,7 @@ export default {
 
       // 与射线相交的物体
       let intersectObjects = [];
-      // 货物
+      // 商品
       let goodsObjects = [];
       // 货架格子
       let shelfBaseObjects = [];
@@ -213,7 +213,7 @@ export default {
             if (intersect?.object?.name.slice(0, 11) === "shelf_base_") {
               shelfBaseObjects.push(intersect);
             }
-            // 获取货物
+            // 获取商品
             if (intersect?.object?.name === "goods") {
               goodsObjects.push(intersect);
             }
@@ -234,27 +234,27 @@ export default {
         // 清空货架格子列表
         shelfBaseObjects = [];
 
-        // 判断是否捕获到货物
+        // 判断是否捕获到商品
         if (goodsObjects.length > 0) {
-          // 当前货物
+          // 当前商品
           const selectedObject = goodsObjects[0].object;
           // 添加到描边列表
           outline.outlinePass.selectedObjects = [selectedObject];
           // 判断是否处于拖放状态
           if (!dragControls.getDragState()) {
-            // 隐藏货物 Tag 标签
+            // 隐藏商品 Tag 标签
             store.commit("goods/changeGoodsTagShow", {
               all: true,
               tagShow: false,
             });
-            // 显示货物 Tag 标签
+            // 显示商品 Tag 标签
             store.commit("goods/changeGoodsTagShow", {
               id: selectedObject.data.id,
               tagShow: true,
             });
           }
 
-          // 将当前货物添加到可拖放列表
+          // 将当前商品添加到可拖放列表
           dragControls.addDragControlsObject(selectedObject);
         } else {
           // 清除描边效果
@@ -262,16 +262,16 @@ export default {
           // 清空被拖放的物体
           dragControls.clearDragControlsObject();
 
-          // 隐藏货物详情
+          // 隐藏商品详情
           goodsList.value.forEach((item) => {
-            // 隐藏货物 Tag 标签显示状态
+            // 隐藏商品 Tag 标签显示状态
             store.commit("goods/changeGoodsTagShow", {
               id: item.id,
               tagShow: false,
             });
           });
         }
-        // 清空货物列表
+        // 清空商品列表
         goodsObjects = [];
       });
 
@@ -281,11 +281,11 @@ export default {
       //   const _goodsObjects = [];
       //   // 遍历相交的模型
       //   intersectObjects.forEach((intersect) => {
-      //     // 判断是否是货物
+      //     // 判断是否是商品
       //     if (intersect?.object?.name === "goods") {
       //       // 判断是否处于拖放状态
       //       if (!dragControls.getDragState()) {
-      //         // 显示货物 Tag 标签
+      //         // 显示商品 Tag 标签
       //         store.commit("goods/changeGoodsTagShow", {
       //           id: intersect.object.data.id,
       //           tagShow: true,
@@ -294,9 +294,9 @@ export default {
       //       _goodsObjects.push(intersect);
       //     }
       //   });
-      //   // 判断是否捕获到货物
+      //   // 判断是否捕获到商品
       //   if (_goodsObjects.length > 0) {
-      //     // 将当前货物添加到可拖放列表
+      //     // 将当前商品添加到可拖放列表
       //     dragControls.addDragControlsObject(_goodsObjects[0].object);
       //   }
       // });
@@ -308,7 +308,7 @@ export default {
           const currentGoodsObject = intersectObjects.find(
             (object) => object?.object?.name === "goods"
           );
-          // 判断是否有货物
+          // 判断是否有商品
           if (currentGoodsObject) {
             console.log("currentGoodsObject", currentGoodsObject);
           }
@@ -335,7 +335,7 @@ export default {
           data: event.object.data,
         });
 
-        // 隐藏货物 Tag 标签
+        // 隐藏商品 Tag 标签
         store.commit("goods/changeGoodsTagShow", {
           id: intersectObjects[0].object.data.id,
           tagShow: false,
@@ -383,7 +383,7 @@ export default {
       dragControls.addEventListener("dragend", (event) => {
         // 设置拖放状态为未在拖放
         dragControls.setDragState(false);
-        // 保存当前移移动的货物的事件对象
+        // 保存当前移移动的商品的事件对象
         goodsMoveEvent = event;
         // 获取鼠标位置
         mousePosition.value = getMousePosition();
@@ -393,7 +393,7 @@ export default {
         )?.object;
         // 判断是否拖拽到货架格子
         if (goodsMoveShelfBaseMesh) {
-          // 判断货物是否移动
+          // 判断商品是否移动
           if (
             !isShelfMove(
               event.object,
@@ -403,14 +403,14 @@ export default {
           )
             return message.warning("货架格子未进行更改");
 
-          // 判断货物是否重叠
+          // 判断商品是否重叠
           if (isShelfOverlap(event.object, goodsMoveShelfBaseMesh))
             return message.warning("该货架格子已被使用");
 
           // 弹出确认框
           goodsMoveConfirmVisible.value = true;
         } else {
-          // 还原货物位置
+          // 还原商品位置
           updateOneGoodsModelPosition(event.object);
         }
       });
