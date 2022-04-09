@@ -3,6 +3,7 @@ import { shelfLocation } from "@/utils/modelLocation/shelfModelLocation";
 import { shelfSpacing } from "@/hooks/useShelf";
 import { computed } from "vue";
 import store from "@/store";
+import { ThreeJS } from "@/hooks/useTEngine";
 
 const useGoodsModel = async ({ shelfList, goods, groupScale = 100 }) => {
   shelfList = shelfList || computed(() => store.state.shelf.shelfList).value;
@@ -65,20 +66,6 @@ const updateAllGoodsModelPosition = (scene) => {
   });
 };
 
-// 获取货物位置
-const getGoodsPosition = (goodsId, shelfId, shelfGridId) => {
-  // 货架列表数据
-  const shelfList = computed(() => store.state.shelf.shelfList);
-  // 查找货架
-  const shelf = shelfList.value.find((shelf) => shelf.id === shelfId);
-  // 设置货物的位置
-  return {
-    x: shelf.position.x * shelfSpacing.x + shelfLocation[shelfGridId - 1].x,
-    y: shelf.position.y * shelfSpacing.y + shelfLocation[shelfGridId - 1].y,
-    z: shelf.position.z * shelfSpacing.z + shelfLocation[shelfGridId - 1].z,
-  };
-};
-
 // 判断货物是否移动
 const isShelfMove = (oldGoodsMesh, newGoodsMesh, shelfMesh) => {
   if (
@@ -133,12 +120,35 @@ const twinkleMesh = (mesh, value, attribute = "emissive") => {
   });
 };
 
+// 设置货物属性
+const setGoodsAttribute = (goodsIdList, value, attribute = "emissive") => {
+  const goodsMesh = [];
+  // 递归遍历 children 给选中的商品添加或者还原自发光效果
+  ThreeJS.scene.children.forEach((obj) => {
+    // 判断是否是货物
+    if (obj.type === "Mesh" && obj.name === "goods") {
+      // 判断传入的货物列表是否是数组
+      if (Array.isArray(goodsIdList)) {
+        // 判断该货物ID是否在传入的列表中
+        if (goodsIdList.find((goodsId) => goodsId === obj.data.id)) {
+          obj.material[attribute].set(value);
+          goodsMesh.push(obj);
+        }
+      } else if (obj.data.id === goodsIdList) {
+        obj.material[attribute].set(value);
+        goodsMesh.push(obj);
+      }
+    }
+  });
+  return goodsMesh;
+};
+
 export {
   useGoodsModel,
   updateOneGoodsModelPosition,
   updateAllGoodsModelPosition,
-  getGoodsPosition,
   isShelfMove,
   isShelfOverlap,
   twinkleMesh,
+  setGoodsAttribute,
 };

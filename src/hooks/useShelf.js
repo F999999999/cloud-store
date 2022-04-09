@@ -2,6 +2,7 @@
 import { ShelfMobile } from "@/utils/three/loadModel/shelfMobile";
 import store from "@/store";
 import { computed } from "vue";
+import { shelfLocation } from "@/utils/modelLocation/shelfModelLocation";
 
 const shelfSpacing = { x: 240 + 260, y: 466, z: -1000 };
 
@@ -55,6 +56,20 @@ const getShelfPosition = (shelfId) => {
   };
 };
 
+// 获取货架格子位置
+const getGridPosition = (shelfId, shelfGridId) => {
+  // 货架列表数据
+  const shelfList = computed(() => store.state.shelf.shelfList);
+  // 查找货架
+  const shelf = shelfList.value.find((shelf) => shelf.id === shelfId);
+  // 设置货物的位置
+  return {
+    x: shelf.position.x * shelfSpacing.x + shelfLocation[shelfGridId - 1].x,
+    y: shelf.position.y * shelfSpacing.y + shelfLocation[shelfGridId - 1].y,
+    z: shelf.position.z * shelfSpacing.z + shelfLocation[shelfGridId - 1].z,
+  };
+};
+
 const toggleShelfBaseEmissive = (oldMesh, newMesh, color, addColor) => {
   // 清除之前被选中的货架格子的自发光属性
   oldMesh?.material?.emissive.set(0x000000);
@@ -74,5 +89,6 @@ export {
   shelfSpacing,
   useShelfModel,
   getShelfPosition,
+  getGridPosition,
   toggleShelfBaseEmissive,
 };

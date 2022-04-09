@@ -16,7 +16,7 @@ export const getStoreListDateApi = () => {
   return requestWithToken("/store/store_total", "get");
 };
 /**
- * 获取仓库使用数据信息
+ * 获取仓库使用运行数据信息
  * @returns {Promise}
  */
 export const getStoreShelfDateApi = () => {
@@ -28,4 +28,11 @@ export const getStoreShelfDateApi = () => {
  */
 export const getGoodsLogDateApi = () => {
   return requestWithToken("/store/goods_log", "get");
+};
+/**
+ * 获取临期商品日期
+ * @returns {Promise}
+ */
+export const getGoodsLogDateTimeApi = () => {
+  return requestWithToken("/store/expire_goods_total", "get");
 };

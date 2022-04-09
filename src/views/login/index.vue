@@ -30,7 +30,7 @@ import { useForm, useField } from "vee-validate";
 import { password, username } from "@/utils/vee-validate-schema";
 import { message } from "ant-design-vue";
 import { useRouter } from "vue-router";
-
+import "@/assets/style/reset.css";
 const router = useRouter();
 //所以需要的字段
 const {
@@ -94,7 +94,15 @@ function useFormValidate() {
   margin: 0;
   padding: 0;
 }
-
+/*html,*/
+/*body {*/
+/*  height: 100%;*/
+/*  overflow: auto;*/
+/*  margin: 0;*/
+/*}*/
+/*html {*/
+/*  min-height: 101%;*/
+/*}*/
 a {
   text-decoration: none;
 }
@@ -108,11 +116,13 @@ button {
 
 .content {
   height: 100vh;
-  background: linear-gradient(#141e30, #243b55);
+  /* background: linear-gradient(#141e30, #243b55); */
+  background-image: url(https://woyebuzhidaoyaoqiyigeshenmemingzi.oss-cn-hangzhou.aliyuncs.com/login.gif);
+  background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: 14px;
   color: #03e9f4;
 }
 
@@ -120,6 +130,7 @@ button {
   width: 400px;
   height: 364px;
   background-color: #0c1622;
+  background: rgba(12, 22, 34, 0.6);
   margin: 100px auto;
   border-radius: 10px;
   box-shadow: 0 15px 25px 0 rgba(0, 0, 0, 0.6);
@@ -129,9 +140,10 @@ button {
 
 h2 {
   text-align: center;
-  color: aliceblue;
+  color: #fff;
   margin-bottom: 30px;
   font-family: "Courier New", Courier, monospace;
+  font-size: 1.6rem;
 }
 
 .item {

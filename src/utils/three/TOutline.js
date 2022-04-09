@@ -5,7 +5,7 @@ import { Vector2 } from "three";
 
 let composer;
 // 轮廓线参数
-let outlinePass = {
+export let outlinePass = {
   edgeStrength: 3.0,
   edgeGlow: 0.0,
   edgeThickness: 1.0,

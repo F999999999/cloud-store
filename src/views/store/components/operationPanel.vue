@@ -24,6 +24,10 @@
             :style="{ fontSize: 'large' }"
             v-if="item.id === 'delivery'"
           />
+          <searchOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'search'"
+          />
           <SettingOutlined
             :style="{ fontSize: 'large' }"
             v-if="item.id === 'setting'"
@@ -48,6 +52,11 @@
           :storeId="storeId"
           v-show="currentPanelId === 'delivery'"
         />
+        <!-- 查询 -->
+        <operation-panel-search
+          :store-id="storeId"
+          v-show="currentPanelId === 'search'"
+        />
         <!-- 设置 -->
         <operation-panel-setting
           :storeId="storeId"
@@ -60,9 +69,10 @@
 
 <script>
 import {
+  HomeOutlined,
   CloudDownloadOutlined,
   CloudUploadOutlined,
-  HomeOutlined,
+  SearchOutlined,
   SettingOutlined,
 } from "@ant-design/icons-vue";
 import { ref } from "vue";
@@ -70,10 +80,12 @@ import OperationPanelInventory from "@/views/store/components/operationPanelInve
 import OperationPanelStorage from "@/views/store/components/operationPanelStorage";
 import OperationPanelDelivery from "@/views/store/components/operationPanelDelivery";
 import OperationPanelSetting from "@/views/store/components/operationPanelSetting";
+import OperationPanelSearch from "@/views/store/components/operationPanelSearch";
 
 export default {
   name: "operationPanel",
   components: {
+    OperationPanelSearch,
     OperationPanelSetting,
     OperationPanelDelivery,
     OperationPanelStorage,
@@ -81,6 +93,7 @@ export default {
     HomeOutlined,
     CloudDownloadOutlined,
     CloudUploadOutlined,
+    SearchOutlined,
     SettingOutlined,
   },
   props: {
@@ -110,6 +123,10 @@ export default {
       {
         id: "delivery",
         title: "出库",
+      },
+      {
+        id: "search",
+        title: "查询",
       },
       {
         id: "setting",

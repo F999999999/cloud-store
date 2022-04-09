@@ -1,5 +1,6 @@
 import {
   addGoodsApi,
+  expireGoodsApi,
   getGoodsListApi,
   moveGoodsByIdApi,
   removeGoodsByIdApi,
@@ -15,6 +16,8 @@ const goods = {
     return {
       // 货物数据
       goodsList: [],
+      // 临期货物数据
+      expireGoodsList: [],
     };
   },
   mutations: {
@@ -111,6 +114,10 @@ const goods = {
           }
         }
       });
+    },
+    // 设置临期商品
+    setExpiredGoods(state, expireGoods) {
+      state.expireGoodsList = expireGoods;
     },
   },
   actions: {
@@ -209,6 +216,14 @@ const goods = {
         });
       }
       return result;
+    },
+    // 获取临期商品数据
+    async getExpireGoodsList({ commit }, { store_id, page_num, page_size }) {
+      const result = await expireGoodsApi({ store_id, page_num, page_size });
+      console.log(result);
+      if (result.status === 200) {
+        commit("setExpiredGoods", result.data);
+      }
     },
   },
 };

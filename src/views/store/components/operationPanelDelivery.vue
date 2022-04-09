@@ -48,7 +48,7 @@
 
 <script>
 import { ref } from "vue";
-import { searchDeliveryNameApi } from "@/api/goods";
+import { searchGoodsNameApi } from "@/api/goods";
 import { message } from "ant-design-vue";
 import { useStore } from "vuex";
 export default {
@@ -70,7 +70,7 @@ export default {
     // 点击搜索或按下回车键时的回调
     const onSearch = () => {
       // 根据商品名称搜索商品列表
-      searchDeliveryNameApi({
+      searchGoodsNameApi({
         store_id: props.storeId,
         name: searchValue.value,
       }).then((data) => {

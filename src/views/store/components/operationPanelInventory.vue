@@ -67,20 +67,73 @@
       </a-row>
     </div>
     <div class="operationPanel-replenishment">
-      <h3>补货信息</h3>
-      <a-row class="operationPanel-replenishment-content">
-        <a-col :span="7" class="operationPanel-replenishment-item"></a-col>
-        <a-col
-          :span="7"
-          :offset="1"
+      <h3>临期检测</h3>
+      <div class="operationPanel-replenishment-content">
+        <div
           class="operationPanel-replenishment-item"
-        ></a-col>
-        <a-col
-          :span="7"
-          :offset="1"
-          class="operationPanel-replenishment-item"
-        ></a-col>
-      </a-row>
+          v-for="goods in expireGoodsList"
+          :key="goods.id"
+        >
+          <h3>
+            商品名称：<span>{{ goods.name }}</span>
+          </h3>
+          <p>
+            生产日期：
+            <span>
+              {{
+                new Date(goods.production_date * 1000)
+                  .toLocaleString()
+                  .replaceAll("/", "-")
+              }}
+            </span>
+          </p>
+          <p>
+            过期时间：
+            <span>
+              {{
+                new Date(goods.expiration_time * 1000)
+                  .toLocaleString()
+                  .replaceAll("/", "-")
+              }}
+            </span>
+          </p>
+          <p>
+            入库时间：
+            <span>
+              {{
+                new Date(goods.storage_time * 1000)
+                  .toLocaleString()
+                  .replaceAll("/", "-")
+              }}
+            </span>
+          </p>
+          <p>
+            所在位置：
+            <span>
+              {{
+                shelfList.length > 0
+                  ? getGridPositionString(
+                      goods.id,
+                      goods.shelf_id,
+                      goods.shelf_grid_id
+                    )
+                  : "加载中……"
+              }}
+            </span>
+          </p>
+          <span class="validity">
+            {{
+              goods.expiration_time > new Date().valueOf() / 1000
+                ? (
+                    (goods.expiration_time - new Date().valueOf() / 1000) /
+                    86400
+                  ).toFixed(2)
+                : "已过期"
+            }}
+            / {{ goods.shelflife }}天
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -102,7 +155,7 @@ export default {
       default: null,
     },
   },
-  setup() {
+  setup(props) {
     // 获取路由
     const route = useRoute();
 
@@ -168,6 +221,23 @@ export default {
       newShelfOptionsValue.value = null;
     };
 
+    // 获取临期商品
+    store.dispatch("goods/getExpireGoodsList", { store_id: props.storeId });
+    // 临期商品列表
+    const expireGoodsList = computed(() => store.state.goods.expireGoodsList);
+    // 货架列表数据
+    const shelfList = computed(() => store.state.shelf.shelfList);
+    // 获取商品位置
+    const getGridPositionString = (goodsId, shelfId, shelfGridId) => {
+      const shelf = shelfList.value.find((shelf) => shelf.id === shelfId);
+      const grid = shelf.shelf_grid.find(
+        (grid) => grid.shelf_grid_id === shelfGridId
+      );
+      return `${grid.position.y + 1}层 ${grid.position.x + 1}行 ${
+        grid.position.z + 1
+      }列`;
+    };
+
     return {
       shelfTotal,
       goodsFormState,
@@ -178,6 +248,9 @@ export default {
       newShelfOptionsValue,
       newDisplayRender,
       moveGoods,
+      expireGoodsList,
+      shelfList,
+      getGridPositionString,
     };
   },
 };
@@ -198,9 +271,11 @@ export default {
   }
 }
 .operationPanel-inventory {
+  height: 100%;
   .operationPanel-overview,
   .operationPanel-logistics,
   .operationPanel-replenishment {
+    margin-bottom: 10px;
     h3 {
       text-align: left;
       font-weight: 700;
@@ -276,12 +351,32 @@ export default {
     }
   }
   .operationPanel-replenishment {
+    height: 100%;
     .operationPanel-replenishment-content {
-      height: 140px;
+      height: calc(100% - 360px);
+      overflow: auto;
       .operationPanel-replenishment-item {
-        height: 120px;
+        position: relative;
+        width: 100%;
         background-color: #ffffff54;
         border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+        p {
+          text-align: left;
+          margin-bottom: 0;
+        }
+
+        .validity {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 100%;
+          font-size: 30px;
+          opacity: 0.5;
+          color: #ffffff;
+        }
       }
     }
   }

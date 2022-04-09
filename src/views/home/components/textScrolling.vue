@@ -90,13 +90,15 @@ const useGoodsLog = () => {
   height: 100%;
   overflow: hidden;
   color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .scroll .item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: 0.3rem 0;
 }
 .scroll .item span {
   white-space: nowrap;

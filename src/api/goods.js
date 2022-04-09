@@ -26,7 +26,7 @@ export const addGoodsApi = (params) => {
  * @param name 商品名
  * @returns {Promise}
  */
-export const searchDeliveryNameApi = ({ store_id, name }) => {
+export const searchGoodsNameApi = ({ store_id, name }) => {
   return requestWithToken("/store/search_goods", "get", { store_id, name });
 };
 /**
@@ -62,5 +62,14 @@ export const moveGoodsByIdApi = ({ id, store_id, shelf_id, shelf_grid_id }) => {
     shelf_grid_id,
     // 添加操作员ID到请求参数中
     operate_id: JSON.parse(window.localStorage.getItem("userInfo")).id,
+  });
+};
+
+export const expireGoodsApi = ({ store_id, page_num, page_size }) => {
+  console.log("store_id", store_id);
+  return requestWithToken("/store/expire_goods", "get", {
+    store_id,
+    page_num,
+    page_size,
   });
 };
