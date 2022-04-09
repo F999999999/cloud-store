@@ -148,7 +148,7 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-  background-image: url("~@/assets/image/bg.jpg");
+  background-image: url("~@/assets/image/bg.png");
   background-size: 100% 100%;
   overflow: hidden;
 }
