@@ -8,10 +8,10 @@
       @search="onSearch"
     />
     <!--  搜索结果列表  -->
-    <div class="operationPanel-searc-list" v-if="searchResultList?.length > 0">
+    <div class="operationPanel-search-list" v-if="searchResultList?.length > 0">
       <div
         :class="[
-          'operationPanel-searc-item',
+          'operationPanel-search-item',
           selectedGoodsList.indexOf(item.id) !== -1 ? 'active' : '',
         ]"
         :title="`商品名称：${item.name}`"

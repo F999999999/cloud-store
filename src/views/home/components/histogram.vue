@@ -33,7 +33,7 @@ export default {
         document.getElementById("histogram" + props.histogramId)
       );
       const passengerOccupancy = {
-        xData: ["未过期", "临期", "已过期"],
+        xData: ["未过期", "临过期", "已过期"],
         yData: [props.normal, props.will_expire, props.expired],
       };
       const option = {

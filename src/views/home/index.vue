@@ -161,6 +161,9 @@ export default {
   text-align: center;
   color: #fff;
   font-size: 1.4rem;
+  background-image: url("~@/assets/image/title_bg.png");
+  background-size: 100% 100%;
+  user-select: none;
   span {
     float: right;
     font-size: 1.4rem;
