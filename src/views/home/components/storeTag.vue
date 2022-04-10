@@ -1,5 +1,5 @@
 <template>
-  <li class="box">
+  <div class="box">
     <div class="box_context">
       <h3>{{ store_name }}</h3>
       <div class="box_context_p1">
@@ -17,7 +17,7 @@
       :useGoods="useGoods"
     />
     <img src="@/assets/image/box2_bg.png" alt="" />
-  </li>
+  </div>
 </template>
 
 <script>

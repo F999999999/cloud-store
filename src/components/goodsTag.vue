@@ -1,9 +1,7 @@
 <template>
   <div ref="domElementRef" :data-id="goodsTagData.id">
     <div class="goods-item" v-show="goodsTagData.tagShow">
-      <h3 style="color: #fff; margin-bottom: 4px">
-        商品 - {{ goodsTagData.name }}
-      </h3>
+      <h3 style="color: #fff">商品 - {{ goodsTagData.name }}</h3>
       <a-row style="color: #fff">
         <a-col :span="4">ID:</a-col>
         <a-col :span="6">

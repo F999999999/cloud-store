@@ -2,7 +2,7 @@
   <div class="home">
     <div class="header">云仓 - 智能仓储</div>
     <div class="home_left">
-      <ul>
+      <div>
         <!-- 动态环形图 -->
         <store-tag
           v-for="item in getStoreListDate"
@@ -12,11 +12,11 @@
           :useGoods="item.use_grid"
           :store_name="item.store_name"
         />
-      </ul>
+      </div>
     </div>
     <div class="home_right">
-      <ul>
-        <li>
+      <div>
+        <div>
           <div class="home_right_warn">
             <span>
               <img src="@/assets/image/run.png" alt="" />
@@ -28,8 +28,8 @@
               <TextTag></TextTag>
             </div>
           </div>
-        </li>
-        <li>
+        </div>
+        <div>
           <div class="home_right_status">
             <!-- 标题 -->
             <span>
@@ -41,41 +41,37 @@
               <img src="~@/assets/image/box3_bg.png" alt="" />
               <div class="home_right_status_img_context">
                 <!-- 柱状图组件 -->
-                <ul>
-                  <li
-                    v-for="item in getGoodsLogDateTimeDate"
-                    :key="item.store_id"
-                  >
-                    <p class="home_right_status_img_context_title">
-                      <i></i>{{ item.store_name }}
-                    </p>
-                    <histogram
-                      :histogramId="'histogram' + item.store_id"
-                      :expired="item.expired"
-                      :normal="item.normal"
-                      :will_expire="item.will_expire"
-                    />
-                  </li>
-                </ul>
+                <div
+                  v-for="item in getGoodsLogDateTimeDate"
+                  :key="item.store_id"
+                >
+                  <p class="home_right_status_img_context_title">
+                    <i></i>{{ item.store_name }}
+                  </p>
+                  <histogram
+                    :histogramId="'histogram' + item.store_id"
+                    :expired="item.expired"
+                    :normal="item.normal"
+                    :will_expire="item.will_expire"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
     <div class="home_bottom">
-      <ul>
-        <li
-          class="button"
-          :style="{ '--transform': 'rotate(' + Math.random() * 360 + 'deg)' }"
-          v-for="store in storeList"
-          :key="store.id"
-        >
-          <router-link :to="'/store?id=' + store.id">
-            {{ store.name }}
-          </router-link>
-        </li>
-      </ul>
+      <div
+        class="button"
+        :style="{ '--transform': 'rotate(' + Math.random() * 360 + 'deg)' }"
+        v-for="store in storeList"
+        :key="store.id"
+      >
+        <router-link :to="'/store?id=' + store.id">
+          {{ store.name }}
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -176,7 +172,7 @@ export default {
   margin-left: 5%;
   width: 20%;
   height: 80%;
-  ul {
+  > div {
     width: 100%;
     height: 100%;
     display: flex;
@@ -191,14 +187,14 @@ export default {
   margin-right: 5%;
   width: 20%;
   height: 80%;
-  ul {
+  > div {
     height: 100%;
     display: flex;
     align-items: center; /* 垂直居中 */
     flex-direction: column;
     justify-content: space-between; /* 子元素在横轴上两端对齐 */
 
-    li {
+    > div {
       width: 100%;
     }
   }
@@ -269,7 +265,7 @@ export default {
   top: 16%;
   left: 2rem;
   width: 100%;
-  li {
+  > div {
     height: 30%;
   }
 }
@@ -298,13 +294,11 @@ export default {
   bottom: 3%;
   transform: translate(-50%, -50%);
   color: #fff;
-  li {
+  .button {
     float: left;
     margin: 0 10%;
     text-align: center;
     padding-left: 1rem;
-  }
-  .button {
     position: relative;
     width: 6rem;
     height: 6rem;

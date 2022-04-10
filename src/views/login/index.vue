@@ -30,7 +30,6 @@ import { useForm, useField } from "vee-validate";
 import { password, username } from "@/utils/vee-validate-schema";
 import { message } from "ant-design-vue";
 import { useRouter } from "vue-router";
-import "@/assets/style/reset.css";
 const router = useRouter();
 //所以需要的字段
 const {

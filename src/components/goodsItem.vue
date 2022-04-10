@@ -1,35 +1,50 @@
 <template>
   <div class="goods-item">
-    <h3 style="color: #fff; margin-bottom: 4px">商品 - {{ goodsData.name }}</h3>
+    <h3 style="color: #fff">商品 - {{ goodsData.name }}</h3>
     <a-row style="color: #fff">
       <a-col :span="4">ID:</a-col>
       <a-col :span="6">
-        <a-tag color="#008000" style="font-weight: 700; color: yellow">
+        <span style="font-weight: 700; color: yellow">
           {{ goodsData.id || "-" }}
-        </a-tag>
+        </span>
       </a-col>
       <a-col :span="6"> 重量：</a-col>
       <a-col :span="8">
-        <a-tag color="#008000" style="font-weight: 700">
+        <span style="font-weight: 700">
           <span style="color: yellow">{{
             goodsData.weight >= 0 ? goodsData.weight : "-"
           }}</span>
           KG
-        </a-tag>
+        </span>
       </a-col>
       <a-col :span="24"><hr /></a-col>
       <a-col :span="7"> 保质期：</a-col>
       <a-col :span="6">
-        <a-tag color="#894D21" style="font-weight: 700">
+        <span style="font-weight: 700">
           <span style="color: white">
             {{ goodsData.shelflife >= 0 ? goodsData.shelflife : "-" }}</span
           >
           天
-        </a-tag>
+        </span>
       </a-col>
       <a-col :span="5"><span>状态：</span></a-col>
       <a-col :span="6">
-        <a-tag color="#894D21" style="font-weight: 700; color: white">
+        <span
+          :style="{
+            fontWeight: 700,
+            opacity: 0.8,
+            color:
+              (new Date().getTime() / 1000 - goodsData.production_date) /
+                86400 >
+              goodsData.shelflife
+                ? 'red'
+                : (new Date().getTime() / 1000 - goodsData.production_date) /
+                    86400 >
+                  goodsData.shelflife * 0.8
+                ? 'yellow'
+                : 'green',
+          }"
+        >
           {{
             (new Date().getTime() / 1000 - goodsData.production_date) / 86400 >
             goodsData.shelflife
@@ -40,11 +55,11 @@
               ? "临过期"
               : "未过期"
           }}
-        </a-tag>
+        </span>
       </a-col>
       <a-col :span="8"><span style="color: #1890ff">生产日期：</span></a-col>
       <a-col :span="16">
-        <a-tag color="#894D21" style="font-weight: 700; color: white">
+        <span style="font-weight: 700; color: white">
           {{
             goodsData.production_date >= 0
               ? new Date(goodsData.production_date * 1000)
@@ -53,11 +68,11 @@
                   .replaceAll("00:00:00", "")
               : "-"
           }}
-        </a-tag>
+        </span>
       </a-col>
       <a-col :span="8"><span style="color: #52c41a">入库时间：</span></a-col>
       <a-col :span="16">
-        <a-tag color="#894D21" style="font-weight: 700; color: white">
+        <span style="font-weight: 700; color: white">
           {{
             goodsData.storage_time >= 0
               ? new Date(goodsData.storage_time * 1000)
@@ -66,7 +81,7 @@
                   .replaceAll("00:00:00", "")
               : "-"
           }}
-        </a-tag>
+        </span>
       </a-col>
       <a-col :span="24">
         <a-progress
@@ -115,26 +130,24 @@
         <a-row>
           <a-col :span="6">货架：</a-col>
           <a-col :span="18">
-            <a-tag color="#008000" style="font-weight: 700; color: white">
+            <span style="color: yellow">
               {{ shelf.name }}
-            </a-tag>
+            </span>
           </a-col>
           <a-col :span="6">位置：</a-col>
-          <a-col :span="18" style="font-weight: 700">
-            <a-tag color="#008000">
-              <span style="color: yellow">
-                {{ currentShelfGrid?.position?.y + 1 }}
-              </span>
-              层
-              <span style="color: yellow">
-                {{ currentShelfGrid?.position?.x + 1 }}
-              </span>
-              行
-              <span style="color: yellow">
-                {{ currentShelfGrid?.position?.z + 1 }}
-              </span>
-              列
-            </a-tag>
+          <a-col :span="18">
+            <span style="color: yellow">
+              {{ currentShelfGrid?.position?.y + 1 }}
+            </span>
+            层
+            <span style="color: yellow">
+              {{ currentShelfGrid?.position?.x + 1 }}
+            </span>
+            行
+            <span style="color: yellow">
+              {{ currentShelfGrid?.position?.z + 1 }}
+            </span>
+            列
           </a-col>
         </a-row>
       </a-col>

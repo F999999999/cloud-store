@@ -85,7 +85,7 @@ const useGoodsLog = () => {
 };
 </script>
 
-<style>
+<style scoped>
 .scroll {
   height: 100%;
   overflow: hidden;
