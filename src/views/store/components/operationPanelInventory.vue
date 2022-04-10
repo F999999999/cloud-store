@@ -114,7 +114,7 @@
             </span>
           </p>
           <p>
-            所在位置：
+            位置：
             <span>
               {{
                 shelfList.length > 0
@@ -252,9 +252,9 @@ export default {
       const grid = shelf.shelf_grid.find(
         (grid) => grid.shelf_grid_id === shelfGridId
       );
-      return `${grid.position.y + 1}层 ${grid.position.x + 1}行 ${
-        grid.position.z + 1
-      }列`;
+      return `【${shelf.name}】${grid.position.y + 1}层 ${
+        grid.position.x + 1
+      }行 ${grid.position.z + 1}列`;
     };
 
     return {
@@ -391,22 +391,31 @@ export default {
         border-radius: 10px;
         padding: 10px;
         margin-bottom: 10px;
+
         p {
           text-align: left;
           margin-bottom: 0;
+          opacity: 0.9;
         }
-
         .validity {
           position: absolute;
-          //top: 50%;
-          //left: 50%;
-          //transform: translate(-50%, -50%);
-          //width: 100%;
-          top: 10px;
-          right: 10px;
-          font-size: 1rem;
-          opacity: 0.4;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 100%;
+          font-size: 2rem;
+          //top: 10px;
+          //right: 10px;
+          //font-size: 1rem;
+          opacity: 0.3;
           font-weight: 700;
+          pointer-events: none;
+        }
+        &:hover {
+          .validity {
+            opacity: 0.8;
+            text-shadow: 0 0 10px #1188ee;
+          }
         }
       }
     }
