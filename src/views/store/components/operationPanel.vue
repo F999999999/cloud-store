@@ -169,7 +169,7 @@ export default {
   .container {
     height: 100%;
     .operationPanel-options {
-      background-color: #ffffff91;
+      background-color: #111111cc;
       .operationPanel-options-item {
         height: 90px;
         padding: 20px 0;
@@ -187,6 +187,7 @@ export default {
     .operationPanel-content {
       height: 100%;
       padding: 20px 20px 0;
+      background-color: #393944cc;
     }
   }
 }

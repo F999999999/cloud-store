@@ -146,12 +146,27 @@ export default {
 </script>
 
 <style scoped lang="less">
+:deep(.ant-input) {
+  padding: 4px;
+  background-color: #1f1f1f;
+}
+:deep(.ant-calendar-picker) {
+  width: 239px;
+}
+:deep(.ant-input),
+:deep(.ant-cascader-picker) {
+  // 设置 input 的圆角
+  border-radius: 15px;
+  background-color: #1f1f1f;
+  &:focus {
+    // 设置 input 的蓝色边框的圆角
+    border-radius: 15px;
+    .ant-cascader-input {
+      // 设置 input 的蓝色边框的圆角
+      border-radius: 15px;
+    }
+  }
+}
 .operationPanel-storage {
-  :deep(.ant-input) {
-    padding: 4px;
-  }
-  :deep(.ant-calendar-picker) {
-    width: 239px;
-  }
 }
 </style>

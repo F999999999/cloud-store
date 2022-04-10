@@ -9,30 +9,15 @@
     />
     <!--  搜索出的商品列表  -->
     <div class="operationPanel-delivery-list" v-if="deliveryList?.length > 0">
-      <a-card
-        :class="[
-          'operationPanel-delivery-item',
-          selectedDeliveryIdList.indexOf(item.id) !== -1 ? 'active' : '',
-        ]"
-        size="small"
-        :title="`商品名称：${item.name}`"
-        :style="{ width: '100%', marginBottom: '5px' }"
+      <goods-item
+        class="operationPanel-delivery-item"
         v-for="item in deliveryList"
         :key="item.id"
+        :goodsData="item"
+        :active="selectedDeliveryIdList.indexOf(item.id) !== -1"
+        activeText="已选择"
         @click="onSelectDelivery(item.id)"
-      >
-        <p>ID：{{ item.id }}</p>
-        <p>重量：{{ item.weight }}</p>
-        <p>保质期：{{ item.shelflife }}</p>
-        <p>货架ID：{{ item.shelf_id }}</p>
-        <p>货架格子ID：{{ item.shelf_grid_id }}</p>
-        <p>
-          生产日期：{{ new Date(item.production_date * 1000).toLocaleString() }}
-        </p>
-        <p>
-          入库时间：{{ new Date(item.storage_time * 1000).toLocaleString() }}
-        </p>
-      </a-card>
+      />
     </div>
     <!--  商品出库按钮  -->
     <a-button
@@ -51,8 +36,10 @@ import { ref } from "vue";
 import { searchGoodsNameApi } from "@/api/goods";
 import { message } from "ant-design-vue";
 import { useStore } from "vuex";
+import GoodsItem from "@/components/goodsItem";
 export default {
   name: "operationPanelDelivery",
+  components: { GoodsItem },
   props: {
     storeId: {
       type: Number,
@@ -134,6 +121,10 @@ export default {
 </script>
 
 <style scoped lang="less">
+:deep(.ant-input-affix-wrapper) {
+  border-radius: 15px;
+  background-color: #1f1f1f;
+}
 .operationPanel-delivery {
   height: 100%;
   .operationPanel-delivery-list {
@@ -141,11 +132,12 @@ export default {
     height: calc(100% - 32px - 32px - 30px);
     overflow-y: auto;
     margin-top: 5px;
+    border-radius: 10px;
     p {
       margin-bottom: 8px;
     }
     .operationPanel-delivery-item {
-      opacity: 0.7;
+      opacity: 0.9;
       &:hover,
       &.active {
         opacity: 1;
