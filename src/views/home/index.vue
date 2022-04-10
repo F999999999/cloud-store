@@ -66,7 +66,7 @@
     <div class="home_bottom">
       <ul>
         <li
-          class="button button_1"
+          class="button"
           :style="{ '--transform': 'rotate(' + Math.random() * 360 + 'deg)' }"
           v-for="store in storeList"
           :key="store.id"
@@ -117,20 +117,20 @@ export default {
     });
     //获取仓库商品统计
     getGoodsLogDateTimeApi().then((res) => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         getGoodsLogDateTimeDate.value = res.data.list;
         console.log(getGoodsLogDateTimeDate.value);
       }
     });
     // 获取仓库列表
     // store.dispatch("store/getStoreList");
+    // const storeList = computed(() => store.state.store.storeList);
     getStoreListApi().then((res) => {
       console.log(res);
-      if (res.status == 200) {
+      if (res.status === 200) {
         storeList.value = res.data;
       }
     });
-    // const storeList = computed(() => store.state.store.storeList);
 
     return {
       getStoreListDate,

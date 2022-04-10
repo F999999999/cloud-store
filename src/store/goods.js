@@ -82,7 +82,7 @@ const goods = {
         shelfGridId,
       });
       // 刷新货架模型位置
-      updateAllGoodsModelPosition(ThreeJS.scene, store.state.shelf.shelfList);
+      updateAllGoodsModelPosition(ThreeJS.scene);
     },
     // 移除商品
     removeGoods(state, { goodsId }) {

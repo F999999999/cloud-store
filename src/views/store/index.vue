@@ -21,7 +21,7 @@
       :goodsTagData="goodsTagData"
       :shelf="shelfList.find((item) => item.id === goodsTagData.shelf_id)"
     >
-      <a-tag color="orange">拖动可以移动商品位置</a-tag>
+      <span style="color: yellow">拖动可以移动商品位置</span>
     </goods-tag>
     <!--移动确认框-->
     <div
@@ -77,9 +77,10 @@ export default {
   setup() {
     // 鼠标位置
     const mousePosition = ref({ x: 0, y: 0 });
-
     // 获取路由
     const route = useRoute();
+    // ThreeJS 实例
+    let ThreeJS = null;
     // 仓库ID
     const storeId = Number(route.query.id);
     if (!route.query.id) {
@@ -138,6 +139,25 @@ export default {
       gridPositionTagVisible.value = false;
       // 提示消息
       message.success("移动成功");
+      // 查找新的商品模型
+      const goodsMesh = ThreeJS.scene.children.find(
+        (item) =>
+          item.type === "Mesh" &&
+          item.name === "goods" &&
+          item.data.id === dragControls.getCurrentDragControls().data.id
+      );
+      // 更新商品 Tag 位置
+      ThreeJS.scene.children.forEach((item) => {
+        if (item.type === "Object3D" && item.name === "goodsTag") {
+          if (item.data.id === dragControls.getCurrentDragControls().data.id) {
+            item.position.set(
+              goodsMesh.position.x,
+              goodsMesh.position.y,
+              goodsMesh.position.z
+            );
+          }
+        }
+      });
     };
     // 取消商品移动
     const goodsMoveCancel = () => {
@@ -155,7 +175,7 @@ export default {
 
     // DOM 渲染完成后执行
     onMounted(() => {
-      const ThreeJS = useTEngine(threeRef.value);
+      ThreeJS = useTEngine(threeRef.value);
 
       // 自动调整渲染器大小
       window.onresize = () => {
@@ -350,7 +370,6 @@ export default {
         const currentMesh = intersectObjects.find(
           (object) => object.object.name.slice(0, 11) === "shelf_base_"
         )?.object;
-        console.log(currentMesh);
         // 判断是否获取到货架格子
         if (currentMesh) {
           // 判断当前获取到的货架格子是否与上一次的一样
@@ -361,11 +380,12 @@ export default {
             const grid = shelf.shelf_grid.find(
               (grid) => grid.shelf_grid_id === currentMesh.data.id
             );
-
             // 设置货架格子 Tag 的内容
-            gridPositionTagValue.value = `${grid.position.y + 1}层 ${
-              grid.position.x + 1
-            }行 ${grid.position.z + 1}列(${grid.shelf_grid_id})`;
+            gridPositionTagValue.value = `【${shelf.name}】${
+              grid.position.y + 1
+            }层 ${grid.position.x + 1}行 ${grid.position.z + 1}列(${
+              grid.shelf_grid_id
+            })`;
             // 更新鼠标位置
             mousePosition.value = getMousePosition();
             // 保存当前 mesh

@@ -84,16 +84,18 @@
                 new Date(goods.production_date * 1000)
                   .toLocaleString()
                   .replaceAll("/", "-")
+                  .replaceAll("00:00:00", "")
               }}
             </span>
           </p>
           <p>
-            过期时间：
+            过期日期：
             <span>
               {{
                 new Date(goods.expiration_time * 1000)
                   .toLocaleString()
                   .replaceAll("/", "-")
+                  .replaceAll("00:00:00", "")
               }}
             </span>
           </p>
