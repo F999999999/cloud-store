@@ -350,7 +350,6 @@ export default {
         const currentMesh = intersectObjects.find(
           (object) => object.object.name.slice(0, 11) === "shelf_base_"
         )?.object;
-        console.log(currentMesh);
         // 判断是否获取到货架格子
         if (currentMesh) {
           // 判断当前获取到的货架格子是否与上一次的一样
@@ -361,11 +360,12 @@ export default {
             const grid = shelf.shelf_grid.find(
               (grid) => grid.shelf_grid_id === currentMesh.data.id
             );
-
             // 设置货架格子 Tag 的内容
-            gridPositionTagValue.value = `${grid.position.y + 1}层 ${
-              grid.position.x + 1
-            }行 ${grid.position.z + 1}列(${grid.shelf_grid_id})`;
+            gridPositionTagValue.value = `【${shelf.name}】${
+              grid.position.y + 1
+            }层 ${grid.position.x + 1}行 ${grid.position.z + 1}列(${
+              grid.shelf_grid_id
+            })`;
             // 更新鼠标位置
             mousePosition.value = getMousePosition();
             // 保存当前 mesh
