@@ -19,7 +19,6 @@
       v-for="goodsTagData in goodsList"
       :key="goodsTagData.id"
       :goodsTagData="goodsTagData"
-      :shelf="shelfList.find((item) => item.id === goodsTagData.shelf_id)"
     >
       <span style="color: yellow">拖动可以移动商品位置</span>
     </goods-tag>
