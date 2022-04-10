@@ -78,7 +78,6 @@ export default {
 
     // 选中位置后的回调事件
     const displayRender = ({ labels, selectedOptions }) => {
-      console.log("selectedOptions", selectedOptions);
       if (selectedOptions.length > 0) {
         formState.value.shelf_id = selectedOptions[0].value;
         formState.value.shelf_grid_id = selectedOptions[1].value;
@@ -96,9 +95,10 @@ export default {
       // 清空当前选中的商品
       shelfOptionsValue.value = null;
       // 将时间进行处理 处理为时间戳
-      values.production_date = Math.floor(
-        new Date(values.production_date).valueOf() / 1000
-      );
+      values.production_date =
+        new Date(
+          new Date(values.production_date).toLocaleDateString()
+        ).valueOf() / 1000;
       values.storage_time = Math.floor(
         new Date(values.storage_time).valueOf() / 1000
       );
@@ -126,6 +126,10 @@ export default {
             shelf_id: null,
             shelf_grid_id: null,
           };
+          // 重新获取临期商品
+          store.dispatch("goods/getExpireGoodsList", {
+            storeId: props.storeId,
+          });
         });
     };
 
