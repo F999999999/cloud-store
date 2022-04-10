@@ -1,7 +1,9 @@
 <template>
   <div ref="domElementRef" :data-id="goodsTagData.id">
-    <div class="goods-tag" v-show="goodsTagData.tagShow">
-      <h3 style="color: #fff">商品 - {{ goodsTagData.name }}</h3>
+    <div class="goods-item" v-show="goodsTagData.tagShow">
+      <h3 style="color: #fff; margin-bottom: 4px">
+        商品 - {{ goodsTagData.name }}
+      </h3>
       <a-row style="color: #fff">
         <a-col :span="4">ID:</a-col>
         <a-col :span="6">
@@ -51,7 +53,10 @@
           <a-tag color="#894D21" style="font-weight: 700; color: white">
             {{
               goodsTagData.production_date >= 0
-                ? new Date(goodsTagData.production_date * 1000).toLocaleString()
+                ? new Date(goodsTagData.production_date * 1000)
+                    .toLocaleString()
+                    .replaceAll("/", "-")
+                    .replaceAll("00:00:00", "")
                 : "-"
             }}
           </a-tag>
@@ -61,7 +66,10 @@
           <a-tag color="#894D21" style="font-weight: 700; color: white">
             {{
               goodsTagData.storage_time >= 0
-                ? new Date(goodsTagData.storage_time * 1000).toLocaleString()
+                ? new Date(goodsTagData.storage_time * 1000)
+                    .toLocaleString()
+                    .replaceAll("/", "-")
+                    .replaceAll("00:00:00", "")
                 : "-"
             }}
           </a-tag>
@@ -87,13 +95,6 @@
               ) /
                 goodsTagData.shelflife) *
               100
-            "
-            :width="80"
-            :strokeWidth="10"
-            :status="
-              goodsTagData.production_date === goodsTagData.shelflife
-                ? 'exception'
-                : 'normal'
             "
           >
             <template #format="percent">
@@ -225,7 +226,7 @@ export default {
 </script>
 
 <style scoped>
-.goods-tag {
+.goods-item {
   /*width: 260px;*/
   /*position: absolute;*/
   /*top: -300px;*/

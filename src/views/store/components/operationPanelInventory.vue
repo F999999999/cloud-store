@@ -14,21 +14,25 @@
               100
             "
             :width="100"
-            :showInfo="false"
             class="operationPanel-overview-usage-progress"
-          />
-          <div class="operationPanel-overview-usage-inside">
-            <span>使用率</span>
-            <span class="number">
-              {{
-                (
-                  (shelfTotal?.useGrid /
-                    (shelfTotal?.useGrid + shelfTotal?.emptyGrid)) *
-                  100
-                ).toFixed(2)
-              }}%
-            </span>
-          </div>
+          >
+            <template #format>
+              <div class="operationPanel-overview-usage-inside">
+                <div>
+                  <span>使用率</span>
+                  <span class="number">
+                    {{
+                      (
+                        (shelfTotal?.useGrid /
+                          (shelfTotal?.useGrid + shelfTotal?.emptyGrid)) *
+                        100
+                      ).toFixed(2)
+                    }}%
+                  </span>
+                </div>
+              </div>
+            </template>
+          </a-progress>
         </a-col>
         <a-col :span="12" class="operationPanel-overview-overview">
           <div>
@@ -123,13 +127,26 @@
               }}
             </span>
           </p>
-          <span class="validity">
+          <span
+            class="validity"
+            :style="{
+              color:
+                (new Date().getTime() / 1000 - goods.production_date) / 86400 >
+                goods.shelflife
+                  ? 'red'
+                  : (new Date().getTime() / 1000 - goods.production_date) /
+                      86400 >
+                    goods.shelflife * 0.8
+                  ? 'yellow'
+                  : 'green',
+            }"
+          >
             {{
               goods.expiration_time > new Date().valueOf() / 1000
                 ? (
                     (goods.expiration_time - new Date().valueOf() / 1000) /
                     86400
-                  ).toFixed(2)
+                  ).toFixed()
                 : "已过期"
             }}
             / {{ goods.shelflife }}天
@@ -263,6 +280,7 @@ export default {
 :deep(.ant-cascader-picker) {
   // 设置 input 的圆角
   border-radius: 15px;
+  background-color: #1f1f1f;
   &:focus {
     // 设置 input 的蓝色边框的圆角
     border-radius: 15px;
@@ -323,13 +341,21 @@ export default {
           height: 70px;
           width: 70px;
           border-radius: 50%;
-          background-color: #ffffffac;
+          background-color: #393944;
           padding-top: 10px;
+
+          div {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          }
 
           span {
             width: 100%;
             display: block;
             font-size: 14px;
+            margin-bottom: 6px;
             &.number {
               font-size: 18px;
               font-weight: bold;
@@ -344,7 +370,7 @@ export default {
       display: block;
       height: 30px;
       line-height: 30px;
-      background-color: #ffffffac;
+      background-color: #393944;
       border-radius: 15px;
       margin-top: 10px;
       margin-bottom: 10px;
@@ -357,10 +383,11 @@ export default {
     .operationPanel-replenishment-content {
       height: calc(100% - 360px);
       overflow: auto;
+      border-radius: 10px;
       .operationPanel-replenishment-item {
         position: relative;
         width: 100%;
-        background-color: #ffffff54;
+        background-color: #393944;
         border-radius: 10px;
         padding: 10px;
         margin-bottom: 10px;
@@ -371,13 +398,14 @@ export default {
 
         .validity {
           position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 100%;
-          font-size: 30px;
-          opacity: 0.5;
-          color: #ffffff;
+          //top: 50%;
+          //left: 50%;
+          //transform: translate(-50%, -50%);
+          //width: 100%;
+          top: 10px;
+          right: 10px;
+          font-size: 1rem;
+          opacity: 0.6;
         }
       }
     }

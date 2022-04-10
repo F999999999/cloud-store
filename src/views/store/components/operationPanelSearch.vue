@@ -9,29 +9,15 @@
     />
     <!--  搜索结果列表  -->
     <div class="operationPanel-search-list" v-if="searchResultList?.length > 0">
-      <div
-        :class="[
-          'operationPanel-search-item',
-          selectedGoodsList.indexOf(item.id) !== -1 ? 'active' : '',
-        ]"
-        :title="`商品名称：${item.name}`"
-        :style="{ width: '100%', marginBottom: '5px' }"
+      <goods-item
+        class="operationPanel-search-item"
         v-for="item in searchResultList"
         :key="item.id"
+        :goodsData="item"
+        :active="selectedGoodsList.indexOf(item.id) !== -1"
+        activeText="高亮显示"
         @click="onSelectGoods(item.id)"
-      >
-        <p>ID：{{ item.id }}</p>
-        <p>重量：{{ item.weight }}</p>
-        <p>保质期：{{ item.shelflife }}</p>
-        <p>货架ID：{{ item.shelf_id }}</p>
-        <p>货架格子ID：{{ item.shelf_grid_id }}</p>
-        <p>
-          生产日期：{{ new Date(item.production_date * 1000).toLocaleString() }}
-        </p>
-        <p>
-          入库时间：{{ new Date(item.storage_time * 1000).toLocaleString() }}
-        </p>
-      </div>
+      />
     </div>
   </div>
 </template>
@@ -42,8 +28,10 @@ import { searchGoodsNameApi } from "@/api/goods";
 import { message } from "ant-design-vue";
 import { setGoodsAttribute } from "@/hooks/useGoods";
 import { outlinePass } from "@/utils/three/TOutline";
+import GoodsItem from "@/components/goodsItem";
 export default {
   name: "operationPanelSearch",
+  components: { GoodsItem },
   props: {
     storeId: {
       type: Number,
@@ -114,24 +102,24 @@ export default {
 </script>
 
 <style scoped lang="less">
+:deep(.ant-input-affix-wrapper) {
+  border-radius: 15px;
+  background-color: #1f1f1f;
+}
 .operationPanel-setting {
   height: 100%;
   .operationPanel-search-list {
     width: 100%;
     text-align: left;
-    height: calc(100% - 32px - 32px - 30px);
+    height: calc(100% - 32px - 30px);
     overflow-y: auto;
     margin-top: 5px;
-
+    border-radius: 10px;
     p {
       margin-bottom: 8px;
     }
     .operationPanel-search-item {
-      width: 100%;
-      border-radius: 10px;
-      padding: 10px;
-      background-color: white;
-      opacity: 0.7;
+      opacity: 0.9;
       &:hover,
       &.active {
         opacity: 1;

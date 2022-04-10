@@ -143,6 +143,14 @@ const setGoodsAttribute = (goodsIdList, value, attribute = "emissive") => {
   return goodsMesh;
 };
 
+// 获取商品模型
+const getGoodsMesh = (goodsId) => {
+  return ThreeJS.scene.children.find(
+    (item) =>
+      item.type === "Mesh" && item.name === "goods" && item.data.id === goodsId
+  );
+};
+
 export {
   useGoodsModel,
   updateOneGoodsModelPosition,
@@ -151,4 +159,5 @@ export {
   isShelfOverlap,
   twinkleMesh,
   setGoodsAttribute,
+  getGoodsMesh,
 };

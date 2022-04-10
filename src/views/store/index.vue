@@ -64,6 +64,7 @@ import { toggleShelfBaseEmissive } from "@/hooks/useShelf";
 import TDragControls from "@/utils/three/TDragControls";
 import Outline from "@/utils/three/TOutline";
 import {
+  getGoodsMesh,
   isShelfMove,
   isShelfOverlap,
   updateOneGoodsModelPosition,
@@ -140,11 +141,8 @@ export default {
       // 提示消息
       message.success("移动成功");
       // 查找新的商品模型
-      const goodsMesh = ThreeJS.scene.children.find(
-        (item) =>
-          item.type === "Mesh" &&
-          item.name === "goods" &&
-          item.data.id === dragControls.getCurrentDragControls().data.id
+      const goodsMesh = getGoodsMesh(
+        dragControls.getCurrentDragControls().data.id
       );
       // 更新商品 Tag 位置
       ThreeJS.scene.children.forEach((item) => {
@@ -294,32 +292,6 @@ export default {
         // 清空商品列表
         goodsObjects = [];
       });
-
-      // 监听鼠标左键按下事件
-      // TE.renderer.domElement.addEventListener("mousedown", () => {
-      //   console.log("mousedown", intersectObjects);
-      //   const _goodsObjects = [];
-      //   // 遍历相交的模型
-      //   intersectObjects.forEach((intersect) => {
-      //     // 判断是否是商品
-      //     if (intersect?.object?.name === "goods") {
-      //       // 判断是否处于拖放状态
-      //       if (!dragControls.getDragState()) {
-      //         // 显示商品 Tag 标签
-      //         store.commit("goods/changeGoodsTagShow", {
-      //           id: intersect.object.data.id,
-      //           tagShow: true,
-      //         });
-      //       }
-      //       _goodsObjects.push(intersect);
-      //     }
-      //   });
-      //   // 判断是否捕获到商品
-      //   if (_goodsObjects.length > 0) {
-      //     // 将当前商品添加到可拖放列表
-      //     dragControls.addDragControlsObject(_goodsObjects[0].object);
-      //   }
-      // });
 
       // 监听鼠标左键按下事件
       ThreeJS.renderer.domElement.addEventListener("mousedown", () => {
