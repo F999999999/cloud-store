@@ -138,7 +138,7 @@
                       86400 >
                     goods.shelflife * 0.8
                   ? 'yellow'
-                  : 'green',
+                  : 'greenyellow',
             }"
           >
             {{
@@ -405,7 +405,8 @@ export default {
           top: 10px;
           right: 10px;
           font-size: 1rem;
-          opacity: 0.6;
+          opacity: 0.4;
+          font-weight: 700;
         }
       }
     }
