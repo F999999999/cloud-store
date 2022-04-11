@@ -385,13 +385,17 @@ export default {
               dragControls.getCurrentDragControls(),
               goodsMoveShelfBaseMesh
             )
-          )
+          ) {
+            // 隐藏货架格子 Tag
+            gridPositionTagVisible.value = false;
             return message.warning("货架格子未进行更改");
-
+          }
           // 判断商品是否重叠
-          if (isShelfOverlap(event.object, goodsMoveShelfBaseMesh))
+          if (isShelfOverlap(event.object, goodsMoveShelfBaseMesh)) {
+            // 隐藏货架格子 Tag
+            gridPositionTagVisible.value = false;
             return message.warning("该货架格子已被使用");
-
+          }
           // 弹出确认框
           goodsMoveConfirmVisible.value = true;
         } else {
