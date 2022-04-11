@@ -131,7 +131,7 @@
           <a-col :span="6">货架：</a-col>
           <a-col :span="18">
             <span style="color: yellow">
-              {{ shelf.name }}
+              {{ shelf?.name }}
             </span>
           </a-col>
           <a-col :span="6">位置：</a-col>

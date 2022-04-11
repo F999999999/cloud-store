@@ -17,6 +17,14 @@ const shelf = {
     };
   },
   mutations: {
+    // 清空统计详细
+    clearTotal(state) {
+      state.shelfTotal = {
+        emptyGrid: 0,
+        useGrid: 0,
+        shelf: 0,
+      };
+    },
     // 修改统计信息
     changeTotal(state, { emptyGrid = 0, useGrid = 0, shelf = 0 }) {
       state.shelfTotal = {
@@ -88,6 +96,8 @@ const shelf = {
       const result = await getShelfListApi(storeId);
       console.log(result);
       if (result.status === 200) {
+        // 清空统计信息
+        commit("clearTotal");
         // 更新统计信息
         commit("changeTotal", result.total);
         // 清空货架数据
