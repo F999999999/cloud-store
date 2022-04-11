@@ -22,11 +22,13 @@
                   <span>使用率</span>
                   <span class="number">
                     {{
-                      (
-                        (shelfTotal?.useGrid /
-                          (shelfTotal?.useGrid + shelfTotal?.emptyGrid)) *
-                        100
-                      ).toFixed(2)
+                      shelfTotal?.useGrid
+                        ? (
+                            (shelfTotal?.useGrid /
+                              (shelfTotal?.useGrid + shelfTotal?.emptyGrid)) *
+                            100
+                          ).toFixed(2)
+                        : ""
                     }}%
                   </span>
                 </div>

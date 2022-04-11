@@ -116,6 +116,10 @@ const goods = {
         }
       });
     },
+    // 清空临期商品
+    clearExpireGoods(state) {
+      state.expireGoodsList = [];
+    },
     // 设置临期商品
     setExpiredGoods(state, expireGoods) {
       state.expireGoodsList = expireGoods.map((goods) => ({

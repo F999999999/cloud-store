@@ -6,14 +6,6 @@
       :height="fullHeight - 160"
       style="top: 80px; left: 40px"
     />
-    <!--货架标签-->
-    <template ref="shelfTagRef">
-      <shelf-tag
-        v-for="shelfTagData in shelfList"
-        :key="shelfTagData.id"
-        :shelfTagData="shelfTagData"
-      />
-    </template>
     <!--商品标签-->
     <goods-tag
       v-for="goodsTagData in goodsList"
@@ -49,9 +41,8 @@
 </template>
 
 <script>
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import OperationPanel from "@/views/store/components/operationPanel";
-import ShelfTag from "@/components/shelfTag";
 import GoodsTag from "@/components/goodsTag";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
@@ -73,7 +64,7 @@ import getMousePosition from "@/utils/getMousePosition";
 
 export default {
   name: "Store",
-  components: { GoodsTag, ShelfTag, OperationPanel },
+  components: { GoodsTag, OperationPanel },
   setup() {
     // 鼠标位置
     const mousePosition = ref({ x: 0, y: 0 });
@@ -96,18 +87,15 @@ export default {
     // three 绑定的元素
     const threeRef = ref(null);
 
-    // 货架 Tag
-    const shelfTagRef = ref(null);
-
     // 货架列表数据
     const shelfList = computed(() => store.state.shelf.shelfList);
     // 商品列表数据
     const goodsList = computed(() => store.state.goods.goodsList);
 
     // 获取货架列表数据
-    store.dispatch("shelf/getShelfList", route.query.id).then(() => {
+    store.dispatch("shelf/getShelfList", storeId).then(() => {
       // 获取商品列表数据
-      store.dispatch("goods/getGoodsList", route.query.id);
+      store.dispatch("goods/getGoodsList", storeId);
       // 获取临期商品
       store.dispatch("goods/getExpireGoodsList", { storeId });
     });
@@ -409,10 +397,17 @@ export default {
       });
     });
 
+    onBeforeUnmount(() => {
+      // 数据清理
+      store.commit("shelf/clearShelf");
+      store.commit("shelf/clearTotal");
+      store.commit("goods/clearGoods");
+      store.commit("goods/clearExpireGoods");
+    });
+
     return {
       storeId,
       threeRef,
-      shelfTagRef,
       shelfList,
       goodsList,
       fullHeight: window.innerHeight,
