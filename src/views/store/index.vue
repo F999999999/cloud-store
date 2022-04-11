@@ -52,7 +52,7 @@ import { useTEngine } from "@/hooks/useTEngine";
 import labelRenderer from "@/utils/three/CSS2DRenderer";
 import { toggleShelfBaseEmissive } from "@/hooks/useShelf";
 import TDragControls from "@/utils/three/TDragControls";
-import Outline from "@/utils/three/TOutline";
+import { TOutlinePass } from "@/utils/three/TOutlinePass";
 import {
   getGoodsMesh,
   isShelfMove,
@@ -190,9 +190,13 @@ export default {
       dragControls = TDragControls(ThreeJS.camera, ThreeJS.renderer);
 
       // 轮廓线渲染
-      const outline = Outline(ThreeJS.renderer, ThreeJS.scene, ThreeJS.camera);
+      const outlinePass = TOutlinePass(
+        ThreeJS.renderer,
+        ThreeJS.scene,
+        ThreeJS.camera
+      );
       // 添加轮廓线到渲染列表
-      ThreeJS.addRenderAnim(outline.renderOutline);
+      ThreeJS.addRenderAnim(outlinePass.renderOutline);
 
       // 与射线相交的物体
       let intersectObjects = [];
@@ -246,7 +250,7 @@ export default {
           // 当前商品
           const selectedObject = goodsObjects[0].object;
           // 添加到描边列表
-          outline.outlinePass.selectedObjects = [selectedObject];
+          outlinePass.selectedObjects = [selectedObject];
           // 判断是否处于拖放状态
           if (!dragControls.getDragState()) {
             // 隐藏商品 Tag 标签
@@ -265,7 +269,7 @@ export default {
           dragControls.addDragControlsObject(selectedObject);
         } else {
           // 清除描边效果
-          outline.outlinePass.selectedObjects = [];
+          outlinePass.selectedObjects = [];
           // 清空被拖放的物体
           dragControls.clearDragControlsObject();
 

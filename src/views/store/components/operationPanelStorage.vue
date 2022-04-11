@@ -38,6 +38,8 @@
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import moment from "moment";
+import { outlinePass } from "@/utils/three/TOutlinePass";
+import { getGoodsMesh } from "@/hooks/useGoods";
 
 export default {
   name: "operationPanelStorage",
@@ -114,22 +116,28 @@ export default {
           shelfId: formState.value.shelf_id,
           shelfGridId: formState.value.shelf_grid_id,
         })
-        .then(() => {
-          // 将表单内容清空
-          formState.value = {
-            name: "",
-            weight: null,
-            shelflife: null,
-            production_date: null,
-            storage_time: moment(),
-            position: "",
-            shelf_id: null,
-            shelf_grid_id: null,
-          };
-          // 重新获取临期商品
-          store.dispatch("goods/getExpireGoodsList", {
-            storeId: props.storeId,
-          });
+        .then((result) => {
+          if (result.status === 200) {
+            // 将表单内容清空
+            formState.value = {
+              name: "",
+              weight: null,
+              shelflife: null,
+              production_date: null,
+              storage_time: moment(),
+              position: "",
+              shelf_id: null,
+              shelf_grid_id: null,
+            };
+            // 添加描边
+            outlinePass.selectedObjects.push(
+              getGoodsMesh(result.data.goods_id)
+            );
+            // 重新获取临期商品
+            store.dispatch("goods/getExpireGoodsList", {
+              storeId: props.storeId,
+            });
+          }
         });
     };
 
