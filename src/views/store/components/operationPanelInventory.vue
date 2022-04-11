@@ -117,13 +117,11 @@
             位置：
             <span>
               {{
-                shelfList.length > 0
-                  ? getGridPositionString(
-                      goods.id,
-                      goods.shelf_id,
-                      goods.shelf_grid_id
-                    )
-                  : "加载中……"
+                `【${goods.grid_position.shelf_name}】${
+                  goods.grid_position.grid.position.y + 1
+                }层 ${goods.grid_position.grid.position.x + 1}行 ${
+                  goods.grid_position.grid.position.z + 1
+                }列`
               }}
             </span>
           </p>
@@ -174,7 +172,7 @@ export default {
       default: null,
     },
   },
-  setup(props) {
+  setup() {
     // 获取路由
     const route = useRoute();
 
@@ -240,22 +238,8 @@ export default {
       newShelfOptionsValue.value = null;
     };
 
-    // 获取临期商品
-    store.dispatch("goods/getExpireGoodsList", { store_id: props.storeId });
     // 临期商品列表
     const expireGoodsList = computed(() => store.state.goods.expireGoodsList);
-    // 货架列表数据
-    const shelfList = computed(() => store.state.shelf.shelfList);
-    // 获取商品位置
-    const getGridPositionString = (goodsId, shelfId, shelfGridId) => {
-      const shelf = shelfList.value.find((shelf) => shelf.id === shelfId);
-      const grid = shelf.shelf_grid.find(
-        (grid) => grid.shelf_grid_id === shelfGridId
-      );
-      return `【${shelf.name}】${grid.position.y + 1}层 ${
-        grid.position.x + 1
-      }行 ${grid.position.z + 1}列`;
-    };
 
     return {
       shelfTotal,
@@ -268,8 +252,6 @@ export default {
       newDisplayRender,
       moveGoods,
       expireGoodsList,
-      shelfList,
-      getGridPositionString,
     };
   },
 };

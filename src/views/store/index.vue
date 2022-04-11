@@ -108,6 +108,8 @@ export default {
     store.dispatch("shelf/getShelfList", route.query.id).then(() => {
       // 获取商品列表数据
       store.dispatch("goods/getGoodsList", route.query.id);
+      // 获取临期商品
+      store.dispatch("goods/getExpireGoodsList", { storeId });
     });
 
     // 拖放控制器

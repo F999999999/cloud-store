@@ -9,6 +9,7 @@ import { updateAllGoodsModelPosition, useGoodsModel } from "@/hooks/useGoods";
 import store from "@/store";
 import { ThreeJS } from "@/hooks/useTEngine";
 import { message } from "ant-design-vue";
+import { getGridPositionIndex } from "@/hooks/useShelf";
 
 const goods = {
   namespaced: true,
@@ -117,7 +118,13 @@ const goods = {
     },
     // 设置临期商品
     setExpiredGoods(state, expireGoods) {
-      state.expireGoodsList = expireGoods;
+      state.expireGoodsList = expireGoods.map((goods) => ({
+        ...goods,
+        grid_position: getGridPositionIndex(
+          goods.shelf_id,
+          goods.shelf_grid_id
+        ),
+      }));
     },
   },
   actions: {
@@ -218,8 +225,12 @@ const goods = {
       return result;
     },
     // 获取临期商品数据
-    async getExpireGoodsList({ commit }, { store_id, page_num, page_size }) {
-      const result = await expireGoodsApi({ store_id, page_num, page_size });
+    async getExpireGoodsList({ commit }, { storeId, pageNum, pageSize }) {
+      const result = await expireGoodsApi({
+        store_id: storeId,
+        page_num: pageNum,
+        page_size: pageSize,
+      });
       console.log(result);
       if (result.status === 200) {
         commit("setExpiredGoods", result.data);
