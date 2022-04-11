@@ -73,8 +73,7 @@ export default {
         // 如果未选中该商品 则选中
         selectedGoodsList.value.push(goodsId);
         // 给选中的商品添加自发光效果
-        const goodsMesh = setGoodsAttribute(goodsId, 0xffcb6b);
-        console.log(outlinePass, "outlinePass");
+        const goodsMesh = setGoodsAttribute(goodsId, 0x88ffff, "color");
         // 添加描边效果
         outlinePass.selectedObjects.push(...goodsMesh);
       } else {
@@ -83,7 +82,7 @@ export default {
           (item) => item !== goodsId
         );
         // 给取消选中的商品还原自发光效果
-        const goodsMesh = setGoodsAttribute(goodsId, 0xffffff);
+        const goodsMesh = setGoodsAttribute(goodsId, 0xffffff, "color");
         // 移除描边效果
         outlinePass.selectedObjects = outlinePass.selectedObjects.filter(
           (item) => !goodsMesh.find((mesh) => mesh.data.id === item.data.id)
