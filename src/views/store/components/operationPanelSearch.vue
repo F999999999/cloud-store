@@ -27,7 +27,7 @@ import { ref } from "vue";
 import { searchGoodsNameApi } from "@/api/goods";
 import { message } from "ant-design-vue";
 import { setGoodsAttribute } from "@/hooks/useGoods";
-import { outlinePass } from "@/utils/three/TOutline";
+import { outlinePass } from "@/utils/three/TOutlinePass";
 import GoodsItem from "@/components/goodsItem";
 export default {
   name: "operationPanelSearch",
@@ -73,7 +73,7 @@ export default {
         // 如果未选中该商品 则选中
         selectedGoodsList.value.push(goodsId);
         // 给选中的商品添加自发光效果
-        const goodsMesh = setGoodsAttribute(goodsId, 0x41b883, "color");
+        const goodsMesh = setGoodsAttribute(goodsId, 0x88ffff, "color");
         // 添加描边效果
         outlinePass.selectedObjects.push(...goodsMesh);
       } else {

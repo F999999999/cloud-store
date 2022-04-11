@@ -391,14 +391,14 @@ export default {
           //top: 10px;
           //right: 10px;
           //font-size: 1rem;
-          opacity: 0.3;
+          opacity: 0.4;
           font-weight: 700;
           pointer-events: none;
         }
         &:hover {
           .validity {
             opacity: 0.8;
-            text-shadow: 0 0 10px #1188ee;
+            text-shadow: 0 0 4px #fff;
           }
         }
       }

@@ -131,6 +131,7 @@ const setGoodsAttribute = (goodsIdList, value, attribute = "emissive") => {
       if (Array.isArray(goodsIdList)) {
         // 判断该商品ID是否在传入的列表中
         if (goodsIdList.find((goodsId) => goodsId === obj.data.id)) {
+          obj.material["old" + attribute] = obj.material[attribute];
           obj.material[attribute].set(value);
           goodsMesh.push(obj);
         }

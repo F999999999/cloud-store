@@ -181,6 +181,9 @@ const goods = {
           shelf_id: result.data.shelf_id,
           shelf_grid_id: result.data.shelf_grid_id,
         });
+        // 提示信息
+        message.success(result.message);
+        return result;
       }
     },
     // 移动商品
@@ -201,6 +204,8 @@ const goods = {
           shelfGridId,
         });
       }
+      // 提示信息
+      message.success(result.message);
     },
     // 移除商品
     async removeGoods({ commit }, { storeId, ids }) {
@@ -211,9 +216,6 @@ const goods = {
         takeout_time: new Date().toLocaleString() / 1000,
       });
       if (result.status === 200) {
-        // 提示信息
-        message.success(result.message);
-
         // 删除商品列表中移除的商品
         result.data.forEach((goods) => {
           commit("removeGoods", { goodsId: goods.goods_id });
@@ -226,6 +228,8 @@ const goods = {
           }
         });
       }
+      // 提示信息
+      message.success(result.message);
       return result;
     },
     // 获取临期商品数据

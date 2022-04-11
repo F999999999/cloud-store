@@ -37,6 +37,8 @@ import { searchGoodsNameApi } from "@/api/goods";
 import { message } from "ant-design-vue";
 import { useStore } from "vuex";
 import GoodsItem from "@/components/goodsItem";
+import { setGoodsAttribute } from "@/hooks/useGoods";
+import { outlinePass } from "@/utils/three/TOutlinePass";
 export default {
   name: "operationPanelDelivery",
   components: { GoodsItem },
@@ -97,13 +99,23 @@ export default {
     };
 
     // 选中商品
-    const onSelectDelivery = (id) => {
-      if (selectedDeliveryIdList.value.indexOf(id) === -1) {
-        selectedDeliveryIdList.value.push(id);
+    const onSelectDelivery = (goodsId) => {
+      if (selectedDeliveryIdList.value.indexOf(goodsId) === -1) {
+        selectedDeliveryIdList.value.push(goodsId);
+        // 给选中的商品添加自发光效果
+        const goodsMesh = setGoodsAttribute(goodsId, 0x333333, "color");
+        // 添加描边效果
+        outlinePass.selectedObjects.push(...goodsMesh);
       } else {
         selectedDeliveryIdList.value.splice(
-          selectedDeliveryIdList.value.indexOf(id),
+          selectedDeliveryIdList.value.indexOf(goodsId),
           1
+        );
+        // 给取消选中的商品还原自发光效果
+        const goodsMesh = setGoodsAttribute(goodsId, 0xffffff, "color");
+        // 移除描边效果
+        outlinePass.selectedObjects = outlinePass.selectedObjects.filter(
+          (item) => !goodsMesh.find((mesh) => mesh.data.id === item.data.id)
         );
       }
     };
