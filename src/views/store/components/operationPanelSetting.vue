@@ -1,7 +1,14 @@
 <template>
   <div class="operationPanel-setting" style="display: none">
     <!-- 用户信息 -->
-
+    <!-- 返回首页 -->
+    <a-button
+      type="primary"
+      :style="{ marginTop: '8px', marginRight: '8px' }"
+      @click="goToHomePage"
+    >
+      返回首页
+    </a-button>
     <!--  退出登陆  -->
     <a-button
       type="primary"
@@ -37,7 +44,11 @@ export default {
       });
     };
 
-    return { logout };
+    const goToHomePage = () => {
+      router.push("/");
+    };
+
+    return { logout, goToHomePage };
   },
 };
 </script>
