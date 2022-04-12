@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { searchGoodsNameApi } from "@/api/goods";
 import { message } from "ant-design-vue";
 import { useStore } from "vuex";
@@ -46,6 +46,10 @@ export default {
     storeId: {
       type: Number,
       default: null,
+    },
+    currentPanelId: {
+      type: String,
+      default: "search",
     },
   },
   setup(props) {
@@ -62,18 +66,18 @@ export default {
       searchGoodsNameApi({
         store_id: props.storeId,
         name: searchValue.value,
-      }).then((data) => {
-        if (data.status === 200) {
+      }).then((result) => {
+        if (result.status === 200) {
           // 存储商品列表(商品出库)
-          deliveryList.value = data.data;
+          deliveryList.value = result.data;
           // 提示信息
-          message.success(data.message);
+          message.success(result.message);
           // 清空搜索输入框
           searchValue.value = "";
         }
-        if (data.status === 400) {
+        if (result.status === 400) {
           // 提示信息
-          message.warning(data.message);
+          message.warning(result.message);
           // 清空搜索输入框
           searchValue.value = "";
         }
@@ -86,11 +90,11 @@ export default {
           storeId: props.storeId,
           ids: selectedDeliveryIdList.value,
         })
-        .then((res) => {
-          if (res.status === 200) {
+        .then((result) => {
+          if (result.status === 200) {
             // 删除搜索结果中移除的商品
             deliveryList.value = deliveryList.value.filter(
-              (item) => !res.data.find((goods) => goods.goods_id === item.id)
+              (item) => !result.data.find((goods) => goods.goods_id === item.id)
             );
           }
         });
@@ -103,7 +107,11 @@ export default {
       if (selectedDeliveryIdList.value.indexOf(goodsId) === -1) {
         selectedDeliveryIdList.value.push(goodsId);
         // 给选中的商品添加自发光效果
-        const goodsMesh = setGoodsAttribute(goodsId, 0x333333, "color");
+        const goodsMesh = setGoodsAttribute({
+          goodsIds: goodsId,
+          value: 0x333333,
+          attribute: "color",
+        });
         // 添加描边效果
         outlinePass.selectedObjects.push(...goodsMesh);
       } else {
@@ -112,13 +120,36 @@ export default {
           1
         );
         // 给取消选中的商品还原自发光效果
-        const goodsMesh = setGoodsAttribute(goodsId, 0xffffff, "color");
+        const goodsMesh = setGoodsAttribute({
+          goodsIds: goodsId,
+          value: 0xffffff,
+          attribute: "color",
+        });
         // 移除描边效果
         outlinePass.selectedObjects = outlinePass.selectedObjects.filter(
           (item) => !goodsMesh.find((mesh) => mesh.data.id === item.data.id)
         );
       }
     };
+
+    watch(
+      () => props.currentPanelId,
+      (newVal, oldVal) => {
+        if (oldVal === "delivery" && newVal !== "delivery") {
+          // 执行清理操作
+          // 清空当前被选中的商品
+          selectedDeliveryIdList.value = [];
+          // 给选中的商品还原自发光效果
+          setGoodsAttribute({
+            all: true,
+            value: 0xffffff,
+            attribute: "color",
+          });
+          // 给选中的商品还原描边效果
+          outlinePass.selectedObjects = [];
+        }
+      }
+    );
 
     return {
       searchValue,

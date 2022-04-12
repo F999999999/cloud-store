@@ -51,11 +51,13 @@
         <operation-panel-delivery
           :storeId="storeId"
           v-show="currentPanelId === 'delivery'"
+          :currentPanelId="currentPanelId"
         />
         <!-- 查询 -->
         <operation-panel-search
           :store-id="storeId"
           v-show="currentPanelId === 'search'"
+          :currentPanelId="currentPanelId"
         />
         <!-- 设置 -->
         <operation-panel-setting
