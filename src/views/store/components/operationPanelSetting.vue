@@ -1,14 +1,7 @@
 <template>
   <div class="operationPanel-setting" style="display: none">
     <!-- 用户信息 -->
-    <!-- 返回首页 -->
-    <a-button
-      type="primary"
-      :style="{ marginTop: '8px', marginRight: '8px' }"
-      @click="goToHomePage"
-    >
-      返回首页
-    </a-button>
+    <div>用户名：{{ userInfo.username }}</div>
     <!--  退出登陆  -->
     <a-button
       type="primary"
@@ -24,6 +17,8 @@
 <script>
 import { message } from "ant-design-vue";
 import router from "@/router";
+import { decodeToken } from "@/hooks/decodeToken";
+import { ref } from "vue";
 export default {
   name: "operationPanelSetting",
   props: {
@@ -43,12 +38,9 @@ export default {
         message.success("已退出登录");
       });
     };
+    const userInfo = ref(decodeToken());
 
-    const goToHomePage = () => {
-      router.push("/");
-    };
-
-    return { logout, goToHomePage };
+    return { logout, userInfo };
   },
 };
 </script>

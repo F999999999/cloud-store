@@ -32,6 +32,10 @@
             :style="{ fontSize: 'large' }"
             v-if="item.id === 'setting'"
           />
+          <rollbackOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'goToHome'"
+          />
           <span>{{ item.title }}</span>
         </div>
       </a-col>
@@ -51,11 +55,13 @@
         <operation-panel-delivery
           :storeId="storeId"
           v-show="currentPanelId === 'delivery'"
+          :currentPanelId="currentPanelId"
         />
         <!-- 查询 -->
         <operation-panel-search
           :store-id="storeId"
           v-show="currentPanelId === 'search'"
+          :currentPanelId="currentPanelId"
         />
         <!-- 设置 -->
         <operation-panel-setting
@@ -74,8 +80,10 @@ import {
   CloudUploadOutlined,
   SearchOutlined,
   SettingOutlined,
+  RollbackOutlined,
 } from "@ant-design/icons-vue";
 import { ref } from "vue";
+import router from "@/router";
 import OperationPanelInventory from "@/views/store/components/operationPanelInventory";
 import OperationPanelStorage from "@/views/store/components/operationPanelStorage";
 import OperationPanelDelivery from "@/views/store/components/operationPanelDelivery";
@@ -95,6 +103,7 @@ export default {
     CloudUploadOutlined,
     SearchOutlined,
     SettingOutlined,
+    RollbackOutlined,
   },
   props: {
     width: {
@@ -132,6 +141,10 @@ export default {
         id: "setting",
         title: "设置",
       },
+      {
+        id: "goToHome",
+        title: "首页",
+      },
     ]);
     // 当前选中的操作面板
     const currentPanelId = ref(panelList.value[0].id);
@@ -139,6 +152,10 @@ export default {
     // 切换操作面板
     const handlePanelClick = (panelId) => {
       currentPanelId.value = panelId;
+      // 跳转到首页
+      if (panelId === "goToHome") {
+        router.push("/");
+      }
       if (panelId === "storage") {
         // 切换到入库面板时，更新入库时间
         storagePanelRef.value.updateStorageTime();

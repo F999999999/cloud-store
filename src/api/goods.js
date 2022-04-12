@@ -16,8 +16,6 @@ export const addGoodsApi = (params) => {
   // 添加操作员ID到请求参数中
   return requestWithToken("/store/add_goods", "post", {
     ...params,
-    // 添加操作员ID到请求参数中
-    operate_id: JSON.parse(window.localStorage.getItem("userInfo")).id,
   });
 };
 /**
@@ -41,8 +39,6 @@ export const removeGoodsByIdApi = ({ store_id, ids, takeout_time }) => {
     store_id,
     ids,
     takeout_time,
-    // 添加操作员ID到请求参数中
-    operate_id: JSON.parse(window.localStorage.getItem("userInfo")).id,
   });
 };
 
@@ -60,15 +56,31 @@ export const moveGoodsByIdApi = ({ id, store_id, shelf_id, shelf_grid_id }) => {
     store_id,
     shelf_id,
     shelf_grid_id,
-    // 添加操作员ID到请求参数中
-    operate_id: JSON.parse(window.localStorage.getItem("userInfo")).id,
   });
 };
-
+/**
+ * 获取商品日志
+ * @returns {Promise}
+ */
+export const getGoodsLogApi = () => {
+  return requestWithToken("/store/goods_log", "get");
+};
+/**
+ * 获取临期商品列表
+ * @param id 商品id
+ * @returns {Promise}
+ */
 export const expireGoodsApi = ({ store_id, page_num, page_size }) => {
   return requestWithToken("/store/expire_goods", "get", {
     store_id,
     page_num,
     page_size,
   });
+};
+/**
+ * 获取临期商品统计
+ * @returns {Promise}
+ */
+export const getGoodsLogTotalApi = () => {
+  return requestWithToken("/store/expire_goods_total", "get");
 };

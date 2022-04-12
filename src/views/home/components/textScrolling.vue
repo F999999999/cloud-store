@@ -26,7 +26,7 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { Vue3SeamlessScroll } from "vue3-seamless-scroll";
-import { getGoodsLogDateApi } from "@/api/store";
+import { getGoodsLogApi } from "@/api/goods";
 
 export default defineComponent({
   name: "App",
@@ -45,7 +45,7 @@ export default defineComponent({
 const useGoodsLog = () => {
   const goodsLogList = ref([]);
   const getGoodsLog = async () => {
-    const result = await getGoodsLogDateApi();
+    const result = await getGoodsLogApi();
     console.log(result);
     if (result.status === 200) {
       goodsLogList.value = result.data.map((item) => {

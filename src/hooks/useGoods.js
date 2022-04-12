@@ -121,21 +121,29 @@ const twinkleMesh = (mesh, value, attribute = "emissive") => {
 };
 
 // 设置商品属性
-const setGoodsAttribute = (goodsIdList, value, attribute = "emissive") => {
+const setGoodsAttribute = ({
+  goodsIds,
+  value,
+  attribute = "emissive",
+  all = false,
+}) => {
   const goodsMesh = [];
   // 递归遍历 children 给选中的商品添加或者还原自发光效果
   ThreeJS.scene.children.forEach((obj) => {
     // 判断是否是商品
     if (obj.type === "Mesh" && obj.name === "goods") {
+      if (all) {
+        obj.material[attribute].set(value);
+        return goodsMesh.push(obj);
+      }
       // 判断传入的商品列表是否是数组
-      if (Array.isArray(goodsIdList)) {
+      if (Array.isArray(goodsIds)) {
         // 判断该商品ID是否在传入的列表中
-        if (goodsIdList.find((goodsId) => goodsId === obj.data.id)) {
-          obj.material["old" + attribute] = obj.material[attribute];
+        if (goodsIds.find((goodsId) => goodsId === obj.data.id)) {
           obj.material[attribute].set(value);
           goodsMesh.push(obj);
         }
-      } else if (obj.data.id === goodsIdList) {
+      } else if (obj.data.id === goodsIds) {
         obj.material[attribute].set(value);
         goodsMesh.push(obj);
       }

@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { searchGoodsNameApi } from "@/api/goods";
 import { message } from "ant-design-vue";
 import { setGoodsAttribute } from "@/hooks/useGoods";
@@ -36,6 +36,10 @@ export default {
     storeId: {
       type: Number,
       default: null,
+    },
+    currentPanelId: {
+      type: String,
+      default: "search",
     },
   },
   setup(props) {
@@ -73,7 +77,11 @@ export default {
         // 如果未选中该商品 则选中
         selectedGoodsList.value.push(goodsId);
         // 给选中的商品添加自发光效果
-        const goodsMesh = setGoodsAttribute(goodsId, 0x88ffff, "color");
+        const goodsMesh = setGoodsAttribute({
+          goodsIds: goodsId,
+          value: 0x88ffff,
+          attribute: "color",
+        });
         // 添加描边效果
         outlinePass.selectedObjects.push(...goodsMesh);
       } else {
@@ -82,13 +90,36 @@ export default {
           (item) => item !== goodsId
         );
         // 给取消选中的商品还原自发光效果
-        const goodsMesh = setGoodsAttribute(goodsId, 0xffffff, "color");
+        const goodsMesh = setGoodsAttribute({
+          goodsIds: goodsId,
+          value: 0xffffff,
+          attribute: "color",
+        });
         // 移除描边效果
         outlinePass.selectedObjects = outlinePass.selectedObjects.filter(
           (item) => !goodsMesh.find((mesh) => mesh.data.id === item.data.id)
         );
       }
     };
+
+    watch(
+      () => props.currentPanelId,
+      (newVal, oldVal) => {
+        if (oldVal === "search" && newVal !== "search") {
+          // 执行清理操作
+          // 清空当前被选中的商品
+          selectedGoodsList.value = [];
+          // 给选中的商品还原自发光效果
+          setGoodsAttribute({
+            all: true,
+            value: 0xffffff,
+            attribute: "color",
+          });
+          // 给选中的商品还原描边效果
+          outlinePass.selectedObjects = [];
+        }
+      }
+    );
 
     return {
       searchValue,
