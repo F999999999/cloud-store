@@ -82,12 +82,9 @@ import TextTag from "@/views/home/components/textScrolling";
 import histogram from "@/views/home/components/histogram";
 import { ref } from "vue";
 // import { useStore } from "vuex";
-import {
-  getGoodsLogDateTimeApi,
-  getStoreListApi,
-  getStoreListDateApi,
-  getStoreShelfDateApi,
-} from "@/api/store";
+import { getStoreListApi, getStoreTotalApi } from "@/api/store";
+import { getStoreShelfTotalApi } from "@/api/shelf";
+import { getGoodsLogTotalApi } from "@/api/goods";
 export default {
   components: { StoreTag, TextTag, histogram },
   setup() {
@@ -98,21 +95,21 @@ export default {
     const storeList = ref([]);
     // const store = useStore();
     //获取仓库使用数据信息
-    getStoreListDateApi().then((res) => {
+    getStoreTotalApi().then((res) => {
       console.log(res);
       if (res.status === 200) {
         getStoreListDate.value = res.data.list;
       }
     });
     //获取仓库运行状态
-    getStoreShelfDateApi().then((res) => {
+    getStoreShelfTotalApi().then((res) => {
       console.log(res);
       if (res.status === 200) {
         getStoreShelfDate.value = res.data.list;
       }
     });
     //获取仓库商品统计
-    getGoodsLogDateTimeApi().then((res) => {
+    getGoodsLogTotalApi().then((res) => {
       if (res.status === 200) {
         getGoodsLogDateTimeDate.value = res.data.list;
         console.log(getGoodsLogDateTimeDate.value);
