@@ -28,11 +28,15 @@
             :style="{ fontSize: 'large' }"
             v-if="item.id === 'search'"
           />
+          <FileTextOutlined
+            :style="{ fontSize: 'large' }"
+            v-if="item.id === 'log'"
+          />
           <SettingOutlined
             :style="{ fontSize: 'large' }"
             v-if="item.id === 'setting'"
           />
-          <rollbackOutlined
+          <RollbackOutlined
             :style="{ fontSize: 'large' }"
             v-if="item.id === 'goToHome'"
           />
@@ -63,6 +67,11 @@
           v-show="currentPanelId === 'search'"
           :currentPanelId="currentPanelId"
         />
+        <!-- 日志 -->
+        <operation-panel-log
+          :store-id="storeId"
+          v-show="currentPanelId === 'log'"
+        />
         <!-- 设置 -->
         <operation-panel-setting
           :storeId="storeId"
@@ -79,6 +88,7 @@ import {
   CloudDownloadOutlined,
   CloudUploadOutlined,
   SearchOutlined,
+  FileTextOutlined,
   SettingOutlined,
   RollbackOutlined,
 } from "@ant-design/icons-vue";
@@ -89,10 +99,12 @@ import OperationPanelStorage from "@/views/store/components/operationPanelStorag
 import OperationPanelDelivery from "@/views/store/components/operationPanelDelivery";
 import OperationPanelSetting from "@/views/store/components/operationPanelSetting";
 import OperationPanelSearch from "@/views/store/components/operationPanelSearch";
+import OperationPanelLog from "@/views/store/components/operationPanelLog";
 
 export default {
   name: "operationPanel",
   components: {
+    OperationPanelLog,
     OperationPanelSearch,
     OperationPanelSetting,
     OperationPanelDelivery,
@@ -102,6 +114,7 @@ export default {
     CloudDownloadOutlined,
     CloudUploadOutlined,
     SearchOutlined,
+    FileTextOutlined,
     SettingOutlined,
     RollbackOutlined,
   },
@@ -136,6 +149,10 @@ export default {
       {
         id: "search",
         title: "查询",
+      },
+      {
+        id: "log",
+        title: "日志",
       },
       {
         id: "setting",

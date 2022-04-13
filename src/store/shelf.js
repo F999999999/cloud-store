@@ -6,7 +6,9 @@ const shelf = {
   namespaced: true,
   state() {
     return {
-      // 商品数据
+      // 所有货架数据
+      allShelfList: [],
+      // 当前仓库货架数据
       shelfList: [],
       // 统计信息
       shelfTotal: {
@@ -17,6 +19,10 @@ const shelf = {
     };
   },
   mutations: {
+    // 设置全部货架数据
+    setAllShelfList(state, data) {
+      state.allShelfList = data;
+    },
     // 清空统计详细
     clearTotal(state) {
       state.shelfTotal = {
@@ -93,7 +99,7 @@ const shelf = {
   actions: {
     // 获取货架列表数据
     async getShelfList({ commit }, storeId) {
-      const result = await getShelfListApi(storeId);
+      const result = await getShelfListApi();
       console.log(result);
       if (result.status === 200) {
         // 清空统计信息
@@ -102,10 +108,16 @@ const shelf = {
         commit("changeTotal", result.total);
         // 清空货架数据
         commit("clearShelf");
-        result.data.forEach((shelf) => {
-          // 添加货架
-          commit("addShelf", shelf);
-        });
+
+        // 设置全部货架数据
+        commit("setAllShelfList", result.data);
+        // 查找当前仓库的货架
+        result.data
+          .filter((shelf) => shelf.store_id === storeId)
+          .forEach((shelf) => {
+            // 添加货架
+            commit("addShelf", shelf);
+          });
       }
     },
   },
