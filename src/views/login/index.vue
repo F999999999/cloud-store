@@ -43,17 +43,17 @@ const {
 const onSubmit = usernameFormHandleSubmit(({ username, password }) => {
   //登录接口
   loginByAccountAndPasswordApi({ username, password })
-    .then((res) => {
-      if (res.status === 200) {
+    .then((result) => {
+      if (result.status === 200) {
         // 保存 token 到 localStorage
-        window.localStorage.setItem("token", res.data.token);
+        window.localStorage.setItem("token", result.data.token);
         // 保存用户信息到 localStorage
-        window.localStorage.setItem("userInfo", JSON.stringify(res.data));
-        message.success(res.message);
+        window.localStorage.setItem("userInfo", JSON.stringify(result.data));
+        message.success(result.message);
         //路由跳转
         router.push("/");
       } else {
-        message.error(res.message);
+        message.error(result.message);
       }
     })
     .catch((err) => {

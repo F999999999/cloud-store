@@ -127,8 +127,6 @@ export default {
       goodsMoveConfirmVisible.value = false;
       // 隐藏货架格子 Tag
       gridPositionTagVisible.value = false;
-      // 提示消息
-      message.success("移动成功");
       // 查找新的商品模型
       const goodsMesh = getGoodsMesh(
         dragControls.getCurrentDragControls().data.id

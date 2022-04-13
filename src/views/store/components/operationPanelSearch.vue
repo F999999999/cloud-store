@@ -1,5 +1,5 @@
 <template>
-  <div class="operationPanel-setting" style="display: none">
+  <div class="operationPanel-search" style="display: none">
     <!--  搜索框  -->
     <a-input-search
       v-model:value="searchValue"
@@ -137,7 +137,7 @@ export default {
   border-radius: 15px;
   background-color: #1f1f1f;
 }
-.operationPanel-setting {
+.operationPanel-search {
   height: 100%;
   .operationPanel-search-list {
     width: 100%;
@@ -146,9 +146,6 @@ export default {
     overflow-y: auto;
     margin-top: 5px;
     border-radius: 10px;
-    p {
-      margin-bottom: 8px;
-    }
     .operationPanel-search-item {
       opacity: 0.9;
       &:hover,

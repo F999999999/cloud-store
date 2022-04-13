@@ -45,7 +45,7 @@ export default defineComponent({
 const useGoodsLog = () => {
   const goodsLogList = ref([]);
   const getGoodsLog = async () => {
-    const result = await getGoodsLogApi();
+    const result = await getGoodsLogApi({});
     console.log(result);
     if (result.status === 200) {
       goodsLogList.value = result.data.map((item) => {

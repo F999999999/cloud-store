@@ -14,9 +14,7 @@ export const getGoodsListApi = (store_id) => {
  */
 export const addGoodsApi = (params) => {
   // 添加操作员ID到请求参数中
-  return requestWithToken("/store/add_goods", "post", {
-    ...params,
-  });
+  return requestWithToken("/store/add_goods", "post", params);
 };
 /**
  * 根据商品名搜索商品列表(商品出库)
@@ -60,10 +58,17 @@ export const moveGoodsByIdApi = ({ id, store_id, shelf_id, shelf_grid_id }) => {
 };
 /**
  * 获取商品日志
+ * @param store_id 仓库id
+ * @param page_num 页码
+ * @param page_size 每页数量
  * @returns {Promise}
  */
-export const getGoodsLogApi = () => {
-  return requestWithToken("/store/goods_log", "get");
+export const getGoodsLogApi = ({ store_id, page_num = 1, page_size = 10 }) => {
+  return requestWithToken("/store/goods_log", "get", {
+    store_id,
+    page_num,
+    page_size,
+  });
 };
 /**
  * 获取临期商品列表

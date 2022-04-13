@@ -119,10 +119,10 @@
             位置：
             <span>
               {{
-                `【${goods.grid_position.shelf_name}】${
-                  goods.grid_position.grid.position.y + 1
-                }层 ${goods.grid_position.grid.position.x + 1}行 ${
-                  goods.grid_position.grid.position.z + 1
+                `【${goods.grid_position.shelf.name}】${
+                  goods.grid_position.position.y + 1
+                }层 ${goods.grid_position.position.x + 1}行 ${
+                  goods.grid_position.position.z + 1
                 }列`
               }}
             </span>
