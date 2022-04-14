@@ -162,6 +162,8 @@ import { ArrowDownOutlined } from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import { getGoodsMesh } from "@/hooks/useGoods";
+import { ThreeJS } from "@/hooks/useTEngine";
 
 export default {
   name: "operationPanelInventory",
@@ -228,12 +230,30 @@ export default {
 
     // 移动商品
     const moveGoods = () => {
-      store.dispatch("goods/moveGoods", {
-        goodsId: goodsFormState.value.goods_id,
-        storeId: goodsFormState.value.store_id,
-        shelfId: goodsFormState.value.shelf_id,
-        shelfGridId: goodsFormState.value.shelf_grid_id,
-      });
+      // 移动商品
+      store
+        .dispatch("goods/moveGoods", {
+          goodsId: goodsFormState.value.goods_id,
+          storeId: goodsFormState.value.store_id,
+          shelfId: goodsFormState.value.shelf_id,
+          shelfGridId: goodsFormState.value.shelf_grid_id,
+        })
+        .then(() => {
+          // 获取商品模型
+          const goodsMesh = getGoodsMesh(goodsFormState.value.goods_id);
+          // 更新商品 Tag 位置
+          ThreeJS.scene.children.forEach((item) => {
+            if (item.type === "Object3D" && item.name === "goodsTag") {
+              if (item.data.id === goodsFormState.value.goods_id) {
+                item.position.set(
+                  goodsMesh.position.x,
+                  goodsMesh.position.y,
+                  goodsMesh.position.z
+                );
+              }
+            }
+          });
+        });
 
       // 清空表单
       oldShelfOptionsValue.value = null;

@@ -150,10 +150,10 @@ export default {
         id: "search",
         title: "查询",
       },
-      {
-        id: "log",
-        title: "日志",
-      },
+      // {
+      //   id: "log",
+      //   title: "日志",
+      // },
       {
         id: "setting",
         title: "设置",
