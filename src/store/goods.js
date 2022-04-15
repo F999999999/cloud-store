@@ -62,14 +62,6 @@ const goods = {
         shelfId: goods.shelf_id,
         shelfGridId: goods.shelf_grid_id,
       });
-      // 判断是否需要更新统计数据
-      if (!goods.notTotal) {
-        store.commit("shelf/changeTotal", {
-          storeId: goods.store_id,
-          emptyGrid: -1,
-          useGrid: 1,
-        });
-      }
     },
     // 移动商品
     moveGoods(state, { goodsId, shelfId, shelfGridId }) {
@@ -193,6 +185,14 @@ const goods = {
           shelf_id: result.data.shelf_id,
           shelf_grid_id: result.data.shelf_grid_id,
         });
+        // 判断是否需要更新统计数据
+        if (!goods.notTotal) {
+          store.commit("shelf/changeTotal", {
+            storeId,
+            emptyGrid: -1,
+            useGrid: 1,
+          });
+        }
         // 提示信息
         message.success(result.message);
         return result;

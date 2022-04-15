@@ -148,6 +148,9 @@ export default {
           // 给选中的商品还原描边效果
           outlinePass.selectedObjects = [];
         }
+        if (oldVal !== "delivery" && newVal === "delivery") {
+          outlinePass.selectedObjects = [];
+        }
       }
     );
 
