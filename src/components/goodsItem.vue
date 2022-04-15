@@ -130,21 +130,21 @@
         <a-row>
           <a-col :span="6">货架：</a-col>
           <a-col :span="18">
-            <span style="color: yellow">
+            <span class="goods-item-shelf" style="color: yellow">
               {{ shelf?.name }}
             </span>
           </a-col>
           <a-col :span="6">位置：</a-col>
           <a-col :span="18">
-            <span style="color: yellow">
+            <span class="goods-item-grid-y" style="color: yellow">
               {{ currentShelfGrid?.position?.y + 1 }}
             </span>
             层
-            <span style="color: yellow">
+            <span class="goods-item-grid-x" style="color: yellow">
               {{ currentShelfGrid?.position?.x + 1 }}
             </span>
             行
-            <span style="color: yellow">
+            <span class="goods-item-grid-z" style="color: yellow">
               {{ currentShelfGrid?.position?.z + 1 }}
             </span>
             列

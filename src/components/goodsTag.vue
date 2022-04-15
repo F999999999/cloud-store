@@ -1,6 +1,6 @@
 <template>
   <div ref="domElementRef" :data-id="goodsTagData.id">
-    <div v-show="goodsTagData.tagShow">
+    <div v-if="goodsTagData.tagShow">
       <goods-item
         v-if="slot.default"
         class="goods-item"

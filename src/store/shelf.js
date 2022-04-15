@@ -51,7 +51,7 @@ const shelf = {
     // 清空货架
     clearShelf(state) {
       state.shelfList = [];
-      // 递归遍历 children 释放网格模型绑定几何体占用内存
+      // 遍历 children 释放网格模型绑定几何体占用内存
       ThreeJS.scene.children.forEach((obj) => {
         if (obj.type === "Mesh" && obj.name === "shelf") {
           // 从内存中删除对象

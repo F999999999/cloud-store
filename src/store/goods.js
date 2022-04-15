@@ -37,7 +37,7 @@ const goods = {
     // 清空商品
     clearGoods(state) {
       state.goodsList = [];
-      // 递归遍历 children 释放网格模型绑定几何体占用内存
+      // 遍历 children 释放网格模型绑定几何体占用内存
       ThreeJS.scene.children.forEach((obj) => {
         if (obj.type === "Mesh" && obj.name === "goods") {
           // 从内存中删除对象
@@ -105,7 +105,7 @@ const goods = {
       store.commit("shelf/changeShelfPosition", {
         goodsId,
       });
-      // 递归遍历 children 释放网格模型绑定几何体占用内存
+      // 遍历 children 释放网格模型绑定几何体占用内存
       ThreeJS.scene.children.forEach((obj) => {
         if (obj.type === "Mesh" && obj.name === "goods") {
           // 判断当前商品是否是被删除的商品
