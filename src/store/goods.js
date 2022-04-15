@@ -65,6 +65,7 @@ const goods = {
       // 判断是否需要更新统计数据
       if (!goods.notTotal) {
         store.commit("shelf/changeTotal", {
+          storeId: goods.store_id,
           emptyGrid: -1,
           useGrid: 1,
         });
@@ -233,6 +234,7 @@ const goods = {
           // 判断是否需要更新统计数据
           if (!goods.notTotal) {
             store.commit("shelf/changeTotal", {
+              storeId: storeId,
               emptyGrid: 1,
               useGrid: -1,
             });

@@ -12,6 +12,7 @@ const shelf = {
       shelfList: [],
       // 统计信息
       shelfTotal: {
+        subTotal: [],
         emptyGrid: 0,
         useGrid: 0,
         shelf: 0,
@@ -20,24 +21,34 @@ const shelf = {
   },
   mutations: {
     // 设置全部货架数据
-    setAllShelfList(state, data) {
-      state.allShelfList = data;
+    setAllShelfList(state, payload) {
+      state.allShelfList = payload;
+    },
+    // 设置统信息
+    setTotal(state, payload) {
+      state.shelfTotal = payload;
     },
     // 清空统计详细
     clearTotal(state) {
-      state.shelfTotal = {
-        emptyGrid: 0,
-        useGrid: 0,
-        shelf: 0,
-      };
+      state.shelfTotal = { subTotal: [], emptyGrid: 0, useGrid: 0, shelf: 0 };
     },
     // 修改统计信息
-    changeTotal(state, { emptyGrid = 0, useGrid = 0, shelf = 0 }) {
-      state.shelfTotal = {
-        emptyGrid: state.shelfTotal.emptyGrid + emptyGrid,
-        useGrid: state.shelfTotal.useGrid + useGrid,
-        shelf: state.shelfTotal.shelf + shelf,
-      };
+    changeTotal(state, { storeId, emptyGrid = 0, useGrid = 0, shelf = 0 }) {
+      const index = state.shelfTotal.findIndex(
+        (item) => item.store_id === storeId
+      );
+      if (index >= 0) {
+        // 仓库合计
+        state.shelfTotal[index].emptyGrid += emptyGrid;
+        state.shelfTotal[index].useGrid += useGrid;
+        state.shelfTotal[index].shelf += shelf;
+        // 总合计
+        state.shelfTotal = {
+          emptyGrid: state.shelfTotal.emptyGrid + emptyGrid,
+          useGrid: state.shelfTotal.useGrid + useGrid,
+          shelf: state.shelfTotal.shelf + shelf,
+        };
+      }
     },
     // 修改货架 Tag 显示状态
     changeShelfTagShow(state, { id, tagShow, all = false }) {
@@ -105,14 +116,13 @@ const shelf = {
         // 清空统计信息
         commit("clearTotal");
         // 更新统计信息
-        commit("changeTotal", result.total);
+        commit("setTotal", result.data.total);
         // 清空货架数据
         commit("clearShelf");
-
         // 设置全部货架数据
-        commit("setAllShelfList", result.data);
+        commit("setAllShelfList", result.data.list);
         // 查找当前仓库的货架
-        result.data
+        result.data.list
           .filter((shelf) => shelf.store_id === storeId)
           .forEach((shelf) => {
             // 添加货架

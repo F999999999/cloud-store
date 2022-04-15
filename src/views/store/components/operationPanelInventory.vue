@@ -1,7 +1,7 @@
 <template>
   <div class="operationPanel-inventory" style="display: block">
     <div class="operationPanel-overview">
-      <h3>商品总览</h3>
+      <h3>仓库总览</h3>
       <a-row class="operationPanel-overview-content">
         <a-col :span="12" class="operationPanel-overview-usage">
           <a-progress
@@ -9,8 +9,8 @@
             strokeColor="#f33"
             trailColor="#18e"
             :percent="
-              (shelfTotal?.useGrid /
-                (shelfTotal?.useGrid + shelfTotal?.emptyGrid)) *
+              (currentShelfTotal?.useGrid /
+                (currentShelfTotal?.useGrid + currentShelfTotal?.emptyGrid)) *
               100
             "
             :width="100"
@@ -22,10 +22,11 @@
                   <span>使用率</span>
                   <span class="number">
                     {{
-                      shelfTotal?.useGrid
+                      currentShelfTotal?.useGrid
                         ? (
-                            (shelfTotal?.useGrid /
-                              (shelfTotal?.useGrid + shelfTotal?.emptyGrid)) *
+                            (currentShelfTotal?.useGrid /
+                              (currentShelfTotal?.useGrid +
+                                currentShelfTotal?.emptyGrid)) *
                             100
                           ).toFixed(2)
                         : ""
@@ -38,8 +39,8 @@
         </a-col>
         <a-col :span="12" class="operationPanel-overview-overview">
           <div>
-            <a-tag color="#f33">已用：{{ shelfTotal?.useGrid }}</a-tag>
-            <a-tag color="#18e">空闲：{{ shelfTotal?.emptyGrid }}</a-tag>
+            <a-tag color="#f33">已用：{{ currentShelfTotal?.useGrid }}</a-tag>
+            <a-tag color="#18e">空闲：{{ currentShelfTotal?.emptyGrid }}</a-tag>
           </div>
         </a-col>
       </a-row>
@@ -176,13 +177,19 @@ export default {
       default: null,
     },
   },
-  setup() {
+  setup(props) {
     // 获取路由
     const route = useRoute();
 
     const store = useStore();
     // 货架统计数据
     const shelfTotal = computed(() => store.state.shelf.shelfTotal);
+    const currentShelfTotal = computed(
+      () =>
+        shelfTotal.value.subTotal.find(
+          (item) => item.store_id === props.storeId
+        ) || {}
+    );
 
     // 商品移动表单字段
     const goodsFormState = ref({
@@ -264,7 +271,7 @@ export default {
     const expireGoodsList = computed(() => store.state.goods.expireGoodsList);
 
     return {
-      shelfTotal,
+      currentShelfTotal,
       goodsFormState,
       emptyShelfOptions,
       useShelfOptions,
