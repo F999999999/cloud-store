@@ -118,6 +118,9 @@ export default {
           // 给选中的商品还原描边效果
           outlinePass.selectedObjects = [];
         }
+        if (oldVal !== "search" && newVal === "search") {
+          outlinePass.selectedObjects = [];
+        }
       }
     );
 
