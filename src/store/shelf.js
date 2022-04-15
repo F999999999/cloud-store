@@ -34,7 +34,7 @@ const shelf = {
     },
     // 修改统计信息
     changeTotal(state, { storeId, emptyGrid = 0, useGrid = 0, shelf = 0 }) {
-      const index = state.shelfTotal.findIndex(
+      const index = state.shelfTotal.subTotal.findIndex(
         (item) => item.store_id === storeId
       );
       if (index >= 0) {
