@@ -1,6 +1,6 @@
 <template>
   <div ref="domElementRef" :data-id="goodsTagData.id">
-    <div v-show="goodsTagData.tagShow">
+    <div v-if="goodsTagData.tagShow">
       <goods-item
         v-if="slot.default"
         class="goods-item"
@@ -47,10 +47,10 @@ export default {
     onMounted(() => {
       const tag = goodsTag(
         domElementRef.value,
-        getGridPosition(
-          props.goodsTagData.shelf_id,
-          props.goodsTagData.shelf_grid_id
-        )
+        getGridPosition({
+          shelfId: props.goodsTagData.shelf_id,
+          shelfGridId: props.goodsTagData.shelf_grid_id,
+        })
       );
       // 添加自定义属性
       tag.data = props.goodsTagData;

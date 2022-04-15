@@ -128,7 +128,7 @@ const setGoodsAttribute = ({
   all = false,
 }) => {
   const goodsMesh = [];
-  // 递归遍历 children 给选中的商品添加或者还原自发光效果
+  // 遍历 children 给选中的商品添加或者还原自发光效果
   ThreeJS.scene.children.forEach((obj) => {
     // 判断是否是商品
     if (obj.type === "Mesh" && obj.name === "goods") {

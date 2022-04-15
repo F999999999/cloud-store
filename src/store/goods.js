@@ -2,6 +2,7 @@ import {
   addGoodsApi,
   expireGoodsApi,
   getGoodsListApi,
+  getGoodsLogApi,
   moveGoodsByIdApi,
   removeGoodsByIdApi,
 } from "@/api/goods";
@@ -19,6 +20,8 @@ const goods = {
       goodsList: [],
       // 临期商品数据
       expireGoodsList: [],
+      // 商品日志
+      goodsLog: [],
     };
   },
   mutations: {
@@ -34,7 +37,7 @@ const goods = {
     // 清空商品
     clearGoods(state) {
       state.goodsList = [];
-      // 递归遍历 children 释放网格模型绑定几何体占用内存
+      // 遍历 children 释放网格模型绑定几何体占用内存
       ThreeJS.scene.children.forEach((obj) => {
         if (obj.type === "Mesh" && obj.name === "goods") {
           // 从内存中删除对象
@@ -62,6 +65,7 @@ const goods = {
       // 判断是否需要更新统计数据
       if (!goods.notTotal) {
         store.commit("shelf/changeTotal", {
+          storeId: goods.store_id,
           emptyGrid: -1,
           useGrid: 1,
         });
@@ -102,7 +106,7 @@ const goods = {
       store.commit("shelf/changeShelfPosition", {
         goodsId,
       });
-      // 递归遍历 children 释放网格模型绑定几何体占用内存
+      // 遍历 children 释放网格模型绑定几何体占用内存
       ThreeJS.scene.children.forEach((obj) => {
         if (obj.type === "Mesh" && obj.name === "goods") {
           // 判断当前商品是否是被删除的商品
@@ -124,11 +128,19 @@ const goods = {
     setExpiredGoods(state, expireGoods) {
       state.expireGoodsList = expireGoods.map((goods) => ({
         ...goods,
-        grid_position: getGridPositionIndex(
-          goods.shelf_id,
-          goods.shelf_grid_id
-        ),
+        grid_position: getGridPositionIndex({
+          shelfId: goods.shelf_id,
+          shelfGridId: goods.shelf_grid_id,
+        }),
       }));
+    },
+    // 清空商品日志
+    clearGoodsLog(state) {
+      state.goodsLogList = [];
+    },
+    // 设置商品日志
+    setGoodsLog(state, goodsLog) {
+      state.goodsLog = goodsLog;
     },
   },
   actions: {
@@ -222,6 +234,7 @@ const goods = {
           // 判断是否需要更新统计数据
           if (!goods.notTotal) {
             store.commit("shelf/changeTotal", {
+              storeId: storeId,
               emptyGrid: 1,
               useGrid: -1,
             });
@@ -241,7 +254,23 @@ const goods = {
       });
       console.log(result);
       if (result.status === 200) {
+        commit("clearExpireGoods");
         commit("setExpiredGoods", result.data);
+      }
+    },
+    // 获取商品操作日志
+    async getGoodsLog({ commit }, { storeId, pageNum, pageSize }) {
+      const result = await getGoodsLogApi({
+        store_id: storeId,
+        page_num: pageNum,
+        page_size: pageSize,
+      });
+      console.log(result);
+      if (result.status === 200) {
+        // 清空日志
+        commit("clearGoodsLog");
+        // 添加日志
+        commit("setGoodsLog", result.data);
       }
     },
   },

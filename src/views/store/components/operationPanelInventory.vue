@@ -1,7 +1,7 @@
 <template>
   <div class="operationPanel-inventory" style="display: block">
     <div class="operationPanel-overview">
-      <h3>商品总览</h3>
+      <h3>仓库总览</h3>
       <a-row class="operationPanel-overview-content">
         <a-col :span="12" class="operationPanel-overview-usage">
           <a-progress
@@ -9,8 +9,8 @@
             strokeColor="#f33"
             trailColor="#18e"
             :percent="
-              (shelfTotal?.useGrid /
-                (shelfTotal?.useGrid + shelfTotal?.emptyGrid)) *
+              (currentShelfTotal?.useGrid /
+                (currentShelfTotal?.useGrid + currentShelfTotal?.emptyGrid)) *
               100
             "
             :width="100"
@@ -22,10 +22,11 @@
                   <span>使用率</span>
                   <span class="number">
                     {{
-                      shelfTotal?.useGrid
+                      currentShelfTotal?.useGrid
                         ? (
-                            (shelfTotal?.useGrid /
-                              (shelfTotal?.useGrid + shelfTotal?.emptyGrid)) *
+                            (currentShelfTotal?.useGrid /
+                              (currentShelfTotal?.useGrid +
+                                currentShelfTotal?.emptyGrid)) *
                             100
                           ).toFixed(2)
                         : ""
@@ -38,8 +39,8 @@
         </a-col>
         <a-col :span="12" class="operationPanel-overview-overview">
           <div>
-            <a-tag color="#f33">已用：{{ shelfTotal?.useGrid }}</a-tag>
-            <a-tag color="#18e">空闲：{{ shelfTotal?.emptyGrid }}</a-tag>
+            <a-tag color="#f33">已用：{{ currentShelfTotal?.useGrid }}</a-tag>
+            <a-tag color="#18e">空闲：{{ currentShelfTotal?.emptyGrid }}</a-tag>
           </div>
         </a-col>
       </a-row>
@@ -119,10 +120,10 @@
             位置：
             <span>
               {{
-                `【${goods.grid_position.shelf_name}】${
-                  goods.grid_position.grid.position.y + 1
-                }层 ${goods.grid_position.grid.position.x + 1}行 ${
-                  goods.grid_position.grid.position.z + 1
+                `【${goods.grid_position.shelf.name}】${
+                  goods.grid_position.position.y + 1
+                }层 ${goods.grid_position.position.x + 1}行 ${
+                  goods.grid_position.position.z + 1
                 }列`
               }}
             </span>
@@ -162,6 +163,8 @@ import { ArrowDownOutlined } from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import { getGoodsMesh } from "@/hooks/useGoods";
+import { ThreeJS } from "@/hooks/useTEngine";
 
 export default {
   name: "operationPanelInventory",
@@ -174,13 +177,19 @@ export default {
       default: null,
     },
   },
-  setup() {
+  setup(props) {
     // 获取路由
     const route = useRoute();
 
     const store = useStore();
     // 货架统计数据
     const shelfTotal = computed(() => store.state.shelf.shelfTotal);
+    const currentShelfTotal = computed(
+      () =>
+        shelfTotal.value.subTotal.find(
+          (item) => item.store_id === props.storeId
+        ) || {}
+    );
 
     // 商品移动表单字段
     const goodsFormState = ref({
@@ -228,12 +237,30 @@ export default {
 
     // 移动商品
     const moveGoods = () => {
-      store.dispatch("goods/moveGoods", {
-        goodsId: goodsFormState.value.goods_id,
-        storeId: goodsFormState.value.store_id,
-        shelfId: goodsFormState.value.shelf_id,
-        shelfGridId: goodsFormState.value.shelf_grid_id,
-      });
+      // 移动商品
+      store
+        .dispatch("goods/moveGoods", {
+          goodsId: goodsFormState.value.goods_id,
+          storeId: goodsFormState.value.store_id,
+          shelfId: goodsFormState.value.shelf_id,
+          shelfGridId: goodsFormState.value.shelf_grid_id,
+        })
+        .then(() => {
+          // 获取商品模型
+          const goodsMesh = getGoodsMesh(goodsFormState.value.goods_id);
+          // 更新商品 Tag 位置
+          ThreeJS.scene.children.forEach((item) => {
+            if (item.type === "Object3D" && item.name === "goodsTag") {
+              if (item.data.id === goodsFormState.value.goods_id) {
+                item.position.set(
+                  goodsMesh.position.x,
+                  goodsMesh.position.y,
+                  goodsMesh.position.z
+                );
+              }
+            }
+          });
+        });
 
       // 清空表单
       oldShelfOptionsValue.value = null;
@@ -244,7 +271,7 @@ export default {
     const expireGoodsList = computed(() => store.state.goods.expireGoodsList);
 
     return {
-      shelfTotal,
+      currentShelfTotal,
       goodsFormState,
       emptyShelfOptions,
       useShelfOptions,

@@ -91,7 +91,10 @@ export default {
     onMounted(() => {
       // 渲染 Tag 标签
       ThreeJS.addObject(
-        shelfTag(domElementRef.value, getShelfPosition(props.shelfTagData.id))
+        shelfTag(
+          domElementRef.value,
+          getShelfPosition({ shelfId: props.shelfTagData.id })
+        )
       );
     });
 

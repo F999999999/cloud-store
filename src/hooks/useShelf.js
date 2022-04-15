@@ -43,9 +43,15 @@ const useShelfModel = async ({ shelf, groupScale = 100 }) => {
 };
 
 // 获取货架位置
-const getShelfPosition = (shelfId) => {
+const getShelfPosition = ({ storeId, shelfId }) => {
   // 货架列表数据
-  const shelfList = computed(() => store.state.shelf.shelfList);
+  const shelfList = computed(() =>
+    storeId
+      ? store.state.shelf.allShelfList.filter(
+          (item) => item.store_id === storeId
+        )
+      : store.state.shelf.shelfList
+  );
   // 查找货架
   const shelf = shelfList.value.find((shelf) => shelf.id === shelfId);
   // 设置商品的位置
@@ -57,9 +63,15 @@ const getShelfPosition = (shelfId) => {
 };
 
 // 获取货架格子位置
-const getGridPosition = (shelfId, shelfGridId) => {
+const getGridPosition = ({ storeId, shelfId, shelfGridId }) => {
   // 货架列表数据
-  const shelfList = computed(() => store.state.shelf.shelfList);
+  const shelfList = computed(() =>
+    storeId
+      ? store.state.shelf.allShelfList.filter(
+          (shelf) => shelf.store_id === storeId
+        )
+      : store.state.shelf.shelfList
+  );
   // 查找货架
   const shelf = shelfList.value.find((shelf) => shelf.id === shelfId);
   // 设置商品的位置
@@ -71,20 +83,28 @@ const getGridPosition = (shelfId, shelfGridId) => {
 };
 
 // 获取货架格子位置索引
-const getGridPositionIndex = (shelfId, shelfGridId) => {
+const getGridPositionIndex = ({ storeId, shelfId, shelfGridId }) => {
   // 货架列表数据
-  const shelfList = computed(() => store.state.shelf.shelfList);
+  const shelfList = computed(() =>
+    storeId
+      ? store.state.shelf.allShelfList.filter(
+          (shelf) => shelf.store_id === storeId
+        )
+      : store.state.shelf.shelfList
+  );
   // 查找货架
   const shelf = shelfList.value.find((shelf) => shelf.id === shelfId);
   const grid = shelf?.shelf_grid.find(
     (grid) => grid.shelf_grid_id === shelfGridId
   );
   return {
-    store_id: shelf?.store_id,
-    shelf_id: shelf?.id,
-    shelf_name: shelf?.name,
-    shelf_total: shelf?.shelf_total,
-    grid,
+    ...grid,
+    shelf: {
+      store_id: shelf?.store_id,
+      id: shelf?.id,
+      name: shelf?.name,
+      total: shelf?.shelf_total,
+    },
   };
 };
 
