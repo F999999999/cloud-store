@@ -39,15 +39,13 @@ const shelf = {
       );
       if (index >= 0) {
         // 仓库合计
-        state.shelfTotal[index].emptyGrid += emptyGrid;
-        state.shelfTotal[index].useGrid += useGrid;
-        state.shelfTotal[index].shelf += shelf;
+        state.shelfTotal.subTotal[index].emptyGrid += emptyGrid;
+        state.shelfTotal.subTotal[index].useGrid += useGrid;
+        state.shelfTotal.subTotal[index].shelf += shelf;
         // 总合计
-        state.shelfTotal = {
-          emptyGrid: state.shelfTotal.emptyGrid + emptyGrid,
-          useGrid: state.shelfTotal.useGrid + useGrid,
-          shelf: state.shelfTotal.shelf + shelf,
-        };
+        state.shelfTotal.emptyGrid += emptyGrid;
+        state.shelfTotal.useGrid += useGrid;
+        state.shelfTotal.shelf += shelf;
       }
     },
     // 修改货架 Tag 显示状态
