@@ -58,9 +58,13 @@
           />
         </a-col>
         <a-col :span="20" :offset="2">
-          <span class="operationPanel-logistics-down" @click="moveGoods">
+          <a-button
+            class="operationPanel-logistics-down"
+            type="primary"
+            html-type="submit"
+          >
             <ArrowDownOutlined /> 确认移动 <ArrowDownOutlined />
-          </span>
+          </a-button>
         </a-col>
         <a-col :span="24">
           <a-cascader
@@ -287,8 +291,11 @@ export default {
 </script>
 
 <style scoped lang="less">
+:deep(.ant-cascader) {
+  width: 100%;
+}
 :deep(.ant-input),
-:deep(.ant-cascader-picker) {
+:deep(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
   // 设置 input 的圆角
   border-radius: 15px;
   background-color: #1f1f1f;
@@ -378,15 +385,10 @@ export default {
   }
   .operationPanel-logistics {
     .operationPanel-logistics-down {
-      display: block;
-      height: 30px;
-      line-height: 30px;
-      background-color: #393944;
+      width: 100%;
       border-radius: 15px;
       margin-top: 10px;
       margin-bottom: 10px;
-      // 鼠标形状设置为手指
-      cursor: Pointer;
     }
   }
   .operationPanel-replenishment {

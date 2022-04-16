@@ -167,9 +167,19 @@ export default {
 </script>
 
 <style scoped lang="less">
-:deep(.ant-input-affix-wrapper) {
+:deep(.ant-input-group-wrapper) {
   border-radius: 15px;
   background-color: #1f1f1f;
+}
+:deep(.ant-input-group .ant-input) {
+  border-radius: 15px 0 0 15px;
+}
+:deep(.ant-input-group-addon),
+:deep(.ant-input-search
+    > .ant-input-group
+    > .ant-input-group-addon:last-child
+    .ant-input-search-button) {
+  border-radius: 0 15px 15px 0;
 }
 .operationPanel-delivery {
   height: 100%;

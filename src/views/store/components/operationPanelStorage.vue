@@ -11,12 +11,10 @@
         <a-input v-model:value="formState.shelflife" type="number" />
       </a-form-item>
       <a-form-item label="商品生产日期：" name="production_date">
-        <a-date-picker v-model:value="formState.production_date">
-        </a-date-picker>
+        <a-date-picker v-model:value="formState.production_date" />
       </a-form-item>
       <a-form-item label="商品入库时间：" name="storage_time">
-        <a-date-picker show-time v-model:value="formState.storage_time">
-        </a-date-picker>
+        <a-date-picker show-time v-model:value="formState.storage_time" />
       </a-form-item>
       <a-form-item label="存储位置：" name="position">
         <a-cascader
@@ -37,7 +35,7 @@
 <script>
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import moment from "moment";
+import dayjs from "dayjs";
 import { outlinePass } from "@/utils/three/TOutlinePass";
 import { getGoodsMesh } from "@/hooks/useGoods";
 
@@ -62,7 +60,7 @@ export default {
       // 商品生产日期
       production_date: null,
       // 商品入库时间
-      storage_time: moment(),
+      storage_time: dayjs(),
       // 存储位置
       position: "",
       // 货架ID
@@ -89,7 +87,7 @@ export default {
 
     // 更新入库时间
     const updateStorageTime = (date = new Date()) => {
-      formState.value.storage_time = moment(date);
+      formState.value.storage_time = dayjs(date);
     };
 
     // 提交表单且数据验证成功后回调事件
@@ -124,7 +122,7 @@ export default {
               weight: null,
               shelflife: null,
               production_date: null,
-              storage_time: moment(),
+              storage_time: dayjs(),
               position: "",
               shelf_id: null,
               shelf_grid_id: null,
@@ -140,7 +138,7 @@ export default {
           }
         });
     };
-
+    console.log(dayjs.locale(), "=========");
     return {
       formState,
       onFinish,
@@ -155,14 +153,16 @@ export default {
 
 <style scoped lang="less">
 :deep(.ant-input) {
-  padding: 4px;
+  padding: 4px 10px;
   background-color: #1f1f1f;
 }
-:deep(.ant-calendar-picker) {
-  width: 239px;
+:deep(.ant-cascader),
+:deep(.ant-picker) {
+  width: 100%;
 }
 :deep(.ant-input),
-:deep(.ant-cascader-picker) {
+:deep(.ant-picker),
+:deep(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
   // 设置 input 的圆角
   border-radius: 15px;
   background-color: #1f1f1f;
@@ -174,7 +174,5 @@ export default {
       border-radius: 15px;
     }
   }
-}
-.operationPanel-storage {
 }
 </style>

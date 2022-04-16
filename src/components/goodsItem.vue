@@ -95,15 +95,16 @@
               goodsData.shelflife) *
             100
           "
-          :success-percent="
-            (Math.abs(
-              Math.floor(
-                (new Date().getTime() / 1000 - goodsData.storage_time) / 86400
-              )
-            ) /
-              goodsData.shelflife) *
-            100
-          "
+          :success="{
+            percent:
+              (Math.abs(
+                Math.floor(
+                  (new Date().getTime() / 1000 - goodsData.storage_time) / 86400
+                )
+              ) /
+                goodsData.shelflife) *
+              100,
+          }"
         >
           <template #format="percent">
             <span
