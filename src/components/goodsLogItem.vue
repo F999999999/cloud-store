@@ -225,14 +225,21 @@ export default {
     const slot = useSlots();
     // 获取货架格子位置
     const getShelfGridPosition = (type) => {
-      const grid = getGridPositionIndex({
-        storeId: props.goodsLog[`${type}_store_id`],
-        shelfId: props.goodsLog[`${type}_shelf_id`],
-        shelfGridId: props.goodsLog[`${type}_shelf_grid_id`],
-      });
-      return `${grid.position.y + 1}层 ${grid.position.x + 1}行 ${
-        grid.position.z + 1
-      }列`;
+      if (
+        props.goodsLog[`${type}_store_id`] &&
+        props.goodsLog[`${type}_shelf_id`] &&
+        props.goodsLog[`${type}_shelf_grid_id`]
+      ) {
+        const grid = getGridPositionIndex({
+          storeId: props.goodsLog[`${type}_store_id`],
+          shelfId: props.goodsLog[`${type}_shelf_id`],
+          shelfGridId: props.goodsLog[`${type}_shelf_grid_id`],
+        });
+        return `${grid?.position?.y + 1}层 ${grid?.position?.x + 1}行 ${
+          grid?.position?.z + 1
+        }列`;
+      }
+      return "";
     };
 
     return { slot, getShelfGridPosition };
