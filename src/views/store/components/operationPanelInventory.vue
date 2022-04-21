@@ -62,6 +62,7 @@
             class="operationPanel-logistics-down"
             type="primary"
             html-type="submit"
+            @click="moveGoods"
           >
             <ArrowDownOutlined /> 确认移动 <ArrowDownOutlined />
           </a-button>
