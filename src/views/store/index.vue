@@ -77,7 +77,10 @@
             padding: 4px 6px 4px 4px;
             user-select: none;
           "
-          @click="goodsMoveRightMenuLevel = 1"
+          @click="
+            goodsMoveRightMenuLevel = 1;
+            removeGoodsConfirm = false;
+          "
         >
           <ArrowLeftOutlined
             style="
@@ -86,10 +89,7 @@
               font-size: 18px;
             "
           />
-          <span
-            style="display: inline-block; vertical-align: middle"
-            @click="removeGoodsConfirm = false"
-          >
+          <span style="display: inline-block; vertical-align: middle">
             返回
           </span>
         </div>
