@@ -39,7 +39,6 @@ export const removeGoodsByIdApi = ({ store_id, ids, takeout_time }) => {
     takeout_time,
   });
 };
-
 /**
  * 移动商品(商品出库)
  * @param id 商品id
@@ -69,6 +68,14 @@ export const getGoodsLogApi = ({ store_id, page_num = 1, page_size = 10 }) => {
     page_num,
     page_size,
   });
+};
+/**
+ * 根据商品id获取商品日志
+ * @param goods_id 商品id
+ * @returns {Promise}
+ */
+export const getGoodsLogByIdApi = ({ goods_id }) => {
+  return requestWithToken("/store/goods_log_by_id", "get", { goods_id });
 };
 /**
  * 获取临期商品列表
