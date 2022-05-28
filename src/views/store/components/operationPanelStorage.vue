@@ -138,7 +138,7 @@ export default {
           }
         });
     };
-    console.log(dayjs.locale(), "=========");
+
     return {
       formState,
       onFinish,

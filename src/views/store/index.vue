@@ -16,15 +16,111 @@
     </goods-tag>
     <!--移动确认框-->
     <div
-      class="confirm-box"
+      class="move-confirm-box"
       v-show="goodsMoveConfirmVisible"
       :style="{
         top: mousePosition.y + 'px',
         left: mousePosition.x + 'px',
       }"
     >
-      <a-button type="primary" @click="goodsMoveOk">确认</a-button>
-      <a-button type="primary" danger @click="goodsMoveCancel">取消</a-button>
+      <a-button type="primary" @click="goodsMoveOk">确认移动</a-button>
+      <a-button type="primary" danger @click="goodsMoveCancel">
+        取消移动
+      </a-button>
+    </div>
+    <!--右键菜单-->
+    <div
+      class="right-menu-box"
+      v-show="goodsMoveRightMenuVisible"
+      :style="{
+        top: mousePosition.y + 'px',
+        left: mousePosition.x + 'px',
+      }"
+    >
+      <!--一级菜单-->
+      <div
+        v-show="goodsMoveRightMenuLevel === 1"
+        @click="goodsMoveRightMenuLevel = 2"
+      >
+        <div
+          style="
+            display: block;
+            position: absolute;
+            top: -32px;
+            left: 0;
+            background-color: #282c34;
+            border-radius: 6px;
+            padding: 4px 6px 4px 4px;
+            user-select: none;
+          "
+          @click="goodsMoveRightMenuVisible = false"
+        >
+          <span style="display: inline-block; vertical-align: middle">
+            取消
+          </span>
+        </div>
+        <a-button type="primary" @click="getGoodsLog"> 查询日志 </a-button>
+        <a-button type="primary" danger @click="removeGoodsConfirm = true">
+          出库
+        </a-button>
+      </div>
+      <!--二级菜单-->
+      <div v-if="goodsMoveRightMenuLevel === 2">
+        <div
+          style="
+            display: block;
+            position: absolute;
+            top: -32px;
+            left: 0;
+            background-color: #282c34;
+            border-radius: 6px;
+            padding: 4px 6px 4px 4px;
+            user-select: none;
+          "
+          @click="goodsMoveRightMenuLevel = 1"
+        >
+          <ArrowLeftOutlined
+            style="
+              display: inline-block;
+              vertical-align: middle;
+              font-size: 18px;
+            "
+          />
+          <span
+            style="display: inline-block; vertical-align: middle"
+            @click="removeGoodsConfirm = false"
+          >
+            返回
+          </span>
+        </div>
+
+        <!--商品日志-->
+        <goods-log-box
+          :logList="currentGoodsLog.list"
+          v-if="currentGoodsLog.goods_id && !removeGoodsConfirm"
+        />
+        <!--出库确认框-->
+        <a-button
+          type="primary"
+          @click="
+            () => {
+              removeGoods();
+              goodsMoveRightMenuVisible = false;
+            }
+          "
+          v-if="removeGoodsConfirm"
+        >
+          确认出库
+        </a-button>
+        <a-button
+          type="primary"
+          danger
+          @click="goodsMoveRightMenuVisible = false"
+          v-if="removeGoodsConfirm"
+        >
+          取消出库
+        </a-button>
+      </div>
     </div>
     <!-- 拖拽时货架格子位置 Tag -->
     <div
@@ -61,10 +157,13 @@ import {
 } from "@/hooks/useGoods";
 import TRaycaster from "@/utils/three/TRaycaster";
 import getMousePosition from "@/utils/getMousePosition";
+import { getGoodsLogByIdApi } from "@/api/goods";
+import GoodsLogBox from "@/components/goodsLogBox";
+import { ArrowLeftOutlined } from "@ant-design/icons-vue";
 
 export default {
   name: "Store",
-  components: { GoodsTag, OperationPanel },
+  components: { ArrowLeftOutlined, GoodsLogBox, GoodsTag, OperationPanel },
   setup() {
     // 鼠标位置
     const mousePosition = ref({ x: 0, y: 0 });
@@ -106,12 +205,36 @@ export default {
     let goodsMoveEvent = null;
     // 商品移动后的货架格子
     let goodsMoveShelfBaseMesh = null;
-    // 商品移动确认框
-    const goodsMoveConfirmVisible = ref(false);
     // 货架格子位置 Tag 是否显示
     const gridPositionTagVisible = ref(false);
     // 货架格子位置 Tag 的内容
     const gridPositionTagValue = ref("");
+
+    // 商品移动确认框
+    const goodsMoveConfirmVisible = ref(false);
+    // 右键菜单是否显示
+    const goodsMoveRightMenuVisible = ref(false);
+    // 右键菜单显示级别
+    const goodsMoveRightMenuLevel = ref(1);
+    // 商品出库确认框
+    const removeGoodsConfirm = ref(false);
+
+    // 统一隐藏所有操作面板
+    const hideAllOperationPanel = () => {
+      goodsMoveConfirmVisible.value = false;
+      goodsMoveRightMenuVisible.value = false;
+    };
+
+    // 显示右键菜单
+    const showGoodsMoveRightMenu = () => {
+      // 隐藏所有操作面板
+      hideAllOperationPanel();
+      // 设置右键菜单显示
+      goodsMoveRightMenuVisible.value = true;
+      // 设置右键菜单显示级别
+      goodsMoveRightMenuLevel.value = 1;
+    };
+
     // 确认移动商品
     const goodsMoveOk = () => {
       // 移动商品
@@ -124,7 +247,7 @@ export default {
       // 清除货架格子的自发光
       toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
       // 关闭确认框
-      goodsMoveConfirmVisible.value = false;
+      hideAllOperationPanel();
       // 隐藏货架格子 Tag
       gridPositionTagVisible.value = false;
       // 查找新的商品模型
@@ -151,11 +274,37 @@ export default {
       // 清除货架格子的自发光
       toggleShelfBaseEmissive(goodsMoveShelfBaseMesh);
       // 关闭确认框
-      goodsMoveConfirmVisible.value = false;
+      hideAllOperationPanel();
       // 隐藏货架格子 Tag
       gridPositionTagVisible.value = false;
       // 提示消息
       message.warning("取消移动");
+    };
+
+    // 当前操作的商品模型
+    let currentGoodsMesh = null;
+    // 当前商品操作日志
+    const currentGoodsLog = ref({});
+    // 获取商品日志
+    const getGoodsLog = async () => {
+      if (currentGoodsMesh) {
+        const result = await getGoodsLogByIdApi({
+          goods_id: currentGoodsMesh.data.id,
+        });
+        console.log(result);
+        if (result.status === 200) {
+          // 保存当前商品操作日志
+          currentGoodsLog.value = result.data[0];
+        }
+      }
+    };
+
+    // 移除商品
+    const removeGoods = (id) => {
+      store.dispatch("goods/removeGoods", {
+        storeId,
+        ids: id || currentGoodsMesh.data.id,
+      });
     };
 
     // DOM 渲染完成后执行
@@ -174,6 +323,11 @@ export default {
           // 设置 Tag 标签的渲染大小参数
           labelRenderer.setSize(window.innerWidth, window.innerHeight);
         })();
+      };
+
+      // 禁用鼠标右键默认事件
+      document.oncontextmenu = function (e) {
+        e.preventDefault();
       };
 
       // 射线投射器(鼠标选中模型对象)
@@ -285,7 +439,22 @@ export default {
       });
 
       // 监听鼠标左键按下事件
-      ThreeJS.renderer.domElement.addEventListener("mousedown", () => {
+      // ThreeJS.renderer.domElement.addEventListener("mousedown", () => {
+      //   // 判断是否有与射线相交的模型
+      //   if (intersectObjects.length > 0) {
+      //     const currentGoodsObject = intersectObjects.find(
+      //       (object) => object?.object?.name === "goods"
+      //     );
+      //     // 判断是否有商品
+      //     if (currentGoodsObject) {
+      //       console.log("currentGoodsObject", currentGoodsObject);
+      //     }
+      //   }
+      // });
+
+      // 监听鼠标右键按下事件
+      ThreeJS.renderer.domElement.addEventListener("contextmenu", () => {
+        currentGoodsLog.value = {};
         // 判断是否有与射线相交的模型
         if (intersectObjects.length > 0) {
           const currentGoodsObject = intersectObjects.find(
@@ -293,7 +462,12 @@ export default {
           );
           // 判断是否有商品
           if (currentGoodsObject) {
-            console.log("currentGoodsObject", currentGoodsObject);
+            currentGoodsMesh = currentGoodsObject.object;
+            if (!goodsMoveConfirmVisible.value) {
+              showGoodsMoveRightMenu();
+            }
+          } else {
+            goodsMoveRightMenuVisible.value = false;
           }
         }
       });
@@ -308,7 +482,7 @@ export default {
         dragControls.setDragState(true);
 
         // 隐藏移动确认框
-        goodsMoveConfirmVisible.value = false;
+        hideAllOperationPanel();
 
         // 保存当前被拖放的物体
         dragControls.setCurrentDragControls({
@@ -386,7 +560,8 @@ export default {
           ) {
             // 隐藏货架格子 Tag
             gridPositionTagVisible.value = false;
-            return message.warning("货架格子未进行更改");
+            // return message.warning("货架格子未进行更改");
+            return;
           }
           // 判断商品是否重叠
           if (isShelfOverlap(event.object, goodsMoveShelfBaseMesh)) {
@@ -423,6 +598,12 @@ export default {
       mousePosition,
       gridPositionTagVisible,
       gridPositionTagValue,
+      goodsMoveRightMenuVisible,
+      goodsMoveRightMenuLevel,
+      getGoodsLog,
+      currentGoodsLog,
+      removeGoods,
+      removeGoodsConfirm,
     };
   },
 };
@@ -440,10 +621,20 @@ export default {
   height: 100%;
 }
 
-.confirm-box {
+.move-confirm-box {
   position: absolute;
   display: flex;
   flex-direction: column;
+}
+
+.right-menu-box {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  div {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .grid-tag-box {
