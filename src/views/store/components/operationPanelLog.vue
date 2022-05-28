@@ -20,8 +20,6 @@
 </template>
 
 <script>
-import { message } from "ant-design-vue";
-import router from "@/router";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import GoodsLogItem from "@/components/goodsLogItem";
@@ -38,16 +36,6 @@ export default {
     const store = useStore();
     // 日志类型
     const logType = ref("current");
-    const logout = () => {
-      // 删除 用户信息
-      window.localStorage.removeItem("token");
-      window.localStorage.removeItem("userInfo");
-      // 跳转到登录页面
-      router.push("/login").then(() => {
-        // 提示信息
-        message.success("已退出登录");
-      });
-    };
 
     // 获取商品日志列表
     store.dispatch("goods/getGoodsLog", { storeId: props.storeId });
@@ -62,7 +50,7 @@ export default {
       }
     };
 
-    return { logout, logType, goodsLogList, changeStore };
+    return { logType, goodsLogList, changeStore };
   },
 };
 </script>
