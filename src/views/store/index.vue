@@ -233,6 +233,8 @@ export default {
       goodsMoveRightMenuVisible.value = true;
       // 设置右键菜单显示级别
       goodsMoveRightMenuLevel.value = 1;
+      // 重置右键菜单显示状态
+      removeGoodsConfirm.value = false;
     };
 
     // 确认移动商品
