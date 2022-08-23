@@ -116,7 +116,7 @@ button {
 .content {
   height: 100vh;
   /* background: linear-gradient(#141e30, #243b55); */
-  background-image: url(https://woyebuzhidaoyaoqiyigeshenmemingzi.oss-cn-hangzhou.aliyuncs.com/login.gif);
+  background-image: url("~@/assets/image/login.gif");
   background-size: cover;
   display: flex;
   justify-content: center;
