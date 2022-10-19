@@ -116,7 +116,7 @@ button {
 .content {
   height: 100vh;
   /* background: linear-gradient(#141e30, #243b55); */
-  background-image: url("https://z4a.net/images/2022/08/23/login.gif");
+  background-image: url("https://cloudstore-gz.oss-cn-guangzhou.aliyuncs.com/cloudstore/login.gif");
   background-size: cover;
   display: flex;
   justify-content: center;
