@@ -116,7 +116,7 @@ button {
 .content {
   height: 100vh;
   /* background: linear-gradient(#141e30, #243b55); */
-  background-image: url("https://cloudstore-gz.oss-cn-guangzhou.aliyuncs.com/cloudstore/login.gif");
+  background-image: url("~@/assets/image/login.png");
   background-size: cover;
   display: flex;
   justify-content: center;
