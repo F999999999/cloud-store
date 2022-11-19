@@ -50,8 +50,13 @@ const onSubmit = usernameFormHandleSubmit(({ username, password }) => {
         // 保存用户信息到 localStorage
         window.localStorage.setItem("userInfo", JSON.stringify(result.data));
         message.success(result.message);
-        //路由跳转
-        router.push("/");
+        if (result.data.post === 2) {
+          //路由跳转
+          router.push("/todo");
+        } else {
+          //路由跳转
+          router.push("/");
+        }
       } else {
         message.error(result.message);
       }

@@ -6,7 +6,11 @@ import {
   moveGoodsByIdApi,
   removeGoodsByIdApi,
 } from "@/api/goods";
-import { updateAllGoodsModelPosition, useGoodsModel } from "@/hooks/useGoods";
+import {
+  updateAllGoodsModelPosition,
+  updateOneGoodsModelPosition,
+  useGoodsModel,
+} from "@/hooks/useGoods";
 import store from "@/store";
 import { ThreeJS } from "@/hooks/useTEngine";
 import { message } from "ant-design-vue";
@@ -22,6 +26,8 @@ const goods = {
       expireGoodsList: [],
       // 商品日志
       goodsLog: [],
+      // 旧商品模型对象
+      beforeGoodsModelObject: {},
     };
   },
   mutations: {
@@ -134,6 +140,17 @@ const goods = {
     setGoodsLog(state, goodsLog) {
       state.goodsLog = goodsLog;
     },
+    // 设置旧商品模型对象
+    setBeforeGoodsModelObject(state, goodsModelObject) {
+      state.beforeGoodsModelObject = goodsModelObject;
+    },
+    // 清空旧商品模型对象
+    clearBeforeGoodsModelObject(state) {
+      state.beforeGoodsModelObject = {};
+    },
+    reductionGoodsModelObject(state) {
+      updateOneGoodsModelPosition(state.beforeGoodsModelObject);
+    },
   },
   actions: {
     // 获取商品数据
@@ -207,7 +224,7 @@ const goods = {
         shelf_id: shelfId,
         shelf_grid_id: shelfGridId,
       });
-      console.log(result);
+      console.log(result, "moveGoods");
       if (result.status === 200) {
         // 更新数据
         commit("moveGoods", {
@@ -215,9 +232,13 @@ const goods = {
           shelfId,
           shelfGridId,
         });
+        // 提示信息
+        message.success(result.message);
+      } else {
+        commit("reductionGoodsModelObject");
+        // 提示信息
+        message.error(result.message);
       }
-      // 提示信息
-      message.success(result.message);
     },
     // 移除商品
     async removeGoods({ commit }, { storeId, ids }) {

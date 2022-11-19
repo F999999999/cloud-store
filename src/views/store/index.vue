@@ -573,6 +573,7 @@ export default {
           }
           // 弹出确认框
           goodsMoveConfirmVisible.value = true;
+          store.commit("goods/setBeforeGoodsModelObject", event.object);
         } else {
           // 还原商品位置
           updateOneGoodsModelPosition(event.object);
