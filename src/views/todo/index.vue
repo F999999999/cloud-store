@@ -1,5 +1,21 @@
 <template>
   <div style="margin: 0 10px">
+    <a-row
+      :gutter="[20, 20]"
+      style="border-bottom: 1px solid #ccc; position: relative; height: 40px"
+    >
+      <!-- 用户信息 -->
+      <div>用户名：{{ userInfo.username }}</div>
+      <!--  退出登陆  -->
+      <a-button
+        type="primary"
+        danger
+        @click="logout"
+        style="position: absolute; top: 0; right: 0"
+      >
+        退出登陆
+      </a-button>
+    </a-row>
     <a-row :gutter="[20, 20]" style="border-bottom: 1px solid #ccc">
       <a-col :span="2">日志ID</a-col>
       <a-col :span="6">商品名称(商品ID)</a-col>
@@ -94,6 +110,8 @@
 import { confirmMoveGoodsApi, getPendingGoodsApi } from "@/api/goods";
 import { ref } from "vue";
 import { message } from "ant-design-vue";
+import { decodeToken } from "@/hooks/decodeToken";
+import router from "@/router";
 
 export default {
   name: "todo",
@@ -125,9 +143,23 @@ export default {
       getPendingGoods();
     }, 6000);
 
+    const logout = () => {
+      // 删除 用户信息
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("userInfo");
+      // 跳转到登录页面
+      router.push("/login").then(() => {
+        // 提示信息
+        message.success("已退出登录");
+      });
+    };
+    const userInfo = ref(decodeToken());
+
     return {
       toDoList,
       confirmMoveGoods,
+      logout,
+      userInfo,
     };
   },
 };
