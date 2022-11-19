@@ -96,3 +96,21 @@ export const expireGoodsApi = ({ store_id, page_num, page_size }) => {
 export const getGoodsLogTotalApi = () => {
   return requestWithToken("/store/expire_goods_total", "get");
 };
+/**
+ * 获取待处理商品
+ * @returns {Promise}
+ */
+export const getPendingGoodsApi = () => {
+  return requestWithToken("/store/pending_goods", "get");
+};
+/**
+ * 确认商品移动
+ * @param log_id 日志id
+ * @param execute_id 操作员id
+ * @returns {Promise}
+ */
+export const confirmMoveGoodsApi = ({ log_id }) => {
+  return requestWithToken("/store/confirm_move_goods", "post", {
+    log_id,
+  });
+};
