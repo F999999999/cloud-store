@@ -51,11 +51,9 @@ router.beforeEach((to, from, next) => {
     // 判断用户职位
     if (to.name !== "Todo" && userInfo.post === 2) {
       next({ name: "Todo" });
-    } else {
-      // 如果满足通过条件(去往login页面之外的路由 并且授权过) 则放行
-      next();
     }
-    console.log(userInfo.post, "post");
+    // 如果满足通过条件(去往login页面之外的路由 并且授权过) 则放行
+    next();
   }
 });
 
