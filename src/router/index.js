@@ -14,7 +14,6 @@ const routes = [
   // 仓库页面
   {
     path: "/store",
-
     name: "Store",
     component: StorePage,
   },
