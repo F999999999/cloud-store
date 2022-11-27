@@ -14,7 +14,6 @@ const routes = [
   // 仓库页面
   {
     path: "/store",
-
     name: "Store",
     component: StorePage,
   },
@@ -48,8 +47,15 @@ router.beforeEach((to, from, next) => {
     // 如果已经登入 强制跳转至首页
     next({ name: "Home" });
   } else {
-    // 如果满足通过条件(去往login页面之外的路由 并且授权过) 则放行
-    next();
+    const userInfo = JSON.parse(window.localStorage.getItem("userInfo"));
+    // 判断用户职位
+    if (to.name !== "Todo" && userInfo.post === 2) {
+      next({ name: "Todo" });
+    } else {
+      // 如果满足通过条件(去往login页面之外的路由 并且授权过) 则放行
+      next();
+    }
+    console.log(userInfo.post, "post");
   }
 });
 
