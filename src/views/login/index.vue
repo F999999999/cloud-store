@@ -39,6 +39,9 @@ const {
   passwordError,
   usernameFormHandleSubmit,
 } = useFormValidate();
+// 提供默认的账号密码
+usernameField.value = "admin";
+passwordField.value = "a123456";
 //验证通过之后
 const onSubmit = usernameFormHandleSubmit(({ username, password }) => {
   //登录接口
